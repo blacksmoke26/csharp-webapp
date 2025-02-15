@@ -1,6 +1,53 @@
-@Movies.Api_HostAddress = http://localhost:5097
+# @name POST /api/movies
+POST {{BaseUrl}}/api/movies
+Accept: application/json
+Content-Type: application/json
 
-GET {{Movies.Api_HostAddress}}/weatherforecast/
+{
+	"title": "{{$random.book.title}}",
+	"YearOfRelease": {{$random.integer(1950, 2025)}},
+	"Genres": [
+	  "{{$random.book.genre}}"
+	]
+}
+
+
+### Updates a Movie
+# @name PUT /api/movies 
+@updateIdOrSlug = test
+PUT http://localhost:5001/api/movies/{{updateIdOrSlug}}
+Accept: application/json
+Content-Type: application/json
+
+{
+	"title": "{{$random.book.title}}",
+	"YearOfRelease": {{$random.integer(1950, 2025)}},
+	"Genres": [
+	  "{{$random.book.genre}}"
+	]
+}
+
+
+### Get all 
+# @name GET /api/movies
+GET http://localhost:5001/api/movies
+
+
+### Get one
+# @name GET /api/movies/$id
+@getIdOrSlug = "{{$random.book.idOrSlug}}"
+GET http://localhost:5001/api/movies/{{getIdOrSlug}}
+Content-Type: application/json
+
+
+### Deletes movie
+# @name DELETE /api/movies/$id
+@deleteIdOrSlug = IdOrSlug
+DELETE http://localhost:5001/api/movies/{{deleteIdOrSlug}}
 Accept: application/json
 
+
 ###
+
+
+

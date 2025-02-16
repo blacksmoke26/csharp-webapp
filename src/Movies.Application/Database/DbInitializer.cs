@@ -7,10 +7,8 @@ using Dapper;
 namespace Movies.Application.Database;
 
 public class DbInitializer(IDbConnectionFactory connectionFactory) {
-  private readonly IDbConnectionFactory _connectionFactory = connectionFactory;
-
   public async Task InitializeAsync() {
-    using var connection = await _connectionFactory.CreateConnectionAsync();
+    using var connection = await connectionFactory.CreateConnectionAsync();
     await connection.ExecuteAsync(
       """
       CREATE TABLE IF NOT EXISTS "public"."movies" (

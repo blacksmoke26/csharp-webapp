@@ -7,7 +7,7 @@ using CaseConverter;
 namespace Movies.Application.Models;
 
 public class Movie {
-  public required Guid Id { get; init; }
+  public long? Id { get; set; }
 
   // section Test
   public required string Title { get; set; }

@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="CaseConverter" Version="2.0.1" />
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="FluentValidation" Version="12.0.0-preview1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0-preview1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
     <PackageReference Include="Npgsql" Version="9.0.2" />
   </ItemGroup>

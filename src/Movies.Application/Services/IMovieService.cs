@@ -1,12 +1,12 @@
 // Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Application.Models;
 
-namespace Movies.Application.Repositories;
+namespace Movies.Application.Services;
 
-public interface IMovieRepository {
+public interface IMovieService {
   /// <summary>
   /// Creates a movie
   /// </summary>
@@ -38,8 +38,8 @@ public interface IMovieRepository {
   /// Updates a movie
   /// </summary>
   /// <param name="movie">The movie object</param>
-  /// <returns>Whatever the movie is updated or not</returns>
-  Task<bool> UpdateAsync(Movie movie);
+  /// <returns>The updated object, otherwise null when failed</returns>
+  Task<Movie?> UpdateAsync(Movie movie);
 
   /// <summary>
   /// Removes the movie by the given ID
@@ -47,11 +47,4 @@ public interface IMovieRepository {
   /// <param name="id">Movie ID</param>
   /// <returns>True if deleted, otherwise false</returns>
   Task<bool> DeleteByIdAsync(long id);
-  
-  /// <summary>
-  /// Validates the given movie id exists
-  /// </summary>
-  /// <param name="id">Movie ID</param>
-  /// <returns>Whatever the movie is exists</returns>
-  Task<bool> ExistsByIdAsync(long id);
 }

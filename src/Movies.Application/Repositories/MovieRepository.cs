@@ -9,6 +9,7 @@ using Movies.Application.Models;
 namespace Movies.Application.Repositories;
 
 public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRepository {
+  /// <inheritdoc />
   public async Task<bool> CreateAsync(Movie movie) {
     using var connection = await connectionFactory.CreateConnectionAsync();
     using var transaction = connection.BeginTransaction();
@@ -44,6 +45,7 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
     }
   }
 
+  /// <inheritdoc />
   public async Task<Movie?> GetByIdAsync(long id) {
     using var connection = await connectionFactory.CreateConnectionAsync();
     var movie = await connection.QuerySingleOrDefaultAsync<Movie>(new CommandDefinition(
@@ -65,6 +67,7 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
     return movie;
   }
 
+  /// <inheritdoc />
   public async Task<Movie?> GetBySlugAsync(string slug) {
     using var connection = await connectionFactory.CreateConnectionAsync();
     var movie = await connection.QuerySingleOrDefaultAsync<Movie>(new CommandDefinition(
@@ -86,6 +89,7 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
     return movie;
   }
 
+  /// <inheritdoc />
   public async Task<IEnumerable<Movie>> GetAllAsync() {
     using var connection = await connectionFactory.CreateConnectionAsync();
     var result = await connection.QueryAsync(new CommandDefinition(
@@ -93,7 +97,7 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
       SELECT "t".*, string_agg("g"."name", ',') as "genres"
       FROM "public"."movies" "t"
       LEFT JOIN "public"."genres" g on "g"."movieId" = "t"."id"
-      GROUP BY "t"."id"
+      GROUP BY "t"."id" ORDER BY "t"."id" DESC
       """
     ));
 
@@ -105,6 +109,7 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
     });
   }
 
+  /// <inheritdoc />
   public async Task<bool> UpdateAsync(Movie movie) {
     using var connection = await connectionFactory.CreateConnectionAsync();
     using var transaction = connection.BeginTransaction();
@@ -143,6 +148,7 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
     }
   }
 
+  /// <inheritdoc />
   public async Task<bool> DeleteByIdAsync(long id) {
     using var connection = await connectionFactory.CreateConnectionAsync();
     using var transaction = connection.BeginTransaction();
@@ -170,15 +176,15 @@ public class MovieRepository(IDbConnectionFactory connectionFactory) : IMovieRep
     }
   }
 
+  /// <inheritdoc />
   public async Task<bool> ExistsByIdAsync(long id) {
     using var connection = await connectionFactory.CreateConnectionAsync();
-    var count = await connection.ExecuteScalarAsync(new CommandDefinition(
+    var exists = await connection.ExecuteScalarAsync(new CommandDefinition(
       """
         SELECT EXISTS(SELECT 1 FROM "public"."movies" "m" WHERE "m"."id" = @Id)
       """, new { Id = id }
     ));
 
-    Console.WriteLine(count);
-    return false;
+    return exists is not null;
   }
 }

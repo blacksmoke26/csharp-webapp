@@ -40,10 +40,6 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
       ? await movieService.GetByIdAsync(id, token)
       : await movieService.GetBySlugAsync(idOrSlug, token);
 
-    token.ThrowIfCancellationRequested();
-    
-    await Task.Delay(100_000, cancellationToken: token);
-    
     return movie is null
       ? NotFound()
       : Ok(movie.MapToResponse());
@@ -56,8 +52,6 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
   public async Task<IActionResult> GetAll(CancellationToken token) {
-    await Task.Delay(100_000, cancellationToken: token);
-    
     var movies = await movieService.GetAllAsync(token);
     return Ok(movies.MapToResponse());
   }

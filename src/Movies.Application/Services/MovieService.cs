@@ -10,41 +10,41 @@ namespace Movies.Application.Services;
 
 public class MovieService(IMovieRepository movieRepository, IValidator<Movie> movieValidator) : IMovieService {
   /// <inheritdoc/>
-  public async Task<bool> CreateAsync(Movie movie) {
-    await movieValidator.ValidateAndThrowAsync(movie);
-    return await movieRepository.CreateAsync(movie);
+  public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default) {
+    await movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
+    return await movieRepository.CreateAsync(movie, token);
   }
 
   /// <inheritdoc/>
-  public Task<Movie?> GetByIdAsync(long id) {
-    return movieRepository.GetByIdAsync(id);
+  public Task<Movie?> GetByIdAsync(long id, CancellationToken token = default) {
+    return movieRepository.GetByIdAsync(id, token);
   }
 
   /// <inheritdoc/>
-  public Task<Movie?> GetBySlugAsync(string slug) {
-    return movieRepository.GetBySlugAsync(slug);
+  public Task<Movie?> GetBySlugAsync(string slug, CancellationToken token = default) {
+    return movieRepository.GetBySlugAsync(slug, token);
   }
 
   /// <inheritdoc/>
-  public Task<IEnumerable<Movie>> GetAllAsync() {
-    return movieRepository.GetAllAsync();
+  public Task<IEnumerable<Movie>> GetAllAsync(CancellationToken token = default) {
+    return movieRepository.GetAllAsync(token);
   }
 
   /// <inheritdoc/>
-  public async Task<Movie?> UpdateAsync(Movie movie) {
-    await movieValidator.ValidateAndThrowAsync(movie);
+  public async Task<Movie?> UpdateAsync(Movie movie, CancellationToken token = default) {
+    await movieValidator.ValidateAndThrowAsync(movie, cancellationToken: token);
 
     if (movie.Id is null) return null;
 
-    var exists = await movieRepository.ExistsByIdAsync((long)movie.Id);
+    var exists = await movieRepository.ExistsByIdAsync((long)movie.Id, token);
     if (!exists) return null;
 
-    await movieRepository.UpdateAsync(movie);
+    await movieRepository.UpdateAsync(movie, token);
     return movie;
   }
 
   /// <inheritdoc/>
-  public Task<bool> DeleteByIdAsync(long id) {
-    return movieRepository.DeleteByIdAsync(id);
+  public Task<bool> DeleteByIdAsync(long id, CancellationToken token = default) {
+    return movieRepository.DeleteByIdAsync(id, token);
   }
 }

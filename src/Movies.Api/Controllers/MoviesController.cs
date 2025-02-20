@@ -2,13 +2,13 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 
 namespace Movies.Api.Controllers;
 
+[Authorize]
 [ApiController]
 public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <summary>
@@ -34,16 +34,13 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <param name="idOrSlug">Movie ID or Slug</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
+  [AllowAnonymous]
   [HttpGet(ApiEndpoints.Movies.Get)]
   public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token) {
     var movie = long.TryParse(idOrSlug, out var id)
       ? await movieService.GetByIdAsync(id, token)
       : await movieService.GetBySlugAsync(idOrSlug, token);
 
-    token.ThrowIfCancellationRequested();
-    
-    await Task.Delay(100_000, cancellationToken: token);
-    
     return movie is null
       ? NotFound()
       : Ok(movie.MapToResponse());
@@ -54,10 +51,9 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// </summary>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
+  [AllowAnonymous]
   [HttpGet(ApiEndpoints.Movies.GetAll)]
   public async Task<IActionResult> GetAll(CancellationToken token) {
-    await Task.Delay(100_000, cancellationToken: token);
-    
     var movies = await movieService.GetAllAsync(token);
     return Ok(movies.MapToResponse());
   }

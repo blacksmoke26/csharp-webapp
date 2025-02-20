@@ -16,4 +16,9 @@ public static class ApiEndpoints {
     public const string Update = $"{Base}/{{id:long}}";
     public const string Delete = $"{Base}/{{id:long}}";
   }
+
+  public static class Token {
+    public const string Base = "token";
+    public const string Create = $"{Base}/create";
+  }
 }

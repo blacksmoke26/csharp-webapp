@@ -10,6 +10,19 @@ using Movies.Application.Models;
 
 namespace Movies.Api.Services;
 
+public static class UserRoles {
+  public const string Admin = "admin";
+  public const string User = "user";
+
+  public static string FromUserRole(UserRole role) {
+    return role switch {
+      UserRole.Admin => Admin,
+      UserRole.User => User,
+      _ => throw new ArgumentOutOfRangeException(nameof(role), role, null)
+    };
+  }
+}
+
 /// <summary>
 /// Additional JWT options to customize the token
 /// </summary>
@@ -59,7 +72,7 @@ public class AuthService(AppConfig appConfig) {
     claims.AddClaims([
       new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
       new Claim(JwtRegisteredClaimNames.Email, user.Email),
-      new Claim(ClaimTypes.Role, user.Role.ToString().ToLower()),
+      new Claim(ClaimTypes.Role, UserRoles.FromUserRole(user.Role)),
     ]);
 
     if (options is null) return claims;

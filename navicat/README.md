@@ -10,4 +10,4 @@
 - In `Tools` Menu, Click `Forward Engineering`.
 - Done.
 
-![navicat-model-workspace-preview.png](navicat-model-workspace-preview.png)
+![image](https://github.com/user-attachments/assets/140ba70e-2456-45a9-bc40-fe577d82737c)

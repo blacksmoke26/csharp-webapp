@@ -36,7 +36,10 @@ builder.Services.AddAuthentication(x => {
   };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(x => {
+  x.AddPolicy("Admin", p => { p.RequireRole(UserRoles.Admin); });
+  x.AddPolicy("User", p => { p.RequireRole(UserRoles.User); });
+});
 
 builder.Services.AddTransient<AuthService>();
 

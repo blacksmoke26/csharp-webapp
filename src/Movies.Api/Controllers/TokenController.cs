@@ -18,13 +18,22 @@ public class TokenController : ControllerBase {
     await Task.Yield();
 
     User user = new() {
-      Name = "Junaid Atari",
+      Name = "Simple User",
       Role = UserRole.User,
-      Email = "mj.atari@gmail.com",
+      Email = "member@company.com",
+    };
+
+    User admin = new() {
+      Name = "Admin User",
+      Role = UserRole.Admin,
+      Email = "admin@company.com",
     };
 
     return Ok(new {
-      Token = authService.GenerateToken(user)
+      Data = new {
+        UserToken = authService.GenerateToken(user),
+        AdminToken = authService.GenerateToken(admin),
+      }
     });
   }
 }

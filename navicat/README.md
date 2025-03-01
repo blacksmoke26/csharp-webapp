@@ -10,4 +10,4 @@
 - In `Tools` Menu, Click `Forward Engineering`.
 - Done.
 
-![image](https://github.com/user-attachments/assets/140ba70e-2456-45a9-bc40-fe577d82737c)
+![image](https://github.com/user-attachments/assets/5ac49038-9e51-43fd-beb8-2295d074e735)

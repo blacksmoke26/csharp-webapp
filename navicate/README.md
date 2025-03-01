@@ -9,3 +9,5 @@
 - Tweak as you please.
 - In `Tools` Menu, Click `Forward Engineering`.
 - Done.
+
+![navicat-model-workspace-preview.png](navicat-model-workspace-preview.png)

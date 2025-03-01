@@ -62,11 +62,11 @@ public class DbInitializer(IDbConnectionFactory connectionFactory) {
         "id" serial8 NOT NULL,
         "user_id" int8 NOT NULL,
         "title" varchar(60) COLLATE "pg_catalog"."default" NOT NULL,
-        "yearOfRelease" int4 NOT NULL,
+        "year_of_release" int4 NOT NULL,
         "slug" varchar(255) COLLATE "pg_catalog"."default",
         CONSTRAINT "movies_pkey" PRIMARY KEY ("id"),
         CONSTRAINT "FK_movies_user_id_users_id" FOREIGN KEY ("user_id") REFERENCES "public"."users" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT "UNQ_Title_YoR" UNIQUE ("title", "yearOfRelease"),
+        CONSTRAINT "UNQ_Title_YoR" UNIQUE ("title", "year_of_release"),
         CONSTRAINT "UNQ_slug" UNIQUE ("slug")
       );
 
@@ -80,7 +80,7 @@ public class DbInitializer(IDbConnectionFactory connectionFactory) {
 
       COMMENT ON COLUMN "public"."movies"."title" IS 'Title';
 
-      COMMENT ON COLUMN "public"."movies"."yearOfRelease" IS 'Year of Release';
+      COMMENT ON COLUMN "public"."movies"."year_of_release" IS 'Year of Release';
 
       COMMENT ON COLUMN "public"."movies"."slug" IS 'Slug';
 

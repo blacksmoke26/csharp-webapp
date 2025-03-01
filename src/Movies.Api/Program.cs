@@ -37,8 +37,17 @@ builder.Services.AddAuthentication(x => {
 });
 
 builder.Services.AddAuthorization(x => {
-  x.AddPolicy("Admin", p => { p.RequireRole(UserRoles.Admin); });
-  x.AddPolicy("User", p => { p.RequireRole(UserRoles.User); });
+  // Policy Type: Admin
+  x.AddPolicy(AuthPolicies.AdminPolicy, p => { p.RequireRole(UserRoles.Admin); });
+
+  // Policy Type: User
+  x.AddPolicy(AuthPolicies.UserPolicy, p => { p.RequireRole(UserRoles.User); });
+
+  // Policy Type: Trusted
+  x.AddPolicy(AuthPolicies.TrustedPolicy, p => {
+    p.RequireRole(UserRoles.Admin);
+    p.RequireRole(UserRoles.User);
+  });
 });
 
 builder.Services.AddTransient<AuthService>();

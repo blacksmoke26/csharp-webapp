@@ -17,7 +17,8 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <param name="request">The request body</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created movie object</returns>
-  [Authorize(Roles = UserRoles.Admin)]
+  //[Authorize(Roles = $"{UserRoles.Admin},{UserRoles.User}")] // multiple-users
+  [Authorize(AuthPolicies.AdminPolicy)]
   [HttpPost(ApiEndpoints.Movies.Create)]
   public async Task<IActionResult> Create([FromBody] CreateMovieRequest request,
     CancellationToken token) {
@@ -50,7 +51,6 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// </summary>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
-  
   [HttpGet(ApiEndpoints.Movies.GetAll)]
   public async Task<IActionResult> GetAll(CancellationToken token) {
     var movies = await movieService.GetAllAsync(token);
@@ -64,7 +64,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <param name="request">Values to update</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
-  [Authorize(Roles = UserRoles.Admin)]
+  [Authorize(AuthPolicies.TrustedPolicy)]
   [HttpPut(ApiEndpoints.Movies.Update)]
   public async Task<IActionResult> Update([FromRoute] long id, [FromBody] UpdateMovieRequest request,
     CancellationToken token) {
@@ -82,7 +82,7 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <param name="id">Movie ID</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The response</returns>
-  [Authorize(Roles = UserRoles.Admin)]
+  [Authorize(AuthPolicies.AdminPolicy)]
   [HttpDelete(ApiEndpoints.Movies.Delete)]
   public async Task<IActionResult> Delete([FromRoute] long id, CancellationToken token) {
     var deleted = await movieService.DeleteByIdAsync(id, token);

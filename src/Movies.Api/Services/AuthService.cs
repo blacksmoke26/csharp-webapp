@@ -10,8 +10,29 @@ using Movies.Application.Models;
 
 namespace Movies.Api.Services;
 
+public static class AuthPolicies {
+  /// <summary>
+  /// Only allowed for `Admin` role
+  /// </summary>
+  public const string AdminPolicy = "AdminPolicy";
+  /// <summary>
+  /// Only allowed for `User` role
+  /// </summary>
+  public const string UserPolicy = "UserPolicy";
+  /// <summary>
+  /// Allowed for both `User` and `Admin` roles
+  /// </summary>
+  public const string TrustedPolicy = "TrustedPolicy";
+}
+
 public static class UserRoles {
+  /// <summary>
+  /// Only allowed for `Admin` role
+  /// </summary>
   public const string Admin = "admin";
+  /// <summary>
+  /// Only allowed for `User` role
+  /// </summary>
   public const string User = "user";
 
   public static string FromUserRole(UserRole role) {

@@ -15,13 +15,13 @@ public class DbInitializer(IDbConnectionFactory connectionFactory) {
       """
       CREATE TABLE IF NOT EXISTS "public"."users" (
         "id" serial8 NOT NULL,
+        "first_name" varchar(20) NOT NULL,
+        "last_name" varchar(20) NOT NULL,
         "email" varchar(255) NOT NULL,
         "password" varchar(64) NOT NULL,
         "auth_key" varchar(64) NOT NULL,
         "password_hash" varchar(150) NOT NULL,
         "password_reset_token" varchar(100),
-        "first_name" varchar(15) NOT NULL,
-        "last_name" varchar(15) NOT NULL,
         "role" varchar(20) NOT NULL,
         "status" int2 NOT NULL,
         "metadata" jsonb DEFAULT '{}',

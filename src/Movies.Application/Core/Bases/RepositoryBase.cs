@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Movies.Application.Core.Interfaces;
 using Movies.Application.Database;
@@ -18,27 +19,30 @@ public abstract class RepositoryBase<TModel> :
   public abstract DbSet<TModel> GetDataSet();
 
   /// <inheritdoc/>
-  public Task<TModel?> GetOneAsync(Func<TModel, bool> whereFn, CancellationToken token = default) {
+  public Task<TModel?> GetOneAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default) {
     return GetDataSet()
-      .SingleOrDefaultAsync(x => whereFn.Invoke(x), cancellationToken: token);
+      .SingleOrDefaultAsync(whereFn, cancellationToken: token);
   }
 
   /// <inheritdoc/>
-  public Task<List<TModel>> GetManyAsync(Func<TModel, bool>? whereFn = null, CancellationToken token = default) {
-    return GetDataSet()
-      .Where(x => whereFn == null || whereFn.Invoke(x))
-      .ToListAsync(token);
+  public Task<List<TModel>> GetManyAsync(
+    Expression<Func<TModel, bool>>? whereFn = null, CancellationToken token = default) {
+    return whereFn is null
+      ? GetDataSet().ToListAsync(token)
+      : GetDataSet()
+        .Where(whereFn)
+        .ToListAsync(token);
   }
 
   /// <inheritdoc/>
-  public Task<bool> ExistsAsync(Func<TModel, bool> whereFn, CancellationToken token = default) {
-    return GetDataSet().AnyAsync(x => whereFn.Invoke(x), token);
+  public Task<bool> ExistsAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default) {
+    return GetDataSet().AnyAsync(whereFn, token);
   }
 
   /// <inheritdoc/>
-  public Task<int> DeleteAsync(Func<TModel, bool> whereFn, CancellationToken token = default) {
+  public Task<int> DeleteAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default) {
     return GetDataSet()
-      .Where(x => whereFn.Invoke(x))
+      .Where(whereFn)
       .ExecuteDeleteAsync(token);
   }
 }

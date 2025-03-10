@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
+using System.Linq.Expressions;
+
 namespace Movies.Application.Core.Interfaces;
 
 public interface IDbRecordFetch<TModel> {
@@ -11,7 +13,7 @@ public interface IDbRecordFetch<TModel> {
   /// <param name="whereFn">A callback which apply as a where condition</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The found record, null if there is not</returns>
-  public Task<TModel?> GetOneAsync(Func<TModel, bool> whereFn, CancellationToken token = default);
+  public Task<TModel?> GetOneAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default);
 
   /// <summary>
   /// Fetches the multiple records against the given condition
@@ -19,7 +21,7 @@ public interface IDbRecordFetch<TModel> {
   /// <param name="whereFn">A callback which apply as a where condition</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The fetched records</returns>
-  public Task<List<TModel>> GetManyAsync(Func<TModel, bool>? whereFn = null, CancellationToken token = default);
+  public Task<List<TModel>> GetManyAsync(Expression<Func<TModel, bool>>? whereFn = null, CancellationToken token = default);
   
   /// <summary>
   /// Checks the records exists against the given condition
@@ -27,7 +29,7 @@ public interface IDbRecordFetch<TModel> {
   /// <param name="whereFn">A callback which apply as a where condition</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>True upon exist, false otherwise</returns>
-  public Task<bool> ExistsAsync(Func<TModel, bool> whereFn, CancellationToken token = default);
+  public Task<bool> ExistsAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default);
   
   /// <summary>
   /// Deletes one or many records against then given condition
@@ -35,5 +37,5 @@ public interface IDbRecordFetch<TModel> {
   /// <param name="whereFn">A callback which apply as a where condition</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>Returns the count of deleted records</returns>
-  public Task<int> DeleteAsync(Func<TModel, bool> whereFn, CancellationToken token = default);
+  public Task<int> DeleteAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default);
 }

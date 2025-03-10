@@ -4,7 +4,6 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Movies.Application.Objects;
 
 namespace Movies.Api.Core.Middleware;
 

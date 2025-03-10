@@ -3,7 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using FluentValidation;
-using Movies.Contracts.Responses;
 
 namespace Movies.Api.Core.Middleware;
 

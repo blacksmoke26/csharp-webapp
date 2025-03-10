@@ -30,7 +30,7 @@ public class MoviesController(
         new() {
           ErrorMessage = "This movie is no longer available or disabled by the owner"
         }
-      ], 410, "UNAVAILABLE")
+      ], 410, "NOT_AVAILABLE")
       : Ok(new SuccessResponse(movie));
   }
 
@@ -52,7 +52,7 @@ public class MoviesController(
   /// <param name="body">The request body</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created movie object</returns>
-  [Authorize(AuthPolicies.AdminPolicy)]
+  [Authorize(AuthPolicies.AuthPolicy)]
   [HttpPost(ApiEndpoints.Movies.Create)]
   public async Task<IActionResult> Create(
     [FromBody]

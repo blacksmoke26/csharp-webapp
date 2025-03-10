@@ -1,11 +1,20 @@
 // Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository:https://github.com/blacksmoke26/csharp-webapp
+
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using Movies.Application.Core.Bases;
 
 namespace Movies.Application.Models;
 
-public class Genre {
-  public long? Id { get; set; }
-  public required long MovieId { get; init; }
-  public required string Name { get; init; }
+public class Genre : ModelBase {
+  [Key] [Comment("Primary Key")]
+  public long Id { get; set; }
+
+  [Required] [Comment("Owner Movie")]
+  public long MovieId { get; set; }
+
+  [Required] [MaxLength(60)] [Comment("Name")]
+  public string Name { get; set; } = null!;
 }

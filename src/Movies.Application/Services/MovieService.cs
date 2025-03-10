@@ -2,9 +2,11 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository: https://github.com/blacksmoke26/csharp-webapp
 
+using System.Linq.Expressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Movies.Application.Core.Bases;
+using Movies.Application.Core.Interfaces;
 using Movies.Application.Database;
 using Movies.Application.Domain.Model;
 using Movies.Application.Helpers;
@@ -17,7 +19,11 @@ public class MovieService(
   DatabaseContext dbContext,
   MovieRepository movieRepo,
   IValidator<MovieCreateModel> createValidator,
-  IValidator<MovieUpdateModel> updateValidator): ServiceBase {
+  IValidator<MovieUpdateModel> updateValidator)
+  : ServiceBase, IServiceRepoInstance<MovieRepository> {
+  /// <inheritdoc/>
+  public MovieRepository GetRepo() => movieRepo;
+
   /// <summary>
   /// Creates a movie
   /// </summary>
@@ -66,36 +72,47 @@ public class MovieService(
   /// <param name="token">The cancellation token</param>
   /// <returns>Whatever the movie is updated or not</returns>
   /// <exception cref="ValidationException">When the inputs validation failed</exception>
-  public async Task<Movie?> UpdateAsync(MovieUpdateModel input, CancellationToken token = default) {
+  public async Task<Movie?> UpdateAsync(
+    MovieUpdateModel input, CancellationToken token = default) {
     await updateValidator.ValidateAndThrowAsync(input, token);
+
     var movie = await GetByUserIdAndPkAsync(input.UserId, input.Id, token);
+    var newSlug = movie.GenerateSlug(input.Title, input.YearOfRelease);
+
+    if (!newSlug.Equals(movie.Slug)
+        && await movieRepo.ExistsAsync(x => x.Slug == newSlug, token)) {
+      throw ValidationHelper.Create([
+        new() {
+          ErrorMessage = "Movie with the same name and year of release is already exist."
+        }
+      ], 400, "DUPLICATE_ENTRY");
+    }
 
     await using var transaction = await dbContext.Database.BeginTransactionAsync(token);
 
     try {
-      dbContext.Movies.Add(movie);
-      await dbContext.SaveChangesAsync(token);
-
       // remove existing genres
       await dbContext.Genres.Where(x => x.MovieId == movie.Id).ExecuteDeleteAsync(token);
 
-      // create new genres
-      dbContext.Genres.AddRange(
-        input.Genres.Select(name => new Genre {
+      dbContext.Movies.Update(movie);
+      await dbContext.SaveChangesAsync(token);
+
+      foreach (var name in input.Genres) {
+        dbContext.Genres.Add(new() {
           MovieId = movie.Id,
           Name = name
-        })
-      );
+        });
+      }
 
       await dbContext.SaveChangesAsync(token);
       await transaction.CommitAsync(token);
+
+      return movie;
     }
     catch (Exception e) {
       Console.WriteLine(e);
       return null;
     }
-
-    return movie;
   }
 
   /// <summary>
@@ -132,9 +149,12 @@ public class MovieService(
     return GetOneAsync(x => x.UserId == userId && x.Id == movieId, token);
   }
 
-  /// <inheritdoc cref="MovieRepository.GetOneAsync"/>
-  public async Task<Movie> GetOneAsync(Func<Movie, bool> whereFn, CancellationToken token = default) {
-    var movie = await movieRepo.GetOneAsync(whereFn, token);
+  /// <inheritdoc cref="RepositoryBase{TModel}.GetOneAsync(System.Linq.Expressions.Expression{System.Func{TModel,bool}},System.Threading.CancellationToken)"/>
+  public async Task<Movie> GetOneAsync(Expression<Func<Movie, bool>> whereFn, CancellationToken token = default) {
+    var movie = await movieRepo.GetOneAsync(x
+      => x.Where(whereFn)
+        .Include(x => x.Genres)
+        .Include(x => x.Ratings), token);
 
     if (movie is not null) return movie;
 
@@ -145,19 +165,32 @@ public class MovieService(
     ], 404, "NOT_FOUND");
   }
 
-  /// <inheritdoc cref="MovieRepository.GetManyAsync"/>
-  public Task<List<Movie>> GetAllAsync(Func<Movie, bool>? whereFn = null, CancellationToken token = default) {
-    return movieRepo.GetManyAsync(whereFn, token);
+  /// <inheritdoc cref="RepositoryBase{TModel}.GetManyAsync{TReturn}(System.Linq.Expressions.Expression{System.Func{TModel,bool}}?,System.Threading.CancellationToken)"/>
+  public Task<List<Movie>> GetAllAsync(
+    Expression<Func<Movie, bool>>? whereFn = null, CancellationToken token = default)
+    => GetAllAsync<Movie>(whereFn, token);
+
+  /// <inheritdoc cref="RepositoryBase{TModel}.GetManyAsync{TReturn}(System.Linq.Expressions.Expression{System.Func{TModel,bool}}?,System.Threading.CancellationToken)"/>
+  public Task<List<TResult>> GetAllAsync<TResult>(
+    Expression<Func<Movie, bool>>? whereFn = null, CancellationToken token = default) {
+    return movieRepo.GetManyAsync<TResult>(x => {
+      var query = x.AsQueryable();
+      if (whereFn is not null) query = x.Where(whereFn);
+
+      return query
+        .Include(x => x.Ratings)
+        .Include(x => x.Genres);
+    }, token);
   }
 
   /// <inheritdoc cref="MovieRepository.DeleteAsync"/>
-  public Task<int> DeleteAsync(Func<Movie, bool> whereFn, CancellationToken token = default) {
+  public Task<int> DeleteAsync(Expression<Func<Movie, bool>> whereFn, CancellationToken token = default) {
     return movieRepo.DeleteAsync(whereFn, token);
   }
 
   /// <inheritdoc cref="MovieRepository.ExistsAsync"/>
-  public Task<bool> ExistsAsync(Func<Movie, bool> whereFn, CancellationToken token = default) {
-    return movieRepo.ExistsAsync(whereFn.Invoke, token);
+  public Task<bool> ExistsAsync(Expression<Func<Movie, bool>> whereFn, CancellationToken token = default) {
+    return movieRepo.ExistsAsync(whereFn, token);
   }
 
   /// <summary>
@@ -171,7 +204,7 @@ public class MovieService(
     return await DeleteAsync(x => x.UserId == userId && x.Id == movieId, token) > 0;
   }
 
-  /*/// <summary>
+  /// <summary>
   /// Fetch the movie by the given owner user id and slug
   /// </summary>
   /// <param name="userId">The user id</param>
@@ -193,7 +226,7 @@ public class MovieService(
   public Task<List<Movie>> GetAllByUserAsync(long userId, CancellationToken token = default) {
     return movieRepo.GetManyAsync(x => x.UserId == userId, token);
   }
-  
+
   /// <summary>
   /// Removes the movie by the given ID ad user id
   /// </summary>
@@ -212,8 +245,8 @@ public class MovieService(
   /// <param name="token">The cancellation token</param>
   /// <returns>Whatever the movie exists</returns>
   public Task<bool> TitleByYearExistsAsync(
-    string title, short yearOfRelease, CancellationToken token = default
-  ) {
-    return ExistsAsync(x => x.Title == title && x.YearOfRelease == yearOfRelease, token);
-  }*/
+    string title, short yearOfRelease, CancellationToken token = default) {
+    return ExistsAsync(x 
+      => x.Title == title && x.YearOfRelease == yearOfRelease, token);
+  }
 }

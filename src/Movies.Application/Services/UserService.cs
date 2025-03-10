@@ -4,6 +4,7 @@
 
 using FluentValidation;
 using Movies.Application.Core.Bases;
+using Movies.Application.Core.Interfaces;
 using Movies.Application.Domain.Model;
 using Movies.Application.Helpers;
 using Movies.Application.Models;
@@ -14,7 +15,10 @@ namespace Movies.Application.Services;
 public class UserService(
   UserRepository userRepo,
   IValidator<UserCreateModel> createValidator
-) : ServiceBase {
+) : ServiceBase, IServiceRepoInstance<UserRepository> {
+  /// <inheritdoc/>
+  public UserRepository GetRepo() => userRepo;
+  
   /// <summary>
   /// Creates a new user account
   /// </summary>

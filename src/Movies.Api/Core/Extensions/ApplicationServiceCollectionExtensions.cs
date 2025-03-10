@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Movies.Application.Config;
-using Movies.Application.Objects;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Results;
@@ -118,7 +117,6 @@ public static class ApplicationServiceCollectionExtensions {
 public class CustomResultFactory : IFluentValidationAutoValidationResultFactory {
   public IActionResult CreateActionResult(ActionExecutingContext context,
     ValidationProblemDetails? validationProblemDetails) {
-    validationProblemDetails.Title.Dump();
     return new BadRequestObjectResult(new
       { Title = "Validation errors" });
   }

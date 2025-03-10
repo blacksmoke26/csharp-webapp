@@ -22,14 +22,16 @@ public static class ApplicationServiceCollectionExtensions {
   /// <returns>The updated service collection instance</returns>
   public static IServiceCollection AddApplication(this IServiceCollection services) {
     // repos
-    services.AddSingleton<MovieRepository>();
     services.AddSingleton<GenreRepository>();
+    services.AddSingleton<MovieRepository>();
     services.AddSingleton<RatingRepository>();
     services.AddSingleton<UserRepository>();
 
     // services
     services.AddSingleton<IdentityService>();
+    services.AddSingleton<GenreService>();
     services.AddSingleton<MovieService>();
+    services.AddSingleton<RatingService>();
     services.AddSingleton<UserService>();
 
     services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);

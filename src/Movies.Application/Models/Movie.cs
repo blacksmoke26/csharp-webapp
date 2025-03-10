@@ -4,9 +4,9 @@
 // See more: https://learn.microsoft.com/en-us/ef/core/modeling/relationships/one-to-one
 
 using System.ComponentModel.DataAnnotations;
-using CaseConverter;
 using Microsoft.EntityFrameworkCore;
 using Movies.Application.Core.Bases;
+using Movies.Application.Helpers;
 using Movies.Application.Repositories;
 
 namespace Movies.Application.Models;
@@ -39,19 +39,21 @@ public class Movie : ModelBase {
   /// <summary>
   /// List of genres associated with this movie
   /// </summary>
-  public virtual List<Genre> Genres { get; set; } = [];
+  public List<Genre> Genres { get; set; } = [];
 
   /// <summary>
   /// List of ratings associated with this movie
   /// </summary>
-  public virtual List<Rating> Ratings { get; set; } = [];
+  public List<Rating> Ratings { get; set; } = [];
 
   /// <inheritdoc/>
   public override Task OnTrackChangesAsync(
     EntityState state, CancellationToken cancellationToken = default) {
-    if (state is EntityState.Added)
+    if (state is EntityState.Added) {
       CreatedAt = DateTime.UtcNow;
-    else if (state is EntityState.Added or EntityState.Modified) {
+    }
+
+    if (state is EntityState.Added or EntityState.Modified) {
       GenerateSlug();
       UpdatedAt = DateTime.UtcNow;
     }
@@ -60,8 +62,14 @@ public class Movie : ModelBase {
   }
 
   /// <summary>
-  /// Generates a slug based on a movie name and the year of release
+  /// Generates a slug against current values
   /// </summary>
   public void GenerateSlug()
-    => Slug = string.Concat(Title, " ", YearOfRelease).ToKebabCase();
+    => Slug = GenerateSlug(Title, YearOfRelease);
+
+  /// <summary>
+  /// Generates a slug based on a movie name and the year of release
+  /// </summary>
+  public string GenerateSlug(string title, short yearOfRelease)
+    => Slug = StringHelper.GenerateSlug(title, " ", yearOfRelease);
 }

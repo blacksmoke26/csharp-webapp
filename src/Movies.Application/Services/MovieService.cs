@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository: https://github.com/blacksmoke26/csharp-webapp
 
+using System.Linq.Expressions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Movies.Application.Core.Bases;
@@ -133,7 +134,7 @@ public class MovieService(
   }
 
   /// <inheritdoc cref="MovieRepository.GetOneAsync"/>
-  public async Task<Movie> GetOneAsync(Func<Movie, bool> whereFn, CancellationToken token = default) {
+  public async Task<Movie> GetOneAsync(Expression<Func<Movie, bool>> whereFn, CancellationToken token = default) {
     var movie = await movieRepo.GetOneAsync(whereFn, token);
 
     if (movie is not null) return movie;
@@ -146,18 +147,18 @@ public class MovieService(
   }
 
   /// <inheritdoc cref="MovieRepository.GetManyAsync"/>
-  public Task<List<Movie>> GetAllAsync(Func<Movie, bool>? whereFn = null, CancellationToken token = default) {
+  public Task<List<Movie>> GetAllAsync(Expression<Func<Movie, bool>>? whereFn = null, CancellationToken token = default) {
     return movieRepo.GetManyAsync(whereFn, token);
   }
 
   /// <inheritdoc cref="MovieRepository.DeleteAsync"/>
-  public Task<int> DeleteAsync(Func<Movie, bool> whereFn, CancellationToken token = default) {
+  public Task<int> DeleteAsync(Expression<Func<Movie, bool>> whereFn, CancellationToken token = default) {
     return movieRepo.DeleteAsync(whereFn, token);
   }
 
   /// <inheritdoc cref="MovieRepository.ExistsAsync"/>
-  public Task<bool> ExistsAsync(Func<Movie, bool> whereFn, CancellationToken token = default) {
-    return movieRepo.ExistsAsync(whereFn.Invoke, token);
+  public Task<bool> ExistsAsync(Expression<Func<Movie, bool>> whereFn, CancellationToken token = default) {
+    return movieRepo.ExistsAsync(whereFn, token);
   }
 
   /// <summary>

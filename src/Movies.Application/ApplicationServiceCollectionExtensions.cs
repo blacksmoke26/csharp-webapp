@@ -3,6 +3,7 @@
 // Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Movies.Application.Database;
 using Movies.Application.Repositories;
@@ -20,9 +21,19 @@ public static class ApplicationServiceCollectionExtensions {
   /// <param name="services">ServiceCollection instance</param>
   /// <returns>The updated service collection instance</returns>
   public static IServiceCollection AddApplication(this IServiceCollection services) {
-    services.AddSingleton<IMovieRepository, MovieRepository>();
-    services.AddSingleton<IMovieService, MovieService>();
+    // repos
+    services.AddSingleton<MovieRepository>();
+    services.AddSingleton<GenreRepository>();
+    services.AddSingleton<RatingRepository>();
+    services.AddSingleton<UserRepository>();
+
+    // services
+    services.AddSingleton<IdentityService>();
+    services.AddSingleton<MovieService>();
+    services.AddSingleton<UserService>();
+
     services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
+    
     return services;
   }
 
@@ -33,8 +44,11 @@ public static class ApplicationServiceCollectionExtensions {
   /// <param name="connectionString">Database connection string to connect</param>
   /// <returns>The updated service collection instance</returns>
   public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString) {
-    services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(connectionString));
-    services.AddSingleton<DbInitializer>();
+    services.AddSingleton<DatabaseContext>(_ => {
+      DatabaseContext instance = new(connectionString);
+      instance.Database.ExecuteSql($"SET timezone = '+00:00'");
+      return instance;
+    });
     return services;
   }
 }

@@ -1,34 +1,16 @@
 // Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Movies.Api.Mapping;
-using Movies.Api.Services;
-using Movies.Application.Services;
-using Movies.Contracts.Requests;
+using Movies.Contracts.Requests.Dto;
 
 namespace Movies.Api.Controllers;
 
 [ApiController]
-public class MoviesController(IMovieService movieService) : ControllerBase {
-  /// <summary>
-  /// Create a new movie
-  /// </summary>
-  /// <param name="request">The request body</param>
-  /// <param name="token">The cancellation token</param>
-  /// <returns>The created movie object</returns>
-  //[Authorize(Roles = $"{UserRoles.Admin},{UserRoles.User}")] // multiple-users
-  [Authorize(AuthPolicies.AdminPolicy)]
-  [HttpPost(ApiEndpoints.Movies.Create)]
-  public async Task<IActionResult> Create([FromBody] CreateMovieRequest request,
-    CancellationToken token) {
-    var movie = request.MapToMovie();
-
-    await movieService.CreateAsync(movie, token);
-
-    return CreatedAtAction(nameof(Get), new { idOrSlug = movie.Id }, movie);
-  }
-
+public class MoviesController(
+  MovieService movieService,
+  UserIdentity identity
+) : ControllerBase {
   /// <summary>
   /// Fetch the movie by its id or slug
   /// </summary>
@@ -36,14 +18,20 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.Get)]
-  public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token) {
+  public async Task<IActionResult> Get(
+    [FromRoute] string idOrSlug, CancellationToken token) {
     var movie = long.TryParse(idOrSlug, out var id)
-      ? await movieService.GetByIdAsync(id, token)
+      ? await movieService.GetByPkAsync(id, token)
       : await movieService.GetBySlugAsync(idOrSlug, token);
 
-    return movie is null
-      ? NotFound()
-      : Ok(movie.MapToResponse());
+    // Note: With the abnormal status, only owner user can access this object. 
+    return !identity.CheckSameId(movie.UserId) && movie.Status != MovieStatus.Published
+      ? throw ValidationHelper.Create([
+        new() {
+          ErrorMessage = "This movie is no longer available or disabled by the owner"
+        }
+      ], 410, "UNAVAILABLE")
+      : Ok(new SuccessResponse(movie));
   }
 
   /// <summary>
@@ -53,27 +41,68 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
   public async Task<IActionResult> GetAll(CancellationToken token) {
-    var movies = await movieService.GetAllAsync(token);
-    return Ok(movies.MapToResponse());
+    // TODO: Implement filters/pagination to limit the no. of records, otherwise **boom**
+    var movies = await movieService.GetAllAsync(token: token);
+    return Ok(new SuccessResponse(movies));
   }
 
   /// <summary>
-  /// Update the movie by its id and details
+  /// Creates a movie object
+  /// </summary>
+  /// <param name="body">The request body</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The created movie object</returns>
+  [Authorize(AuthPolicies.AdminPolicy)]
+  [HttpPost(ApiEndpoints.Movies.Create)]
+  public async Task<IActionResult> Create(
+    [FromBody]
+    MovieCreateDto body,
+    CancellationToken token
+  ) {
+    var movie = await movieService.CreateAsync(new() {
+      UserId = identity.GetId(),
+      Title = body.Title,
+      YearOfRelease = body.YearOfRelease,
+      Genres = body.Genres
+    }, token);
+
+    return movie is null
+      ? throw ValidationHelper.Create([
+        new() {
+          ErrorMessage = "An error occurred while creating the movie"
+        }
+      ], 400, "PROCESS_FAILED")
+      : Ok(new SuccessResponse(movie));
+  }
+
+  /// <summary>
+  /// Update the movie details against movie id
   /// </summary>
   /// <param name="id">Movie ID</param>
-  /// <param name="request">Values to update</param>
+  /// <param name="body">Information to update</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
-  [Authorize(AuthPolicies.TrustedPolicy)]
+  [Authorize(AuthPolicies.AuthPolicy)]
   [HttpPut(ApiEndpoints.Movies.Update)]
-  public async Task<IActionResult> Update([FromRoute] long id, [FromBody] UpdateMovieRequest request,
-    CancellationToken token) {
-    var movie = request.MapToMovie(id);
-    var updatedMovie = await movieService.UpdateAsync(movie, token);
+  public async Task<IActionResult> Update(
+    [FromRoute]
+    long id, [FromBody] MovieUpdateDto body, CancellationToken token
+  ) {
+    var movie = await movieService.UpdateAsync(new() {
+      Id = id,
+      UserId = identity.GetId(),
+      Title = body.Title,
+      YearOfRelease = body.YearOfRelease,
+      Genres = body.Genres
+    }, token);
 
-    return updatedMovie is null
-      ? NotFound()
-      : Ok(updatedMovie.MapToResponse());
+    return movie is null
+      ? throw ValidationHelper.Create([
+        new() {
+          ErrorMessage = "An error occurred while updating the movie"
+        }
+      ], 400, "PROCESS_FAILED")
+      : Ok(new SuccessResponse(movie));
   }
 
   /// <summary>
@@ -84,11 +113,21 @@ public class MoviesController(IMovieService movieService) : ControllerBase {
   /// <returns>The response</returns>
   [Authorize(AuthPolicies.AdminPolicy)]
   [HttpDelete(ApiEndpoints.Movies.Delete)]
-  public async Task<IActionResult> Delete([FromRoute] long id, CancellationToken token) {
-    var deleted = await movieService.DeleteByIdAsync(id, token);
+  public async Task<IActionResult> Delete(
+    [FromRoute]
+    long id, CancellationToken token
+  ) {
+    if (!await movieService.ExistsAsync(x
+          => x.UserId == identity.GetId() && x.Id == id, token))
+      return NotFound();
 
-    return !deleted
-      ? NotFound()
-      : Ok();
+    return await movieService.DeleteAsync(x
+      => x.UserId == identity.GetId() && x.Id == id, token) == 0
+      ? throw ValidationHelper.Create([
+        new() {
+          ErrorMessage = "An error occurred while deleting the movie"
+        }
+      ], 400, "PROCESS_FAILED")
+      : Ok(new SuccessOnlyResponse());
   }
 }

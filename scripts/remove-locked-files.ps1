@@ -14,6 +14,12 @@ $files = @(
 	Resolve-Path "${dirMoviesApi}/Movies.Api.dll" -ErrorAction Ignore
 	Resolve-Path "${dirMoviesApi}/Movies.Api.exe" -ErrorAction Ignore
 	Resolve-Path "${dirMoviesApi}/Movies.Api.pdb" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Application.dll" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Application.exe" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Application.pdb" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Contracts.dll" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Contracts.exe" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Contracts.pdb" -ErrorAction Ignore
 );
 
 $filesPath = ('"' + ( $files -join '","') + '"');

@@ -16,13 +16,59 @@ public interface IDbRecordFetch<TModel> {
   public Task<TModel?> GetOneAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default);
 
   /// <summary>
+  /// Fetches a single record against the queryable condition
+  /// </summary>
+  /// <param name="queryableFn">The callback which performs against queryable object</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The found record, null if there is not</returns>
+  public Task<TModel?> GetOneAsync(
+    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn, CancellationToken token = default);
+
+  /// <summary>
+  /// Fetches a single record against the queryable condition
+  /// </summary>
+  /// <param name="queryableFn">The callback which performs against queryable object</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The partial found record, null if there is not</returns>
+  public Task<TReturn?> GetOneAsync<TReturn>(
+    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn, CancellationToken token = default);
+
+  /// <summary>
+  /// Fetches the multiple records against the given condition
+  /// </summary>
+  /// <param name="queryableFn">The callback which performs against queryable object</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The fetched records</returns>
+  public Task<List<TModel>> GetManyAsync(
+    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn, CancellationToken token = default);
+
+  /// <summary>
   /// Fetches the multiple records against the given condition
   /// </summary>
   /// <param name="whereFn">A callback which apply as a where condition</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The fetched records</returns>
-  public Task<List<TModel>> GetManyAsync(Expression<Func<TModel, bool>>? whereFn = null, CancellationToken token = default);
-  
+  public Task<List<TModel>> GetManyAsync(Expression<Func<TModel, bool>>? whereFn = null,
+    CancellationToken token = default);
+
+  /// <summary>
+  /// Fetches the multiple partial records against the given condition
+  /// </summary>
+  /// <param name="whereFn">A callback which apply as a where condition</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The fetched partial records</returns>
+  public Task<List<TReturn>> GetManyAsync<TReturn>(Expression<Func<TModel, bool>>? whereFn = null,
+    CancellationToken token = default);
+
+  /// <summary>
+  /// Fetches the multiple partial records against the given condition
+  /// </summary>
+  /// <param name="queryableFn">The callback which performs against queryable object</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The fetched partial records</returns>
+  public Task<List<TReturn>> GetManyAsync<TReturn>(
+    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn, CancellationToken token = default);
+
   /// <summary>
   /// Checks the records exists against the given condition
   /// </summary>
@@ -30,7 +76,7 @@ public interface IDbRecordFetch<TModel> {
   /// <param name="token">The cancellation token</param>
   /// <returns>True upon exist, false otherwise</returns>
   public Task<bool> ExistsAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default);
-  
+
   /// <summary>
   /// Deletes one or many records against then given condition
   /// </summary>

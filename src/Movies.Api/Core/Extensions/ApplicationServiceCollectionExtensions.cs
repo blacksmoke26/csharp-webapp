@@ -3,7 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using System.Reflection;
-using Dumpify;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -106,9 +105,8 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddEndpointsApiExplorer();
 
     services.AddApplication();
-    services.AddExceptionHandler(x => { x.ExceptionHandlingPath.Value.Dump(); });
     services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly(), ServiceLifetime.Transient);
-    services.AddDatabase(config.Config["Database:ConnectionString"]!);
+    services.AddDatabase(config);
 
     return services;
   }

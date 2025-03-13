@@ -2,7 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Movies.Application.Helpers;

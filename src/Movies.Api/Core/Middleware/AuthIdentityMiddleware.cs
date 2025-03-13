@@ -25,6 +25,8 @@ public class AuthValidationMiddleware(
   ];
 
   public async Task InvokeAsync(HttpContext context) {
+    userIdentity.Clear();
+    
     var claims = context.User.Claims.ToArray()
       .Where(x => ValidLoginClaims.Contains(x.Type.ToString()))
       .Select(x => new KeyValuePair<string, string>(x.Type, x.Value))

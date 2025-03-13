@@ -4,22 +4,27 @@
 // See also: https://claudiobernasconi.ch/blog/how-to-hash-passwords-with-bcrypt-in-csharp/
 
 using System.Security.Cryptography;
-using System.Text;
 using BCrypt.Net;
 using NanoidDotNet;
 using BC = BCrypt.Net.BCrypt;
 
 namespace Movies.Application.Helpers;
 
+/// <summary>
+/// EncryptedPasswordResult represents the result of password encryption 
+/// </summary>
 public struct EncryptedPasswordResult {
+  /// <summary>The sha1 encrypted password</summary>
   public required string Password { get; init; }
+  /// <summary>The password key to verify the encrypted password</summary>
   public required string PasswordHash { get; init; }
 }
 
 /// <summary>
-/// IdentityHelper class to encrypt and validate password and autherication key 
+/// IdentityHelper class to encrypt and validate password and authentication key 
 /// </summary>
 public static class IdentityHelper {
+  /// <summary>The hash type to verify the password integrity</summary>
   public static HashType HashType => HashType.SHA384;
 
   /// <summary>

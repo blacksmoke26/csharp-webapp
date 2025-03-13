@@ -5,11 +5,7 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Movies.Application.Config;
-using Movies.Application.Core.Bases;
-using Movies.Application.Models;
 
 namespace Movies.Application.Services;
 

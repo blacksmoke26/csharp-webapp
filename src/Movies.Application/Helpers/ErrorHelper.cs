@@ -15,6 +15,7 @@ public enum ErrorCodes {
   ProcessFailed = 7,
   DuplicateEntry = 8,
   AccessDenied = 9,
+  AccessRevoked = 10,
 }
 
 public static class ErrorHelper {
@@ -35,6 +36,7 @@ public static class ErrorHelper {
       ErrorCodes.ProcessFailed => "PROCESS_FAILED",
       ErrorCodes.DuplicateEntry => "DUPLICATE_ENTRY",
       ErrorCodes.AccessDenied => "ACCESS_DENIED",
+      ErrorCodes.AccessRevoked => "ACCESS_REVOKED",
       _ => "BAD_REQUEST"
     };
   }
@@ -56,6 +58,7 @@ public static class ErrorHelper {
       ErrorCodes.ProcessFailed => "Process failed",
       ErrorCodes.DuplicateEntry => "Duplicate entry",
       ErrorCodes.AccessDenied => "Access denied",
+      ErrorCodes.AccessRevoked => "ACCESS_REVOKED",
       _ => "Bad request"
     };
   }
@@ -72,8 +75,10 @@ public static class ErrorHelper {
         or ErrorCodes.ProcessFailed
         or ErrorCodes.DuplicateEntry => 400,
       ErrorCodes.NotFound => 404,
-      ErrorCodes.Unauthorized => 401,
-      ErrorCodes.Forbidden or ErrorCodes.AccessDenied => 403,
+      ErrorCodes.Unauthorized
+        or ErrorCodes.AccessDenied => 401,
+      ErrorCodes.Forbidden
+        or ErrorCodes.AccessRevoked=> 403,
       ErrorCodes.Unavailable => 410,
       ErrorCodes.Unprocessable => 422,
       _ => 400

@@ -2,23 +2,16 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using FluentValidation;
-using Movies.Application.Core.Bases;
-using Movies.Application.Helpers;
-using Movies.Application.Models;
-using Movies.Application.Repositories;
-using Movies.Contracts.Requests.Dto;
-
 namespace Movies.Application.Services;
 
 public struct LoginOptions {
-  public string? IpAddress { get; set; }
+  public string? IpAddress { get; init; }
 }
 
 public class IdentityService(
   UserService userService,
   IValidator<UserLoginCredentialDto> loginValidator
-): ServiceBase {
+) : ServiceBase {
   /// <summary>
   /// Logins the user by email and password
   /// </summary>
@@ -35,9 +28,8 @@ public class IdentityService(
     var user = await userService.GetByEmailAsync(input.Email, token);
 
     if (user == null || !user.ValidatePassword(input.Password))
-      throw ValidationHelper.Create([
-        new(null, "Incorrect email address or password")
-      ], 401, "ACCESS_DENIED");
+      throw ErrorHelper.CustomError(
+        "Incorrect email address or password", ErrorCodes.AccessDenied);
 
     if (user.Status != UserStatus.Active)
       ThrowBadStatusException(user.Status);
@@ -61,9 +53,9 @@ public class IdentityService(
 
     // The missing user, which means the auth-key is no longer valid
     if (user == null) {
-      throw ValidationHelper.Create([
-        new(null, "Token may invalidated or user not found")
-      ], 401, "TOKEN_INVALIDATED");
+      throw ErrorHelper.CustomError(
+        "Token may invalidated or user not found",
+        401, "TOKEN_INVALIDATED");
     }
 
     // Either a user is unverified or insufficient status
@@ -72,16 +64,15 @@ public class IdentityService(
 
     // Forcefully logged-out user globally
     if (user.Metadata.Security.TokenInvalidate is true) {
-      throw ValidationHelper.Create([
-        new(null, "Token has been disabled, or revoked. Please generate a new one")
-      ], 403, "ACCESS_REVOKED");
+      throw ErrorHelper.CustomError(
+        "Token has been disabled, or revoked. Please generate a new one",
+        ErrorCodes.AccessRevoked);
     }
 
     // Role mismatched. Tempered JWT "role" claim?
     if (user.Role != dto.Role) {
-      throw ValidationHelper.Create([
-        new(null, "Ineligible authorization role")
-      ], 403, "INELIGIBLE_ROLE");
+      throw ErrorHelper.CustomError(
+        "Ineligible authorization role", 403, "INELIGIBLE_ROLE");
     }
 
     OnSuccessfulLogin(user, options);
@@ -104,17 +95,17 @@ public class IdentityService(
   /// </summary>
   /// <param name="status">The status to verify</param>
   /// <exception cref="ValidationException">Throws when abnormal status detected</exception>
-  public static void ThrowBadStatusException(UserStatus status) {
+  private static void ThrowBadStatusException(UserStatus status) {
     if (status == UserStatus.Inactive) {
-      throw ValidationHelper.Create([
-        new("Status", "Cannot signed in due to the pending account verification.")
-      ], 401, "VERIFICATION_PENDING");
+      throw ErrorHelper.CustomError(
+        "Cannot signed in due to the pending account verification.",
+        401, "VERIFICATION_PENDING");
     }
 
     if (status is UserStatus.Blocked or UserStatus.Deleted or UserStatus.Disabled) {
-      throw ValidationHelper.Create([
-        new("Status", $"Your account has been ${status.ToString().ToLower()}")
-      ], 401, "ACCESS_REVOKED");
+      throw ErrorHelper.CustomError(
+        $"Your account has been ${status.ToString().ToLower()}",
+        ErrorCodes.AccessRevoked);
     }
   }
 
@@ -123,7 +114,7 @@ public class IdentityService(
   /// </summary>
   /// <param name="user">The user object</param>
   /// <param name="options">The logged in options</param>
-  private void OnSuccessfulLogin(User user, LoginOptions? options = null) {
+  private static void OnSuccessfulLogin(User user, LoginOptions? options = null) {
     user.Metadata.Security.TokenInvalidate = false;
     user.Metadata.LoggedInHistory.SuccessCount += 1;
     user.Metadata.LoggedInHistory.LastIp = options?.IpAddress ?? null;

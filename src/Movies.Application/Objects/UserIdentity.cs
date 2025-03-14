@@ -2,9 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Movies.Application.Helpers;
-using Movies.Application.Models;
-using Movies.Application.Repositories;
+using System.Security.Principal;
 
 namespace Movies.Application.Objects;
 
@@ -17,25 +15,34 @@ namespace Movies.Application.Objects;
 /// <code>
 /// Authorize(AuthPolicies.AuthPolicy)]
 /// [HttpGet(ApiEndpoints.Identity.Me)]
-/// public async Task Me(AuthUserIdentity identity) {
+/// public async Task Me(UserIdentity identity) {
 ///  // implement logic here
 /// }
 /// </code> 
 /// </example> 
-public class UserIdentity {
+public class UserIdentity : IIdentity {
+  /// <summary>
+  /// The user instance
+  /// </summary>
   private User? Identity { get; set; }
+
+  /// <inheritdoc/>
+  public string AuthenticationType => "Token";
 
   /// <summary>
   /// Checks whatever the user is authenticated or not
   /// </summary>
   /// <returns>True when authenticated, otherwise False</returns>
-  public bool IsAuthenticated() => Identity is not null;
+  public bool IsAuthenticated => Identity is not null;
+
+  /// <inheritdoc/>
+  public string? Name => Identity?.FullName ?? null;
 
   /// <summary>
   /// Returns the authenticated user primary key
   /// <p>
   /// To void the exception,
-  /// use <see cref="IsAuthenticated">IsAuthenticated()</see> method to check if user is authenticated or not.
+  /// use <see cref="IsAuthenticated"></see> method to check if user is authenticated or not.
   /// </p>
   /// </summary>
   /// <exception cref="FluentValidation.ValidationException">If user is not authenticated</exception>
@@ -49,15 +56,15 @@ public class UserIdentity {
   /// <param name="userId">User ID to compare</param>
   /// <param name="includeAdmin">Treat admin as the owner, false to compare ID by ID</param>
   /// <returns>True upon successfully matched, otherwise false</returns>
-  public bool CheckSameId(long userId, bool includeAdmin = false) {
-    return IsAuthenticated() && (includeAdmin && IsAdminUser() || GetId() == userId);
+  public bool CheckSameId(long? userId, bool includeAdmin = false) {
+    return IsAuthenticated && (includeAdmin && IsAdminUser() || GetId() == userId);
   }
 
   /// <summary>
   /// Checks whatever the authenticated user is admin user or not
   /// <p>
   /// To void the exception,
-  /// use <see cref="IsAuthenticated">IsAuthenticated()</see> method to check if user is authenticated or not.
+  /// use <see cref="IsAuthenticated">IsAuthenticated</see> method to check if user is authenticated or not.
   /// </p>
   /// </summary>
   /// <exception cref="FluentValidation.ValidationException">If user is not authenticated</exception>
@@ -68,7 +75,7 @@ public class UserIdentity {
   /// Compare the authenticated user role with the given one
   /// <p>
   /// To void the exception,
-  /// use <see cref="IsAuthenticated">IsAuthenticated()</see> method to check if user is authenticated or not.
+  /// use <see cref="IsAuthenticated">IsAuthenticated</see> method to check if user is authenticated or not.
   /// </p>
   /// </summary>
   /// <exception cref="FluentValidation.ValidationException">If user is not authenticated</exception>
@@ -83,19 +90,23 @@ public class UserIdentity {
   public void SetIdentity(User? user) => Identity = user;
 
   /// <summary>
+  /// Clears the current identity
+  /// </summary>
+  public void Clear() => Identity = null;
+
+  /// <summary>
   /// Get the current authenticated user object
   /// <p>
   /// To void the exception,
-  /// use <see cref="IsAuthenticated">IsAuthenticated()</see> method to check if user is authenticated or not.
+  /// use <see cref="IsAuthenticated">IsAuthenticated</see> method to check if user is authenticated or not.
   /// </p>
   /// </summary>
   /// <exception cref="FluentValidation.ValidationException">If user is not authenticated</exception>
   /// <returns>The user model instance</returns>
   public User GetUser() {
-    if (Identity != null) return Identity;
+    if (Identity is not null)
+      return Identity;
 
-    throw ValidationHelper.Create([
-      new(null, "Unauthenticated user")
-    ], 401, "UNAUTHENTICATED_USER");
+    throw ErrorHelper.CustomError("Unauthenticated user", 401, "UNAUTHENTICATED_USER");
   }
 }

@@ -177,6 +177,7 @@ public class MovieService(
         }).OrderByDescending(r => r.CreatedAt)
         .ToList(),
       Slug = x.Slug,
+      Status = x.Status.ToString().ToLower(),
       CreatedAt = x.CreatedAt,
       UpdatedAt = x.UpdatedAt
     };

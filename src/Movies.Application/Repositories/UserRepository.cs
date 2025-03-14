@@ -4,12 +4,7 @@
 // Read more: https://medium.com/@serhiikokhan/jsonb-in-postgresql-with-ef-core-cc945f1aba2a
 
 using System.Globalization;
-using Microsoft.EntityFrameworkCore;
-using Movies.Application.Core.Bases;
 using Movies.Application.Core.Interfaces;
-using Movies.Application.Database;
-using Movies.Application.Domain.Model;
-using Movies.Application.Models;
 
 namespace Movies.Application.Repositories;
 

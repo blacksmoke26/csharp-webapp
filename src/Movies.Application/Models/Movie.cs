@@ -4,10 +4,6 @@
 // See more: https://learn.microsoft.com/en-us/ef/core/modeling/relationships/one-to-one
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Movies.Application.Core.Bases;
-using Movies.Application.Helpers;
-using Movies.Application.Repositories;
 
 namespace Movies.Application.Models;
 
@@ -45,6 +41,16 @@ public class Movie : ModelBase {
   /// List of ratings associated with this movie
   /// </summary>
   public List<Rating> Ratings { get; set; } = [];
+
+  /// <summary>
+  /// Validates the movie status before reading by an end user
+  /// </summary>
+  /// <param name="ownerIdToCheck">If the userId matches, it will simply return true</param>
+  /// <returns>Whatever the status is valid for accessing or not</returns>
+  public bool ValidateStatus(long? ownerIdToCheck = null) {
+    if (UserId == ownerIdToCheck) return true;
+    return Status == MovieStatus.Published;
+  }
 
   /// <inheritdoc/>
   public override Task OnTrackChangesAsync(

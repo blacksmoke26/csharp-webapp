@@ -21,8 +21,8 @@ public static class ApiEndpoints {
   }
 
   public static class Ratings {
-    private const string Base = $"{ApiBase}/ratings";
-    private const string GetUserRatings = $"{Base}/me";
+    public const string Base = $"{ApiBase}/ratings";
+    public const string GetUserRatings = $"{Base}/me";
   }
 
   public static class Token {

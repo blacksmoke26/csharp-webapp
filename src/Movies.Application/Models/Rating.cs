@@ -3,8 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Movies.Application.Core.Bases;
 
 namespace Movies.Application.Models;
 
@@ -43,9 +41,11 @@ public class Rating : ModelBase {
   /// <inheritdoc/>
   public override Task OnTrackChangesAsync(
     EntityState state, CancellationToken cancellationToken = default) {
-    if (state is EntityState.Added or EntityState.Modified) {
+    if (state is EntityState.Added)
+      CreatedAt = DateTime.UtcNow;
+
+    if (state is EntityState.Added or EntityState.Modified)
       UpdatedAt = DateTime.UtcNow;
-    }
 
     return base.OnTrackChangesAsync(state, cancellationToken);
   }

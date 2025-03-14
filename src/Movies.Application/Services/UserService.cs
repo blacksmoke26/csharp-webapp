@@ -2,13 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using FluentValidation;
-using Movies.Application.Core.Bases;
 using Movies.Application.Core.Interfaces;
-using Movies.Application.Domain.Model;
-using Movies.Application.Helpers;
-using Movies.Application.Models;
-using Movies.Application.Repositories;
 
 namespace Movies.Application.Services;
 
@@ -18,30 +12,25 @@ public class UserService(
 ) : ServiceBase, IServiceRepoInstance<UserRepository> {
   /// <inheritdoc/>
   public UserRepository GetRepo() => userRepo;
-  
+
   /// <summary>
   /// Creates a new user account
   /// </summary>
   /// <param name="input">The user DTO object</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created user / null when failed</returns>
-  public async Task<User?> CreateAsync(
+  public async Task<User> CreateAsync(
     UserCreateModel input, CancellationToken token = default
   ) {
     await createValidator.ValidateAndThrowAsync(input, token);
 
     var user = await CreateUserAsync(input, token);
 
-    if (user is null) {
-      throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "Failed to create account because there was error while processing the request.",
-          ErrorCode = "PROCESS_FAILED"
-        }
-      ], 422);
-    }
+    ErrorHelper.ThrowIfNull(
+      user, "Failed to create account because there was an error while processing the request.",
+      ErrorCodes.ProcessFailed);
 
-    return user;
+    return user!;
   }
 
   /// <summary>

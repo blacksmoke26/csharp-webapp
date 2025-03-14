@@ -2,9 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Movies.Application.Models;
-using Movies.Application.Repositories;
-
 namespace Movies.Application.Domain.Model;
 
 public record UserCreateModel {

@@ -2,9 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-using Movies.Application.Core.Bases;
 using Movies.Application.Core.Interfaces;
-using Movies.Application.Repositories;
 
 namespace Movies.Application.Services;
 

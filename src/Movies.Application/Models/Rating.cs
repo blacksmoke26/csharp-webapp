@@ -28,7 +28,7 @@ public class Rating : ModelBase {
   [Comment("Last Updated")]
   public DateTime? UpdatedAt { get; set; }
 
-  /*/// <summary>
+  /// <summary>
   /// The movie associated with this rating
   /// </summary>
   public virtual Movie Movie { get; set; } = null!;
@@ -36,7 +36,7 @@ public class Rating : ModelBase {
   /// <summary>
   /// The user associated with this rating
   /// </summary>
-  public virtual User User { get; set; } = null!;*/
+  public virtual User User { get; set; } = null!;
 
   /// <inheritdoc/>
   public override Task OnTrackChangesAsync(

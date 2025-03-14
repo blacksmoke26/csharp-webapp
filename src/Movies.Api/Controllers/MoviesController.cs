@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
+using Microsoft.AspNetCore.Http.Headers;
 using Movies.Contracts.Requests.Dto;
 
 namespace Movies.Api.Controllers;
@@ -19,19 +20,22 @@ public class MoviesController(
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.Get)]
   public async Task<IActionResult> Get(
-    [FromRoute] string idOrSlug, CancellationToken token) {
+    [FromRoute]
+    string idOrSlug, CancellationToken token) {
     var movie = long.TryParse(idOrSlug, out var id)
       ? await movieService.GetByPkAsync(id, token)
       : await movieService.GetBySlugAsync(idOrSlug, token);
 
+    ErrorHelper.ThrowIfNull(
+      movie, "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable);
+
     // Note: With the abnormal status, only owner user can access this object. 
-    return !identity.CheckSameId(movie.UserId) && movie.Status != MovieStatus.Published
-      ? throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "This movie is no longer available or disabled by the owner"
-        }
-      ], 410, "NOT_AVAILABLE")
-      : Ok(new SuccessResponse(movie));
+    ErrorHelper.ThrowWhenTrue(
+      !identity.CheckSameId(movie.UserId) && Enum.Parse<MovieStatus>(movie.Status!) != MovieStatus.Published,
+      "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable
+    );
+
+    return Ok(ResponseHelper.SuccessWithData(movie));
   }
 
   /// <summary>
@@ -41,9 +45,12 @@ public class MoviesController(
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
   public async Task<IActionResult> GetAll(CancellationToken token) {
-    // TODO: Implement filters/pagination to limit the no. of records, otherwise **boom**
-    var movies = await movieService.GetAllAsync(token: token);
-    return Ok(new SuccessResponse(movies));
+    long? userId = identity.IsAuthenticated ? identity.GetId() : null;
+
+    var records = await movieService.GetManyAsync(q
+      => q.OrderByDescending(x => x.CreatedAt), userId, token);
+
+    return Ok(ResponseHelper.SuccessWithData(records, true));
   }
 
   /// <summary>
@@ -66,13 +73,10 @@ public class MoviesController(
       Genres = body.Genres
     }, token);
 
-    return movie is null
-      ? throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "An error occurred while creating the movie"
-        }
-      ], 400, "PROCESS_FAILED")
-      : Ok(new SuccessResponse(movie));
+    ErrorHelper.ThrowIfNull(
+      movie, "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
+
+    return Ok(ResponseHelper.SuccessWithData(movie));
   }
 
   /// <summary>
@@ -96,13 +100,10 @@ public class MoviesController(
       Genres = body.Genres
     }, token);
 
-    return movie is null
-      ? throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "An error occurred while updating the movie"
-        }
-      ], 400, "PROCESS_FAILED")
-      : Ok(new SuccessResponse(movie));
+    ErrorHelper.ThrowIfNull(
+      movie, "An error occurred while updating the movie", ErrorCodes.ProcessFailed);
+
+    return Ok(ResponseHelper.SuccessWithData(movie));
   }
 
   /// <summary>
@@ -117,17 +118,17 @@ public class MoviesController(
     [FromRoute]
     long id, CancellationToken token
   ) {
-    if (!await movieService.ExistsAsync(x
-          => x.UserId == identity.GetId() && x.Id == id, token))
-      return NotFound();
+    var isFound = await movieService.ExistsAsync(x
+      => x.UserId == identity.GetId() && x.Id == id, token);
 
-    return await movieService.DeleteAsync(x
-      => x.UserId == identity.GetId() && x.Id == id, token) == 0
-      ? throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "An error occurred while deleting the movie"
-        }
-      ], 400, "PROCESS_FAILED")
-      : Ok(new SuccessOnlyResponse());
+    ErrorHelper.ThrowWhenFalse(isFound, ErrorCodes.NotFound);
+
+    var isFailed = await movieService.DeleteAsync(x 
+      => x.UserId == identity.GetId() && x.Id == id, token) == 0;
+
+    return !isFailed
+      ? Ok(ResponseHelper.SuccessOnly())
+      : throw ErrorHelper.CustomError(
+        "An error occurred while deleting the movie", ErrorCodes.ProcessFailed);
   }
 }

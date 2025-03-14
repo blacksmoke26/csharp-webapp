@@ -2,11 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository: https://github.com/blacksmoke26/csharp-webapp
 
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Movies.Application.Database;
-using Movies.Application.Repositories;
 using Movies.Application.Services;
 
 namespace Movies.Application;
@@ -43,11 +39,11 @@ public static class ApplicationServiceCollectionExtensions {
   /// Register the database-specific services
   /// </summary>
   /// <param name="services">ServiceCollection instance</param>
-  /// <param name="connectionString">Database connection string to connect</param>
+  /// <param name="config">Application configuration</param>
   /// <returns>The updated service collection instance</returns>
-  public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString) {
+  public static IServiceCollection AddDatabase(this IServiceCollection services, AppConfiguration config) {
     services.AddSingleton<DatabaseContext>(_ => {
-      DatabaseContext instance = new(connectionString);
+      DatabaseContext instance = new(config.DbConfig());
       instance.Database.ExecuteSql($"SET timezone = '+00:00'");
       return instance;
     });

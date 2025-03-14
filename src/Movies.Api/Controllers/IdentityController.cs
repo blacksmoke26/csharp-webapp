@@ -32,7 +32,7 @@ public class IdentityController(
       LastName = body.LastName,
     }, token);
 
-    return StatusCode(201, new SuccessResponse(new {
+    return StatusCode(201, ResponseHelper.SuccessWithData(new {
       Message = "You account has been created. Please check your inbox for verification email"
     }));
   }
@@ -54,17 +54,12 @@ public class IdentityController(
       IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
     }, token);
 
-    if (user is null) {
-      throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "Authenticate failed due to the unknown reason",
-          ErrorCode = "AUTH_FAILED"
-        }
-      ]);
-    }
+    if (user is null)
+      throw ErrorHelper.CustomError(
+        "Authenticate failed due to the unknown reason", 400, "AUTH_FAILED");
 
     return Ok(
-      new SuccessResponse(new {
+      ResponseHelper.SuccessWithData(new {
         Auth = authService.GenerateToken(user),
         User = new {
           user.FullName,
@@ -87,7 +82,7 @@ public class IdentityController(
   public Task<IActionResult> Me(UserIdentity identity) {
     var user = identity.GetUser();
     return Task.FromResult<IActionResult>(
-      Ok(new SuccessResponse(new {
+      Ok(ResponseHelper.SuccessWithData(new {
         user.Id,
         user.FullName,
         user.FirstName,
@@ -110,6 +105,6 @@ public class IdentityController(
   [HttpGet(ApiEndpoints.Identity.Logout)]
   public async Task<IActionResult> Logout(UserIdentity identity, CancellationToken token) {
     await idService.Logout(identity.GetUser(), token);
-    return Ok(new SuccessResponse());
+    return Ok(ResponseHelper.SuccessOnly());
   }
 }

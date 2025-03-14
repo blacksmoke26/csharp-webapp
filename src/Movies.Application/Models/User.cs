@@ -4,10 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using Movies.Application.Core.Bases;
-using Movies.Application.Helpers;
-using Movies.Application.Repositories;
 
 namespace Movies.Application.Models;
 

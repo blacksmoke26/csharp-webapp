@@ -2,74 +2,85 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using Movies.Application.Core.Interfaces;
-using Movies.Application.Database;
 
 namespace Movies.Application.Core.Bases;
 
-public abstract class RepositoryBase<TModel> :
-  IRepositoryDbContext<TModel>,
-  IDbRecordFetch<TModel> where TModel : ModelBase {
+public abstract class RepositoryBase<TEntity> :
+  IRepositoryDbContext<TEntity>,
+  IDbRecordFetch<TEntity> where TEntity : ModelBase {
   /// <inheritdoc/>
   public abstract DatabaseContext GetDbContext();
 
   /// <inheritdoc/>
-  public abstract DbSet<TModel> GetDataSet();
+  public abstract DbSet<TEntity> GetDataSet();
 
   /// <inheritdoc/>
-  public Task<TModel?> GetOneAsync(
-    Expression<Func<TModel, bool>> whereFn, CancellationToken token = default) {
+  public Task<TEntity?> GetOneAsync(
+    Expression<Func<TEntity, bool>> whereFn, CancellationToken token = default) {
     return GetOneAsync(x => x.Where(whereFn), token);
   }
 
   /// <inheritdoc/>
-  public Task<TModel?> GetOneAsync(
-    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn, CancellationToken token = default) {
-    return GetOneAsync<TModel>(queryableFn, token);
+  public Task<TEntity?> GetOneAsync(
+    Func<IQueryable<TEntity>, IQueryable<TEntity>> query, CancellationToken token = default) {
+    return GetOneAsync(query, null, token);
   }
 
   /// <inheritdoc/>
-  public Task<TReturn?> GetOneAsync<TReturn>(
-    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn, CancellationToken token = default) {
-    return queryableFn.Invoke(GetDataSet().AsQueryable()).Cast<TReturn>().SingleOrDefaultAsync(token);
+  public Task<TEntity?> GetOneAsync(
+    Func<IQueryable<TEntity>, IQueryable<TEntity>> query,
+    Expression<Func<TEntity, TEntity>>? selector = null, CancellationToken token = default) =>
+    GetOneAsync<TEntity>(query, selector, token);
+
+  /// <inheritdoc/>
+  public Task<TResult?> GetOneAsync<TResult>(
+    Func<IQueryable<TEntity>, IQueryable<TEntity>>? query,
+    Expression<Func<TEntity, TResult>>? selector = null, CancellationToken token = default) {
+    var queryable = (query != null ? query.Invoke(GetDataSet()) : GetDataSet()).AsSplitQuery();
+
+    return (
+      selector != null
+        ? queryable.Select(selector)
+        : queryable.Cast<TResult>()
+    ).SingleOrDefaultAsync(token);
   }
 
   /// <inheritdoc/>
-  public Task<List<TModel>> GetManyAsync(
-    Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn,
+  public Task<List<TEntity>> GetManyAsync(
+    Expression<Func<TEntity, bool>>? where = null, CancellationToken token = default) {
+    return GetManyAsync(x => where != null ? x.Where(where) : x, token);
+  }
+
+  /// <inheritdoc/>
+  public Task<List<TEntity>> GetManyAsync(
+    Func<IQueryable<TEntity>, IQueryable<TEntity>> query, CancellationToken token = default) {
+    return GetManyAsync<TEntity>(query, null, token);
+  }
+
+  /// <inheritdoc/>
+  public Task<List<TResult>> GetManyAsync<TResult>(
+    Func<IQueryable<TEntity>, IQueryable<TEntity>>? query,
+    Expression<Func<TEntity, TResult>>? selector = null,
     CancellationToken token = default) {
-    return GetManyAsync<TModel>(queryableFn, token);
+    var queryable = (query != null ? query.Invoke(GetDataSet()) : GetDataSet()).AsSplitQuery();
+
+    return (
+      selector != null
+        ? queryable.Select(selector)
+        : queryable.Cast<TResult>()
+    ).ToListAsync(token);
   }
 
   /// <inheritdoc/>
-  public Task<List<TModel>> GetManyAsync(Expression<Func<TModel, bool>>? whereFn = null,
-    CancellationToken token = default) {
-    return GetManyAsync<TModel>(whereFn, token);
-  }
-
-  /// <inheritdoc/>
-  public Task<List<TReturn>> GetManyAsync<TReturn>(Expression<Func<TModel, bool>>? whereFn = null,
-    CancellationToken token = default) {
-    return whereFn != null
-      ? GetManyAsync<TReturn>(x => x.Where(whereFn), token)
-      : GetManyAsync<TReturn>(x => x.Where(_ => true), token);
-  }
-
-  /// <inheritdoc/>
-  public Task<List<TReturn>> GetManyAsync<TReturn>(Func<IQueryable<TModel>, IQueryable<TModel>> queryableFn,
-    CancellationToken token = default) {
-    return queryableFn.Invoke(GetDataSet().AsQueryable()).Cast<TReturn>().ToListAsync(token);
-  }
-
-  /// <inheritdoc/>
-  public Task<bool> ExistsAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default) {
+  public Task<bool> ExistsAsync(
+    Expression<Func<TEntity, bool>> whereFn, CancellationToken token = default) {
     return GetDataSet().AnyAsync(whereFn, token);
   }
 
   /// <inheritdoc/>
-  public Task<int> DeleteAsync(Expression<Func<TModel, bool>> whereFn, CancellationToken token = default) {
+  public Task<int> DeleteAsync(
+    Expression<Func<TEntity, bool>> whereFn, CancellationToken token = default) {
     return GetDataSet()
       .Where(whereFn)
       .ExecuteDeleteAsync(token);

@@ -2,10 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using FluentValidation;
-using Movies.Application.Domain.Model;
-using Movies.Application.Repositories;
-
 namespace Movies.Application.Domain.Validation;
 
 public class UserCreateValidator : AbstractValidator<UserCreateModel> {

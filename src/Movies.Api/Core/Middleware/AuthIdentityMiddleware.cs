@@ -1,6 +1,7 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
+// See: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/extensibility
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -25,6 +26,8 @@ public class AuthValidationMiddleware(
   ];
 
   public async Task InvokeAsync(HttpContext context) {
+    userIdentity.Clear();
+    
     var claims = context.User.Claims.ToArray()
       .Where(x => ValidLoginClaims.Contains(x.Type.ToString()))
       .Select(x => new KeyValuePair<string, string>(x.Type, x.Value))
@@ -46,12 +49,8 @@ public class AuthValidationMiddleware(
     });
 
     if (user is null) {
-      throw ValidationHelper.Create([
-        new() {
-          ErrorMessage = "Authenticate failed due to the unknown reason",
-          ErrorCode = "AUTH_FAILED"
-        }
-      ]);
+      throw ErrorHelper.CustomError(
+        "Authenticate failed due to the unknown reason", 400, "AUTH_FAILED");
     }
 
     // Set user as authenticated identity

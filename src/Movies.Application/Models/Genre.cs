@@ -3,8 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Movies.Application.Core.Bases;
 
 namespace Movies.Application.Models;
 

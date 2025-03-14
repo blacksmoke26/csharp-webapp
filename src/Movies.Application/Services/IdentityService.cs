@@ -12,6 +12,10 @@ public class IdentityService(
   UserService userService,
   IValidator<UserLoginCredentialDto> loginValidator
 ) : ServiceBase {
+  
+  /// <summary>HTTPContext items identity key name</summary>
+  public const string IdentityKey = "%UserIdentity%";
+  
   /// <summary>
   /// Logins the user by email and password
   /// </summary>

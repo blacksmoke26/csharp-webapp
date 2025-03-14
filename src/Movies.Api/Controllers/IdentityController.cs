@@ -2,7 +2,9 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
+using Dumpify;
 using FluentValidation;
+using Movies.Api.Core.Extensions;
 using Movies.Contracts.Requests.Dto;
 
 namespace Movies.Api.Controllers;
@@ -29,7 +31,7 @@ public class IdentityController(
       Email = body.Email,
       Password = body.Password,
       FirstName = body.FirstName,
-      LastName = body.LastName,
+      LastName = body.LastName
     }, token);
 
     return StatusCode(201, ResponseHelper.SuccessWithData(new {
@@ -66,7 +68,7 @@ public class IdentityController(
           user.FirstName,
           user.LastName,
           user.Email,
-          user.Role,
+          user.Role
         }
       })
     );
@@ -75,12 +77,12 @@ public class IdentityController(
   /// <summary>
   /// Returns the authenticated user details
   /// </summary>
-  /// <param name="identity">The identity object</param>
   /// <returns>The HTTP response</returns>
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpGet(ApiEndpoints.Identity.Me)]
-  public Task<IActionResult> Me(UserIdentity identity) {
-    var user = identity.GetUser();
+  public Task<IActionResult> Me() {
+    HttpContext.GetAuthKey().Dump();
+    var user = HttpContext.GetIdentity().User;
     return Task.FromResult<IActionResult>(
       Ok(ResponseHelper.SuccessWithData(new {
         user.Id,
@@ -89,7 +91,7 @@ public class IdentityController(
         user.LastName,
         user.Email,
         user.Role,
-        Status = user.Status.ToString(),
+        Status = user.Status.ToString().ToLower(),
         user.CreatedAt,
       }))
     );
@@ -98,13 +100,12 @@ public class IdentityController(
   /// <summary>
   /// Logouts the current user
   /// </summary>
-  /// <param name="identity">The user identity instance</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The HTTP response</returns>
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpGet(ApiEndpoints.Identity.Logout)]
-  public async Task<IActionResult> Logout(UserIdentity identity, CancellationToken token) {
-    await idService.Logout(identity.GetUser(), token);
+  public async Task<IActionResult> Logout(CancellationToken token) {
+    await idService.Logout(HttpContext.GetIdentity().User, token);
     return Ok(ResponseHelper.SuccessOnly());
   }
 }

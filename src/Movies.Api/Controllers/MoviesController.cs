@@ -2,15 +2,14 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Microsoft.AspNetCore.Http.Headers;
+using Movies.Api.Core.Extensions;
 using Movies.Contracts.Requests.Dto;
 
 namespace Movies.Api.Controllers;
 
 [ApiController]
 public class MoviesController(
-  MovieService movieService,
-  UserIdentity identity
+  MovieService movieService
 ) : ControllerBase {
   /// <summary>
   /// Fetch the movie by its id or slug
@@ -31,7 +30,8 @@ public class MoviesController(
 
     // Note: With the abnormal status, only owner user can access this object. 
     ErrorHelper.ThrowWhenTrue(
-      !identity.CheckSameId(movie.UserId) && Enum.Parse<MovieStatus>(movie.Status!) != MovieStatus.Published,
+      !HttpContext.GetIdentity().CheckSameId(HttpContext.GetIdOrNull(), true)
+      && Enum.Parse<MovieStatus>(movie.Status!) != MovieStatus.Published,
       "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable
     );
 
@@ -45,10 +45,14 @@ public class MoviesController(
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
   public async Task<IActionResult> GetAll(CancellationToken token) {
-    long? userId = identity.IsAuthenticated ? identity.GetId() : null;
-
+    MovieStatus[] statuses = [MovieStatus.Draft, MovieStatus.Pending, MovieStatus.Published];
+    
     var records = await movieService.GetManyAsync(q
-      => q.OrderByDescending(x => x.CreatedAt), userId, token);
+      => q
+        .Where(x => x.UserId == HttpContext.GetIdOrNull() 
+          ? statuses.Contains(x.Status)
+          : x.Status == MovieStatus.Published)
+        .OrderByDescending(x => x.CreatedAt), HttpContext.GetIdOrNull(), token);
 
     return Ok(ResponseHelper.SuccessWithData(records, true));
   }
@@ -67,7 +71,7 @@ public class MoviesController(
     CancellationToken token
   ) {
     var movie = await movieService.CreateAsync(new() {
-      UserId = identity.GetId(),
+      UserId = HttpContext.GetId(),
       Title = body.Title,
       YearOfRelease = body.YearOfRelease,
       Genres = body.Genres
@@ -94,7 +98,7 @@ public class MoviesController(
   ) {
     var movie = await movieService.UpdateAsync(new() {
       Id = id,
-      UserId = identity.GetId(),
+      UserId = HttpContext.GetId(),
       Title = body.Title,
       YearOfRelease = body.YearOfRelease,
       Genres = body.Genres
@@ -119,12 +123,12 @@ public class MoviesController(
     long id, CancellationToken token
   ) {
     var isFound = await movieService.ExistsAsync(x
-      => x.UserId == identity.GetId() && x.Id == id, token);
+      => x.UserId == HttpContext.GetId() && x.Id == id, token);
 
     ErrorHelper.ThrowWhenFalse(isFound, ErrorCodes.NotFound);
 
     var isFailed = await movieService.DeleteAsync(x 
-      => x.UserId == identity.GetId() && x.Id == id, token) == 0;
+      => x.UserId == HttpContext.GetId() && x.Id == id, token) == 0;
 
     return !isFailed
       ? Ok(ResponseHelper.SuccessOnly())

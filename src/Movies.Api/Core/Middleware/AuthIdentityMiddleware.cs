@@ -3,8 +3,7 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 // See: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/extensibility
 
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using Movies.Api.Core.Extensions;
 
 namespace Movies.Api.Core.Middleware;
 
@@ -14,27 +13,15 @@ namespace Movies.Api.Core.Middleware;
 /// <param name="next">The middleware delegate</param>
 public class AuthValidationMiddleware(
   RequestDelegate next,
-  IdentityService idService,
-  UserIdentity userIdentity
+  IdentityService idService
 ) {
-  /// <summary>
-  /// List of allowed login claims
-  /// </summary>
-  private string[] ValidLoginClaims { get; } = [
-    ClaimTypes.Role,
-    JwtRegisteredClaimNames.Jti
-  ];
-
   public async Task InvokeAsync(HttpContext context) {
-    userIdentity.Clear();
+    context.GetIdentity().Clear();
     
-    var claims = context.User.Claims.ToArray()
-      .Where(x => ValidLoginClaims.Contains(x.Type.ToString()))
-      .Select(x => new KeyValuePair<string, string>(x.Type, x.Value))
-      .ToDictionary();
+    var authKey = context.GetAuthKey();
+    var role = context.GetRole();
 
-    if (!claims.ContainsKey(JwtRegisteredClaimNames.Jti)
-        || string.IsNullOrWhiteSpace(claims[JwtRegisteredClaimNames.Jti])) {
+    if (string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(authKey)) {
       // Skipping anonymous request
       await next(context);
       return;
@@ -42,19 +29,17 @@ public class AuthValidationMiddleware(
 
     // Fetch and validate user against claims
     var user = await idService.LoginWithClaimAsync(new() {
-      Jti = claims[JwtRegisteredClaimNames.Jti],
-      Role = claims[ClaimTypes.Role]
+      Jti = authKey,
+      Role = role
     }, new() {
       IpAddress = context.Connection.RemoteIpAddress?.ToString(),
     });
 
-    if (user is null) {
-      throw ErrorHelper.CustomError(
-        "Authenticate failed due to the unknown reason", 400, "AUTH_FAILED");
-    }
+    ErrorHelper.ThrowIfNull(user,
+      "Authenticate failed due to the unknown reason", 401, "AUTH_FAILED");
 
     // Set user as authenticated identity
-    userIdentity.SetIdentity(user);
+    context.GetIdentity().SetIdentity(user!);
 
     await next(context);
   }

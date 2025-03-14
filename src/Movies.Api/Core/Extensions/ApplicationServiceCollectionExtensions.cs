@@ -65,7 +65,6 @@ public static class ApplicationServiceCollectionExtensions {
         => p.RequireRole(UserRole.Admin, UserRole.User));
     });
 
-    services.AddSingleton<UserIdentity>();
     services.AddSingleton<AuthService>(_ => new AuthService(config.JwtConfig()));
 
     #endregion

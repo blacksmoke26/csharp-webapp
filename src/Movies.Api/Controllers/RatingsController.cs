@@ -2,14 +2,14 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
+using Movies.Api.Core.Extensions;
 using Movies.Contracts.Requests.Dto;
 
 namespace Movies.Api.Controllers;
 
 [ApiController]
 public class RatingsController(
-  RatingService ratingService,
-  UserIdentity identity
+  RatingService ratingService
 ) : ControllerBase {
   /// <summary>
   /// Rate the movie by providing the score and an optional feedback
@@ -26,7 +26,7 @@ public class RatingsController(
     long id, [FromBody] MovieRatingDto body, CancellationToken token
   ) {
     var isRated = await ratingService.RateMovieAsync(new() {
-      UserId = identity.GetId(),
+      UserId = HttpContext.GetId(),
       MovieId = id,
       Score = body.Rating,
       Feedback = body.Feedback,

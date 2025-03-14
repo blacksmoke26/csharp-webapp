@@ -31,12 +31,7 @@ public static class BootstrapperWebApplicationBuilderExtensions {
     // Map controllers
     app.MapControllers();
 
-    #region Api Level Middleware
-
-    app.UseMiddleware<ValidationMappingMiddleware>();
-    app.UseMiddleware<AuthValidationMiddleware>();
-
-    #endregion
+    app.MapMiddleware();
     
     return app;
   }

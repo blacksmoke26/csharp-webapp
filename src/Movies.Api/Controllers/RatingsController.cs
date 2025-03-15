@@ -2,9 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-using Movies.Api.Core.Extensions;
-using Movies.Contracts.Requests.Dto;
-
 namespace Movies.Api.Controllers;
 
 [ApiController]

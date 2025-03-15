@@ -1,15 +1,14 @@
 // Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
-
-using Movies.Api.Core.Extensions;
-using Movies.Contracts.Requests.Dto;
+// See: https://blog.jetbrains.com/dotnet/2024/06/26/how-where-conditions-work-in-entity-framework-core/
 
 namespace Movies.Api.Controllers;
 
 [ApiController]
 public class MoviesController(
-  MovieService movieService
+  MovieService movieService,
+  MoviesGetAllQueryValidator allQueryValidator
 ) : ControllerBase {
   /// <summary>
   /// Fetch the movie by its id or slug
@@ -41,18 +40,24 @@ public class MoviesController(
   /// <summary>
   /// Fetch all movies
   /// </summary>
+  /// <param name="query">The cancellation token</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
-  public async Task<IActionResult> GetAll(CancellationToken token) {
-    MovieStatus[] statuses = [MovieStatus.Draft, MovieStatus.Pending, MovieStatus.Published];
-    
+  public async Task<IActionResult> GetAll(
+    [FromQuery]
+    MoviesGetAllQuery query, CancellationToken token
+  ) {
+    await allQueryValidator.ValidateAndThrowAsync(query, token);
+
+    var currentUserId = HttpContext.GetIdOrNull();
+
     var records = await movieService.GetManyAsync(q
       => q
-        .Where(x => x.UserId == HttpContext.GetIdOrNull() 
-          ? statuses.Contains(x.Status)
-          : x.Status == MovieStatus.Published)
-        .OrderByDescending(x => x.CreatedAt), HttpContext.GetIdOrNull(), token);
+        .Where(MovieFilters.StatusPermissionsFilter(currentUserId))
+        .FilterILike("Title", query.Title)
+        .FilterCompare("YearOfRelease", query.Year, FilterComparison.Equal)
+        .OrderByDescending(x => x.CreatedAt), currentUserId, token);
 
     return Ok(ResponseHelper.SuccessWithData(records, true));
   }
@@ -127,7 +132,7 @@ public class MoviesController(
 
     ErrorHelper.ThrowWhenFalse(isFound, ErrorCodes.NotFound);
 
-    var isFailed = await movieService.DeleteAsync(x 
+    var isFailed = await movieService.DeleteAsync(x
       => x.UserId == HttpContext.GetId() && x.Id == id, token) == 0;
 
     return !isFailed

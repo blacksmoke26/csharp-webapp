@@ -23,7 +23,7 @@ public class RatingService(
   /// <returns>Whatever the rating was a success or failure</returns>
   public async Task<bool> RateMovieAsync(
     RatingCreateModel input, CancellationToken token = default) {
-    await createValidator.ValidateAsync(input, token);
+    await createValidator.ValidateAndThrowAsync(input, token);
 
     // Ensure that movie exists, otherwise the constraints exception thrown 
     if (!await movieService.ExistsAsync(x

@@ -3,7 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using System.Reflection;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;

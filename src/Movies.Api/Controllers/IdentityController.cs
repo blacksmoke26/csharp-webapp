@@ -2,11 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Dumpify;
-using FluentValidation;
-using Movies.Api.Core.Extensions;
-using Movies.Contracts.Requests.Dto;
-
 namespace Movies.Api.Controllers;
 
 [ApiController]
@@ -81,7 +76,6 @@ public class IdentityController(
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpGet(ApiEndpoints.Identity.Me)]
   public Task<IActionResult> Me() {
-    HttpContext.GetAuthKey().Dump();
     var user = HttpContext.GetIdentity().User;
     return Task.FromResult<IActionResult>(
       Ok(ResponseHelper.SuccessWithData(new {

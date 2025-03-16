@@ -8,6 +8,12 @@ public record MoviesGetAllQuery {
   /// <summary> Movie title (case-insensitive) </summary>
   public string? Title { get; set; } = null;
   
+  /// <summary> User ID </summary>
+  public long? UserId { get; set; } = null;
+  
   /// <summary> Year of release </summary>
   public short? Year { get; set; } = null;
+  
+  /// <summary> Sort order by, if the value starts with - then descending, otherwise asending</summary>
+  public string? SortBy { get; set; } = null;
 }

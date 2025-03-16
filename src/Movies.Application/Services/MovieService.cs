@@ -211,7 +211,7 @@ public class MovieService(
     Func<IQueryable<Movie>, IQueryable<Movie>>? query,
     long? userId = null, CancellationToken token = default) {
     return movieRepo.GetManyAsync(
-      q => query != null ? query.Invoke(q) : q,
+      q => (query != null ? query.Invoke(q) : q).AsNoTracking(),
       PrepareMovieResponse(userId),
       token
     );

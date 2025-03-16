@@ -6,27 +6,6 @@
 
 namespace Movies.Application.Core.Extensions;
 
-public enum FilterLikePattern {
-  Both = 0,
-  LeftOnly = 1,
-  RightOnly = 2,
-  None = 3
-}
-
-public enum FilterComparison {
-  Equal = 0,
-  NotEqual = 1,
-  GreaterThan = 2,
-  GreaterThanOrEqual = 3,
-  LessThan = 4,
-  LessTheaOrEqual = 5
-}
-
-public enum FilterComparisonEqual {
-  Equal = 0,
-  NotEqual = 1
-}
-
 public static class QueryableExtensions {
   /// <summary>
   /// Patternize the value using '%' simple for *LIKE clauses
@@ -39,7 +18,8 @@ public static class QueryableExtensions {
       FilterLikePattern.Both => string.Concat('%', value, '%'),
       FilterLikePattern.LeftOnly => string.Concat('%', value),
       FilterLikePattern.RightOnly => string.Concat(value, '%'),
-      _ => value
+      FilterLikePattern.None => value,
+      _ => throw new ArgumentOutOfRangeException(nameof(likePattern), likePattern, null)
     };
   }
 
@@ -54,19 +34,6 @@ public static class QueryableExtensions {
     this IQueryable<TSource> source, bool condition,
     Expression<Func<TSource, bool>> predicate) {
     return condition ? source.Where(predicate) : source;
-  }
-
-  /// <summary>A sequence of values based on a predicate only runs when the condition is true</summary>
-  /// <remarks>This query will be ignored if the condition is false.</remarks>
-  /// <param name="source">A sequence to convert.</param>
-  /// <param name="condition">The conditional value to check</param>
-  /// <param name="queryable">A function to perform a query on sequence.</param>
-  /// <typeparam name="TSource">The entity object</typeparam>
-  /// <returns>An <see cref="T:System.Linq.IQueryable`1" /> that represents the input sequence.</returns>
-  public static IQueryable<TSource> If<TSource>(
-    this IQueryable<TSource> source, bool condition,
-    Func<IQueryable<TSource>, IQueryable<TSource>> queryable) {
-    return condition ? queryable(source) : source;
   }
 
   /// <summary>A sequence of values based on a predicates upon true or false condition</summary>
@@ -103,6 +70,35 @@ public static class QueryableExtensions {
     return condition
       ? ifQueryable(source)
       : elseQueryable(source);
+  }
+
+  /// <summary>Adds the sequence within the current queryable sequence</summary>
+  /// <param name="source">A sequence to convert.</param>
+  /// <param name="queryable">The input sequence. Upon nullable, it will be ignored</param>
+  /// <typeparam name="TSource">The entity object</typeparam>
+  /// <returns>An <see cref="T:System.Linq.IQueryable`1" /> that represents the input sequence.</returns>
+  public static IQueryable<TSource> AddQuery<TSource>(
+    this IQueryable<TSource> source,
+    Func<IQueryable<TSource>, IQueryable<TSource>>? queryable) {
+    return queryable?.Invoke(source) ?? source;
+  }
+
+  /// <summary>Sorts the elements of a sequence in ascending or descending order according to a key.</summary>
+  /// <remarks>This query will be ignored if the condition is false.</remarks>
+  /// <param name="source">A sequence to convert.</param>
+  /// <param name="sortOrder">The sort order type</param>
+  /// <param name="keySelector">A function to extract a key from an element</param>
+  /// <typeparam name="TSource">The type of the elements of source.</typeparam>
+  /// <typeparam name="TKey">The type of the key returned by the function that is represented by keySelector.</typeparam>
+  /// <returns>An <see cref="T:System.Linq.IQueryable`1" /> that represents the input sequence.</returns>
+  public static IQueryable<TSource> SortBy<TSource, TKey>(
+    this IQueryable<TSource> source, SortOrder sortOrder,
+    Expression<Func<TSource, TKey>> keySelector) {
+    return sortOrder switch {
+      SortOrder.Ascending => source.OrderBy(keySelector),
+      SortOrder.Descending => source.OrderByDescending(keySelector),
+      _ => throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, null)
+    };
   }
 
   /// <summary>
@@ -171,7 +167,8 @@ public static class QueryableExtensions {
     if (string.IsNullOrWhiteSpace(value)) return source;
     return comparison switch {
       FilterComparisonEqual.NotEqual => source.Where(x => EF.Property<string>(x!, propertyName) != value),
-      _ => source.Where(x => EF.Property<string>(x!, propertyName) == value),
+      FilterComparisonEqual.Equal => source.Where(x => EF.Property<string>(x!, propertyName) == value),
+      _ => throw new ArgumentOutOfRangeException(nameof(comparison), comparison, null)
     };
   }
 
@@ -380,4 +377,30 @@ public static class QueryableExtensions {
         EF.Property<string>(x!, propertyName), PatternizeLikeValue(value, pattern)
       ));
   }
+}
+
+public enum FilterLikePattern {
+  Both,
+  LeftOnly,
+  RightOnly,
+  None
+}
+
+public enum FilterComparison {
+  Equal,
+  NotEqual,
+  GreaterThan,
+  GreaterThanOrEqual,
+  LessThan,
+  LessTheaOrEqual
+}
+
+public enum FilterComparisonEqual {
+  Equal,
+  NotEqual
+}
+
+public enum SortOrder {
+  Ascending,
+  Descending
 }

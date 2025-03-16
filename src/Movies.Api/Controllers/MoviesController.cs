@@ -54,10 +54,8 @@ public class MoviesController(
 
     var records = await movieService.GetManyAsync(q
       => q
-        .Where(MovieFilters.StatusPermissionsFilter(currentUserId))
-        .FilterILike("Title", query.Title)
-        .FilterCompare("YearOfRelease", query.Year, FilterComparison.Equal)
-        .OrderByDescending(x => x.CreatedAt), currentUserId, token);
+        .AddQuery(MovieFilters.GetAllFilters(query, currentUserId))
+        .AddQuery(MovieFilters.GetAllSortBy(query)), currentUserId, token);
 
     return Ok(ResponseHelper.SuccessWithData(records, true));
   }
@@ -82,8 +80,8 @@ public class MoviesController(
       Genres = body.Genres
     }, token);
 
-    ErrorHelper.ThrowIfNull(
-      movie, "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
+    ErrorHelper.ThrowIfNull(movie,
+      "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
 
     return Ok(ResponseHelper.SuccessWithData(movie));
   }

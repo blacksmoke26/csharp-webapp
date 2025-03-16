@@ -122,7 +122,8 @@ public class MovieService(
   /// <returns>The fetched object, otherwise null if not found</returns>
   /// <exception cref="ValidationException">When there is no record found</exception>
   public Task<MovieResponse> GetByPkAsync(long id, CancellationToken token = default) {
-    return GetOneAsync(null, q => q.Where(x => x.Id == id), token);
+    return GetOneAsync(null, q 
+      => q.AsNoTracking().Where(x => x.Id == id), token);
   }
 
   /// <summary>
@@ -132,7 +133,8 @@ public class MovieService(
   /// <param name="token">The cancellation token</param>
   /// <returns>The fetched object, otherwise null if not found</returns>  /// <exception cref="ValidationException">When there is no record found</exception>
   public Task<MovieResponse> GetBySlugAsync(string slug, CancellationToken token = default) {
-    return GetOneAsync(null, q => q.Where(x => x.Slug == slug), token);
+    return GetOneAsync(null, q 
+      => q.AsNoTracking().Where(x => x.Slug == slug), token);
   }
 
   /// <summary>
@@ -209,7 +211,7 @@ public class MovieService(
     Func<IQueryable<Movie>, IQueryable<Movie>>? query,
     long? userId = null, CancellationToken token = default) {
     return movieRepo.GetManyAsync(
-      q => query != null ? query.Invoke(q) : q,
+      q => (query != null ? query.Invoke(q) : q).AsNoTracking(),
       PrepareMovieResponse(userId),
       token
     );

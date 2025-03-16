@@ -35,22 +35,12 @@ public class Movie : ModelBase {
   /// <summary>
   /// List of genres associated with this movie
   /// </summary>
-  public List<Genre> Genres { get; set; } = [];
+  public virtual List<Genre> Genres { get; set; } = [];
 
   /// <summary>
   /// List of ratings associated with this movie
   /// </summary>
-  public List<Rating> Ratings { get; set; } = [];
-
-  /// <summary>
-  /// Validates the movie status before reading by an end user
-  /// </summary>
-  /// <param name="ownerIdToCheck">If the userId matches, it will simply return true</param>
-  /// <returns>Whatever the status is valid for accessing or not</returns>
-  public bool ValidateStatus(long? ownerIdToCheck = null) {
-    if (UserId == ownerIdToCheck) return true;
-    return Status == MovieStatus.Published;
-  }
+  public virtual List<Rating> Ratings { get; set; } = [];
 
   /// <inheritdoc/>
   public override Task OnTrackChangesAsync(

@@ -2,17 +2,12 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Movies.Application.Core.Interfaces;
-
 namespace Movies.Application.Services;
 
 public class UserService(
   UserRepository userRepo,
   IValidator<UserCreateModel> createValidator
-) : ServiceBase, IServiceRepoInstance<UserRepository> {
-  /// <inheritdoc/>
-  public UserRepository GetRepo() => userRepo;
-
+) : ServiceBase {
   /// <summary>
   /// Creates a new user account
   /// </summary>

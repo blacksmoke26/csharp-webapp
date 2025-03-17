@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
+using Movies.Api.Core.Validators;
+
 namespace Movies.Api.Domain.Query.Validators;
 
 public class MoviesGetAllQueryValidator : AbstractValidator<MoviesGetAllQuery> {
@@ -15,13 +17,8 @@ public class MoviesGetAllQueryValidator : AbstractValidator<MoviesGetAllQuery> {
     RuleFor(x => x.Year)
       .InclusiveBetween(MovieFilters.YearMin, MovieFilters.YearMax);
 
-    RuleFor(x => x.SortBy)
-      .MinimumLength(2)
-      .MaximumLength(20)
-      .Must(value => value?.Length != 0 || StringHelper.IsSortOrderValue(value))
-      .WithMessage("The sort field should start with '-', '+' or a letter character (camel case or snake case only)")
-      /*.Must(value => StringHelper.HasSortOrderField(
-        value, [MovieFilters.SortByTitle, MovieFilters.SortByYear]))
-      .WithMessage("Unknown sort order field name given")*/;
+    Include(new QueryFetchingValidator<MoviesGetAllQuery> {
+      SortByFields = MovieFilters.SortByFields
+    });
   }
 }

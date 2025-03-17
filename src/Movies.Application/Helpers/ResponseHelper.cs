@@ -12,7 +12,7 @@ public static class ResponseHelper {
   /// </summary>
   /// <returns>The response object</returns>
   public static ISuccessResponse SuccessOnly() => new SuccessOnlyResponse();
-  
+
   /// <summary>
   /// Returns the successful response with data object
   /// </summary>
@@ -25,4 +25,13 @@ public static class ResponseHelper {
       ? SuccessOnly()
       : new SuccessResponse(data, excludeNullValues);
   }
+
+  /// <summary>
+  /// Returns the successful response with the paginated results
+  /// </summary>
+  /// <param name="result">The paginated results object</param>
+  /// <param name="excludeNullValues">True will remove properties with null values, false will include 'em</param>
+  /// <returns>The paginated response object</returns>
+  public static PaginatedSuccessResponse SuccessWithPaginated(
+    PaginatedResult result, bool excludeNullValues = false) => new (result, excludeNullValues);
 }

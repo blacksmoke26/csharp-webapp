@@ -12,11 +12,9 @@ namespace Movies.Application.Services;
 public class MovieService(
   MovieRepository movieRepo,
   IValidator<MovieCreateModel> createValidator,
-  IValidator<MovieUpdateModel> updateValidator)
-  : ServiceBase, IServiceRepoInstance<MovieRepository> {
-  /// <inheritdoc/>
-  public MovieRepository GetRepo() => movieRepo;
-
+  IValidator<MovieUpdateModel> updateValidator
+) : ServiceBase,
+  IQueryCountable<Movie>, IQueryExists<Movie>, IQueryDeletable<Movie> {
   /// <summary>
   /// Creates a movie
   /// </summary>
@@ -115,40 +113,40 @@ public class MovieService(
   }
 
   /// <summary>
-  /// Fetch the movie by the primary key
+  /// Find and retrieve the entity against the primary key (ID)
   /// </summary>
   /// <param name="id">Movie ID</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The fetched object, otherwise null if not found</returns>
   /// <exception cref="ValidationException">When there is no record found</exception>
   public Task<MovieResponse> GetByPkAsync(long id, CancellationToken token = default) {
-    return GetOneAsync(null, q 
+    return GetOneAsync(null, q
       => q.AsNoTracking().Where(x => x.Id == id), token);
   }
 
   /// <summary>
-  /// Fetch the movie by the slug
+  /// Find and retrieve the entity against the slug
   /// </summary>
   /// <param name="slug">Movie slug</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>The fetched object, otherwise null if not found</returns>  /// <exception cref="ValidationException">When there is no record found</exception>
+  /// <returns>The fetched object, otherwise null if not found</returns>
+  /// <exception cref="ValidationException">When there is no record found</exception>
   public Task<MovieResponse> GetBySlugAsync(string slug, CancellationToken token = default) {
-    return GetOneAsync(null, q 
+    return GetOneAsync(null, q
       => q.AsNoTracking().Where(x => x.Slug == slug), token);
   }
 
   /// <summary>
-  /// Fetch the movie by the given owner user id and movie id
+  /// Find and retrieve the entity against the primary key (ID) or a slug
   /// </summary>
-  /// <param name="userId">The user id</param>
-  /// <param name="movieId">The movie id</param>
+  /// <param name="idOrSlug">The movie primary key (ID) or a slug</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>The fetched object, otherwise null if not found</returns>
+  /// <returns>The found entity, otherwise null if not found</returns>
   /// <exception cref="ValidationException">When there is no record found</exception>
-  public Task<MovieResponse> GetByUserIdAndPkAsync(
-    long userId, long movieId, CancellationToken token = default) {
-    return GetOneAsync(userId, q
-      => q.Where(x => x.UserId == userId && x.Id == movieId), token);
+  public Task<MovieResponse> GetBySlugOrPkAsync(string idOrSlug, CancellationToken token = default) {
+    return long.TryParse(idOrSlug, out var id)
+      ? GetByPkAsync(id, token)
+      : GetBySlugAsync(idOrSlug, token);
   }
 
   /// <summary>
@@ -203,39 +201,64 @@ public class MovieService(
   /// <summary>
   /// Fetches the multiple records from database
   /// </summary>
-  /// <param name="query">The query to filter/sort results</param>
+  /// <param name="queryable">A callback function to perform a query on a current sequence.</param>
   /// <param name="userId">Authenticated user id</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>List of fetched movie responses</returns>
   public Task<List<MovieResponse>> GetManyAsync(
-    Func<IQueryable<Movie>, IQueryable<Movie>>? query,
+    Func<IQueryable<Movie>, IQueryable<Movie>>? queryable,
     long? userId = null, CancellationToken token = default) {
     return movieRepo.GetManyAsync(
-      q => (query != null ? query.Invoke(q) : q).AsNoTracking(),
+      q => (queryable != null ? queryable.Invoke(q) : q).AsNoTracking(),
       PrepareMovieResponse(userId),
       token
     );
   }
 
   /// <summary>
-  /// Removes the movie object based on the specified condition
+  /// Fetches the multiple paginated custom entities
   /// </summary>
-  /// <param name="condition">The where condition to filter records</param>
+  /// <param name="queryable">A callback function to perform a query on a current sequence.</param>
+  /// <param name="options">The pagination options</param>
+  /// <param name="userId">Authenticated user id</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>Count of deleted record</returns>
-  public Task<int> DeleteAsync(
-    Expression<Func<Movie, bool>> condition, CancellationToken token = default) {
-    return movieRepo.DeleteAsync(condition, token);
+  /// <returns>The fetched records</returns>
+  public Task<PaginatedList<MovieResponse>> GetPaginatedAsync(
+    Func<IQueryable<Movie>, IQueryable<Movie>>? queryable,
+    PaginatorOptions options,
+    long? userId = null, CancellationToken token = default) {
+    return movieRepo.GetPaginatedAsync(
+      queryable, PrepareMovieResponse(userId), options, token
+    );
   }
-  
-  /// <summary>
-  /// Verifies the record exists based on a specified condition
-  /// </summary>
-  /// <param name="condition">The where condition to filter records</param>
-  /// <param name="token">The cancellation token</param>
-  /// <returns>Whatever the record exists</returns>
+
+  /// <inheritdoc/>
+  public Task<int> CountAsync(
+    Expression<Func<Movie, bool>> predicate, CancellationToken token = default)
+    => movieRepo.CountAsync(predicate, token);
+
+  /// <inheritdoc/>
+  public Task<int> CountAsync(
+    Func<IQueryable<Movie>, IQueryable<Movie>> queryable, CancellationToken token = default)
+    => movieRepo.CountAsync(queryable, token);
+
+  /// <inheritdoc/>
   public Task<bool> ExistsAsync(
-    Expression<Func<Movie, bool>> condition, CancellationToken token = default) {
-    return movieRepo.ExistsAsync(condition, token);
-  }
+    Expression<Func<Movie, bool>> predicate, CancellationToken token = default)
+    => movieRepo.ExistsAsync(predicate, token);
+
+  /// <inheritdoc/>
+  public Task<bool> ExistsAsync(
+    Func<IQueryable<Movie>, IQueryable<Movie>> queryable, CancellationToken token = default)
+    => movieRepo.ExistsAsync(queryable, token);
+
+  /// <inheritdoc/>
+  public Task<int> DeleteAsync(
+    Expression<Func<Movie, bool>> predicate, CancellationToken token = default)
+    => movieRepo.DeleteAsync(predicate, token);
+
+  /// <inheritdoc/>
+  public Task<int> DeleteAsync(
+    Func<IQueryable<Movie>, IQueryable<Movie>> queryable, CancellationToken token = default)
+    => movieRepo.DeleteAsync(queryable, token);
 }

@@ -7,21 +7,6 @@ using System.Text.Json.Serialization;
 
 namespace Movies.Contracts.Responses;
 
-public interface ISuccessResponse {
-}
-
-/// <summary>
-/// This class represents the success response without containing
-/// any kind of data, the best usage is when you delete/remove
-/// something and returns as an empty success response 
-/// </summary>
-public class SuccessOnlyResponse : ISuccessResponse {
-  /// <summary>
-  /// The success property means operation was a success 
-  /// </summary>
-  public bool Success => true;
-}
-
 public class SuccessResponse : ISuccessResponse {
   /// <summary>
   /// The success property means operation was a success 

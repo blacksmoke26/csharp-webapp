@@ -20,9 +20,7 @@ public class MoviesController(
   public async Task<IActionResult> Get(
     [FromRoute]
     string idOrSlug, CancellationToken token) {
-    var movie = long.TryParse(idOrSlug, out var id)
-      ? await movieService.GetByPkAsync(id, token)
-      : await movieService.GetBySlugAsync(idOrSlug, token);
+    var movie = await movieService.GetBySlugOrPkAsync(idOrSlug, token);
 
     ErrorHelper.ThrowIfNull(
       movie, "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable);
@@ -50,14 +48,14 @@ public class MoviesController(
   ) {
     await allQueryValidator.ValidateAndThrowAsync(query, token);
 
-    var currentUserId = HttpContext.GetIdOrNull();
+    var userId = HttpContext.GetIdOrNull();
 
-    var records = await movieService.GetManyAsync(q
-      => q
-        .AddQuery(MovieFilters.GetAllFilters(query, currentUserId))
-        .AddQuery(MovieFilters.GetAllSortBy(query)), currentUserId, token);
+    var paginated = await movieService.GetPaginatedAsync(
+      MovieFilters.GetAllQuery(query, userId),
+      query.GetPageOptions(), userId, token);
 
-    return Ok(ResponseHelper.SuccessWithData(records, true));
+    return Ok(ResponseHelper.SuccessWithPaginated(
+      paginated.ToPaginatedResult(), true));
   }
 
   /// <summary>

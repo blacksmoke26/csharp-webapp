@@ -26,6 +26,7 @@ public static class BootstrapperWebApplicationBuilderExtensions {
 
     #endregion
     
+    app.UseExceptionHandler();
     app.UseStatusCodePages();
     
     // Map controllers

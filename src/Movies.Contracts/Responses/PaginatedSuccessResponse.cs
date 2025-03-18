@@ -4,27 +4,29 @@
 
 namespace Movies.Contracts.Responses;
 
-public class PaginatedSuccessResponse(
-  PaginatedResult result, bool excludeNullValues = false) : ISuccessResponse {
+/// <summary>
+/// This response class formats the successful success response using <c>Paginated</c> results.
+/// </summary>
+/// <param name="result">The PaginatedResult object</param>
+public class PaginatedSuccessResponse(PaginatedResult result) : ISuccessResponse {
   /// <summary>
   /// The success property means operation was a success 
   /// </summary>
   public bool Success => true;
 
   /// <summary>
-  /// The success property means operation was a success 
+  /// The total count of records
   /// </summary>
   public int TotalCount => result.TotalCount;
 
   /// <summary>
   /// This response class  represents the successful response
-  /// containing the `data` property
+  /// containing the list of `entities`
   /// </summary>
-  public object Data => new SuccessResponse(result.Rows, excludeNullValues).Data;
+  public object Data => new SuccessResponse(result.Rows).Data;
 
   /// <summary>
-  /// This response class  represents the successful response
-  /// containing the `data` property
+  /// The pagination parameters
   /// </summary>
   public PageInfo PageInfo => new() {
     CurrentPage = result.CurrentPage,

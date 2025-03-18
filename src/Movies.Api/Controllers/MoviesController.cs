@@ -56,7 +56,7 @@ public class MoviesController(
       query.GetPageOptions(), userId, token);
 
     return Ok(ResponseHelper.SuccessWithPaginated(
-      paginated.ToPaginatedResult(), true));
+      paginated.ToPaginatedResult()));
   }
 
   /// <summary>

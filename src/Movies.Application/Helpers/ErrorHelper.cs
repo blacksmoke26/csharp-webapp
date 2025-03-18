@@ -1,6 +1,12 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
+// Reference: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/attributes/nullable-analysis
+// Guide: https://endjin.com/blog/2020/08/dotnet-csharp-8-nullable-references-when-methods-dont-return
+// Article: https://pvs-studio.com/en/blog/posts/csharp/1017/
+// Article: https://www.meziantou.net/csharp-8-nullable-reference-types.htm
+
+using System.Diagnostics.CodeAnalysis;
 
 namespace Movies.Application.Helpers;
 
@@ -130,6 +136,7 @@ public static class ErrorHelper {
   /// <param name="message">The error message</param>
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
+  [DoesNotReturn]
   public static void ThrowError(
     string? message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
     throw CustomError(message ?? GetErrorMessage(errorCode), GetStatusCode(errorCode), errorCode);
@@ -142,6 +149,7 @@ public static class ErrorHelper {
   /// <param name="statusCode">The HTTP status code</param>
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
+  [DoesNotReturn]
   public static void ThrowError(
     string message = "An unknown error occurred", int statusCode = 400, string errorCode = "BAD_REQUEST") {
     throw CustomError(message, statusCode, errorCode);
@@ -154,7 +162,7 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowIfNull(
-    object? input, ErrorCodes errorCode = ErrorCodes.BadRequest) {
+    [NotNull] object? input, ErrorCodes errorCode = ErrorCodes.BadRequest) {
     if (input is null) ThrowError(GetErrorMessage(errorCode), errorCode);
   }
 
@@ -166,7 +174,7 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowIfNull(
-    object? input, string? message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
+    [NotNull] object? input, string? message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
     if (input is null) ThrowError(message, errorCode);
   }
 
@@ -179,7 +187,7 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code (e.g., "BAD_REQUEST")</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowIfNull(
-    object? input, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
+    [NotNull] object? input, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
     if (input is null) ThrowError(message, statusCode, errorCode);
   }
 
@@ -190,7 +198,7 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowWhenFalse(
-    bool? condition, ErrorCodes errorCode) {
+    [DoesNotReturnIf(false)] bool condition, ErrorCodes errorCode) {
     ThrowWhenFalse(condition, GetErrorMessage(errorCode), errorCode);
   }
 
@@ -202,8 +210,8 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code (e.g., "BAD_REQUEST")</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowWhenFalse(
-    bool? condition, string message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    if (condition is null or false) ThrowError(message, errorCode);
+    [DoesNotReturnIf(false)] bool condition, string message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
+    if (!condition) ThrowError(message, errorCode);
   }
 
   /// <summary>
@@ -215,8 +223,8 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code (e.g., "BAD_REQUEST")</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowWhenFalse(
-    bool? condition, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
-    if (condition is null or false) ThrowError(message, statusCode, errorCode);
+    [DoesNotReturnIf(false)] bool condition, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
+    if (!condition) ThrowError(message, statusCode, errorCode);
   }
 
   /// <summary>
@@ -226,8 +234,8 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowWhenTrue(
-    bool? condition, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    if (condition is true) ThrowError(null, errorCode);
+    [DoesNotReturnIf(true)]bool condition, ErrorCodes errorCode = ErrorCodes.BadRequest) {
+    if (condition) ThrowError(null, errorCode);
   }
 
   /// <summary>
@@ -238,8 +246,8 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowWhenTrue(
-    bool? condition, string message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    if (condition is true) ThrowError(message, errorCode);
+    [DoesNotReturnIf(true)] bool condition, string message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
+    if (condition) ThrowError(message, errorCode);
   }
 
   /// <summary>
@@ -251,95 +259,7 @@ public static class ErrorHelper {
   /// <param name="errorCode">The error code (e.g., "BAD_REQUEST")</param>
   /// <exception cref="ValidationException"></exception>
   public static void ThrowWhenTrue(
-    bool? condition, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
-    if (condition is true) ThrowError(message, statusCode, errorCode);
-  }
-
-  /// <summary>
-  /// Checks that the given expression is zero or not
-  /// </summary>
-  /// <param name="expression">The nullable numeric expression to verify</param>
-  /// <typeparam name="TNumeric">The numeric value</typeparam>
-  /// <returns>True if the computed value equals to zero, false otherwise</returns>
-  private static bool IsEqualToZero<TNumeric>(TNumeric? expression) => expression is 0;
-  
-  /// <summary>
-  /// Checks that the given expression is not a zero, more or less than a zero
-  /// </summary>
-  /// <param name="expression">The nullable numeric expression to verify</param>
-  /// <typeparam name="TNumeric">The numeric value</typeparam>
-  /// <returns>True if the computed value less or more than zero, false otherwise</returns>
-  private static bool IsNotEqualToZero<TNumeric>(TNumeric? expression) => !IsEqualToZero(expression);
-
-  /// <summary>
-  /// Throw an HTTP error when the given numeric value is equal to zero
-  /// </summary>
-  /// <param name="numericValue">The nullable numeric expression to verify</param>
-  /// <param name="errorCode">The error code</param>
-  /// <exception cref="ValidationException"></exception>
-  public static void ThrowWhenZero<TNumeric>(
-    TNumeric? numericValue, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    ThrowWhenTrue(IsEqualToZero(numericValue), errorCode);
-  }
-
-  /// <summary>
-  /// Throw an HTTP error when the given numeric value is equal to zero
-  /// </summary>
-  /// <param name="numericValue">The nullable numeric expression to verify</param>
-  /// <param name="message">The error message</param>
-  /// <param name="errorCode">The error code</param>
-  /// <exception cref="ValidationException"></exception>
-  public static void ThrowWhenZero<TNumeric>(
-    TNumeric? numericValue, string message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    ThrowWhenTrue(IsEqualToZero(numericValue), message, errorCode);
-  }
-
-  /// <summary>
-  /// Throw an HTTP error when the given numeric value is equal to zero
-  /// </summary>
-  /// <param name="numericValue">The nullable numeric expression to verify</param>
-  /// <param name="message">The error message</param>
-  /// <param name="statusCode">HTTP Status code (e.g., 400)</param>
-  /// <param name="errorCode">The error code (e.g., "BAD_REQUEST")</param>
-  /// <exception cref="ValidationException"></exception>
-  public static void ThrowWhenZero<TNumeric>(
-    TNumeric? numericValue, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
-    ThrowWhenTrue(IsEqualToZero(numericValue), message, statusCode, errorCode);
-  }
-
-  /// <summary>
-  /// Throw an HTTP error when the given numeric value is less or more than zero
-  /// </summary>
-  /// <param name="numericValue">The nullable numeric expression to verify</param>
-  /// <param name="errorCode">The error code</param>
-  /// <exception cref="ValidationException"></exception>
-  public static void ThrowWhenNotZero<TNumeric>(
-    TNumeric? numericValue, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    ThrowWhenTrue(IsNotEqualToZero(numericValue), errorCode);
-  }
-
-  /// <summary>
-  /// Throw an HTTP error when the given numeric value is less or more than zero
-  /// </summary>
-  /// <param name="numericValue">The nullable numeric expression to verify</param>
-  /// <param name="message">The error message</param>
-  /// <param name="errorCode">The error code</param>
-  /// <exception cref="ValidationException"></exception>
-  public static void ThrowWhenNotZero<TNumeric>(
-    TNumeric? numericValue, string message, ErrorCodes errorCode = ErrorCodes.BadRequest) {
-    ThrowWhenTrue(IsNotEqualToZero(numericValue), message, errorCode);
-  }
-
-  /// <summary>
-  /// Throw an HTTP error when the given numeric value is less or more than zero
-  /// </summary>
-  /// <param name="numericValue">The nullable numeric expression to verify</param>
-  /// <param name="message">The error message</param>
-  /// <param name="statusCode">HTTP Status code (e.g., 400)</param>
-  /// <param name="errorCode">The error code (e.g., "BAD_REQUEST")</param>
-  /// <exception cref="ValidationException"></exception>
-  public static void ThrowWhenNotZero<TNumeric>(
-    TNumeric? numericValue, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
-    ThrowWhenTrue(IsNotEqualToZero(numericValue), message, statusCode, errorCode);
+    [DoesNotReturnIf(true)] bool condition, string message, int statusCode = 400, string errorCode = "BAD_REQUEST") {
+    if (condition) ThrowError(message, statusCode, errorCode);
   }
 }

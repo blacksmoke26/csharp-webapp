@@ -2,7 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-
 namespace Movies.Api.Controllers;
 
 [ApiVersion(ApiVersions.V10)]

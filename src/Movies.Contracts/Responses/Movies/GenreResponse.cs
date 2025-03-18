@@ -4,6 +4,7 @@
 
 namespace Movies.Contracts.Responses.Movies;
 
+[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public struct GenreResponse {
   public long? Id { get; set; }
   public long? MovieId { get; set; }

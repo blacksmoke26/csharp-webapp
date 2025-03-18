@@ -1,15 +1,15 @@
 // Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
-
-using Movies.Api.Core.Extensions;
-using Movies.Contracts.Requests.Dto;
+// See: https://blog.jetbrains.com/dotnet/2024/06/26/how-where-conditions-work-in-entity-framework-core/
 
 namespace Movies.Api.Controllers;
 
+[ApiVersion(ApiVersions.V10)]
 [ApiController]
 public class MoviesController(
-  MovieService movieService
+  MovieService movieService,
+  MoviesGetAllQueryValidator allQueryValidator
 ) : ControllerBase {
   /// <summary>
   /// Fetch the movie by its id or slug
@@ -21,9 +21,7 @@ public class MoviesController(
   public async Task<IActionResult> Get(
     [FromRoute]
     string idOrSlug, CancellationToken token) {
-    var movie = long.TryParse(idOrSlug, out var id)
-      ? await movieService.GetByPkAsync(id, token)
-      : await movieService.GetBySlugAsync(idOrSlug, token);
+    var movie = await movieService.GetBySlugOrPkAsync(idOrSlug, token);
 
     ErrorHelper.ThrowIfNull(
       movie, "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable);
@@ -41,20 +39,24 @@ public class MoviesController(
   /// <summary>
   /// Fetch all movies
   /// </summary>
+  /// <param name="query">The cancellation token</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
-  public async Task<IActionResult> GetAll(CancellationToken token) {
-    MovieStatus[] statuses = [MovieStatus.Draft, MovieStatus.Pending, MovieStatus.Published];
-    
-    var records = await movieService.GetManyAsync(q
-      => q
-        .Where(x => x.UserId == HttpContext.GetIdOrNull() 
-          ? statuses.Contains(x.Status)
-          : x.Status == MovieStatus.Published)
-        .OrderByDescending(x => x.CreatedAt), HttpContext.GetIdOrNull(), token);
+  public async Task<IActionResult> GetAll(
+    [FromQuery]
+    MoviesGetAllQuery query, CancellationToken token
+  ) {
+    await allQueryValidator.ValidateAndThrowAsync(query, token);
 
-    return Ok(ResponseHelper.SuccessWithData(records, true));
+    var userId = HttpContext.GetIdOrNull();
+
+    var paginated = await movieService.GetPaginatedAsync(
+      MovieFilters.GetAllQuery(query, userId),
+      query.GetPageOptions(), userId, token);
+
+    return Ok(ResponseHelper.SuccessWithPaginated(
+      paginated.ToPaginatedResult()));
   }
 
   /// <summary>
@@ -77,8 +79,8 @@ public class MoviesController(
       Genres = body.Genres
     }, token);
 
-    ErrorHelper.ThrowIfNull(
-      movie, "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
+    ErrorHelper.ThrowIfNull(movie,
+      "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
 
     return Ok(ResponseHelper.SuccessWithData(movie));
   }
@@ -127,7 +129,7 @@ public class MoviesController(
 
     ErrorHelper.ThrowWhenFalse(isFound, ErrorCodes.NotFound);
 
-    var isFailed = await movieService.DeleteAsync(x 
+    var isFailed = await movieService.DeleteAsync(x
       => x.UserId == HttpContext.GetId() && x.Id == id, token) == 0;
 
     return !isFailed

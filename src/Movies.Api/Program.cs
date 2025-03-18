@@ -2,8 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Movies.Api.Core.Extensions;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.InitBootstrapper(builder.Configuration);

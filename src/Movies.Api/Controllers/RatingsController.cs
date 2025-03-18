@@ -2,11 +2,10 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-using Movies.Api.Core.Extensions;
-using Movies.Contracts.Requests.Dto;
 
 namespace Movies.Api.Controllers;
 
+[ApiVersion(ApiVersions.V10)]
 [ApiController]
 public class RatingsController(
   RatingService ratingService
@@ -68,6 +67,6 @@ public class RatingsController(
   public async Task<IActionResult> DeleteRating(CancellationToken token) {
     var records = await ratingService.GetManyAsync(x
       => x.Where(r => r.UserId == HttpContext.GetId()), token);
-    return Ok(ResponseHelper.SuccessWithData(records, true));
+    return Ok(ResponseHelper.SuccessWithData(records));
   }
 }

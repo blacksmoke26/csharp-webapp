@@ -3,8 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 // See: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/extensibility
 
-using Movies.Api.Core.Extensions;
-
 namespace Movies.Api.Core.Middleware;
 
 /// <summary>

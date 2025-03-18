@@ -2,27 +2,14 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Movies.Contracts.Responses;
 
-public interface ISuccessResponse {
-}
-
 /// <summary>
-/// This class represents the success response without containing
-/// any kind of data, the best usage is when you delete/remove
-/// something and returns as an empty success response 
+/// This response class formats the successful success response using dynamic data.
 /// </summary>
-public class SuccessOnlyResponse : ISuccessResponse {
-  /// <summary>
-  /// The success property means operation was a success 
-  /// </summary>
-  public bool Success => true;
-}
-
-public class SuccessResponse : ISuccessResponse {
+/// <param name="data">The dynamic object</param>
+public class SuccessResponse (object data) : ISuccessResponse {
   /// <summary>
   /// The success property means operation was a success 
   /// </summary>
@@ -32,19 +19,5 @@ public class SuccessResponse : ISuccessResponse {
   /// This response class  represents the successful response
   /// containing the `data` property
   /// </summary>
-  public object Data { get; set; }
-
-  /// <summary>
-  /// Constructor method which creates and formats the success response
-  /// </summary>
-  /// <param name="data">The dynamic object</param>
-  /// <param name="excludeNullValues">True will remove properties with null values, false will include</param>
-  public SuccessResponse(object? data = null, bool excludeNullValues = false) {
-    JsonSerializerOptions options = new(JsonSerializerOptions.Web);
-
-    if (excludeNullValues)
-      options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
-    Data = JsonSerializer.SerializeToDocument(data ?? new { }, options);
-  }
+  public object Data { get; set; } = data;
 }

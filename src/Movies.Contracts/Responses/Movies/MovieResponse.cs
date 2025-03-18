@@ -6,9 +6,9 @@ using Movies.Contracts.Responses.Ratings;
 
 namespace Movies.Contracts.Responses.Movies;
 
+[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public record MovieResponse {
   private float _rating;
-  
   public long? Id { get; set; }
   public long? UserId { get; set; }
   public string? Title { get; set; }

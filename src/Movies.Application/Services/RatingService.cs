@@ -2,7 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Website: https://github.com/blacksmoke26/
 
-using Movies.Application.Core.Interfaces;
 using Movies.Contracts.Responses.Ratings;
 
 namespace Movies.Application.Services;
@@ -11,10 +10,7 @@ public class RatingService(
   RatingRepository ratingRepo,
   MovieService movieService,
   IValidator<RatingCreateModel> createValidator)
-  : ServiceBase, IServiceRepoInstance<RatingRepository> {
-  /// <inheritdoc/>
-  public RatingRepository GetRepo() => ratingRepo;
-
+  : ServiceBase {
   /// <summary>
   /// Rates the movie against the movie id by the user 
   /// </summary>
@@ -23,7 +19,7 @@ public class RatingService(
   /// <returns>Whatever the rating was a success or failure</returns>
   public async Task<bool> RateMovieAsync(
     RatingCreateModel input, CancellationToken token = default) {
-    await createValidator.ValidateAsync(input, token);
+    await createValidator.ValidateAndThrowAsync(input, token);
 
     // Ensure that movie exists, otherwise the constraints exception thrown 
     if (!await movieService.ExistsAsync(x

@@ -2,8 +2,6 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-using Movies.Contracts.Base;
-
 namespace Movies.Contracts.Requests.Query;
 
 public record MoviesGetAllQuery : RequestQueryFetching {

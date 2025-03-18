@@ -55,8 +55,7 @@ public class MoviesController(
       MovieFilters.GetAllQuery(query, userId),
       query.GetPageOptions(), userId, token);
 
-    return Ok(ResponseHelper.SuccessWithPaginated(
-      paginated.ToPaginatedResult()));
+    return Ok(ResponseHelper.SuccessWithPaginated(paginated.ToPaginatedResult()));
   }
 
   /// <summary>
@@ -106,8 +105,8 @@ public class MoviesController(
       Genres = body.Genres
     }, token);
 
-    ErrorHelper.ThrowIfNull(
-      movie, "An error occurred while updating the movie", ErrorCodes.ProcessFailed);
+    ErrorHelper.ThrowIfNull(movie,
+      "An error occurred while updating the movie", ErrorCodes.ProcessFailed);
 
     return Ok(ResponseHelper.SuccessWithData(movie));
   }
@@ -131,10 +130,10 @@ public class MoviesController(
 
     var isFailed = await movieService.DeleteAsync(x
       => x.UserId == HttpContext.GetId() && x.Id == id, token) == 0;
+    
+    ErrorHelper.ThrowWhenTrue(isFailed,
+      "An error occurred while deleting the movie", ErrorCodes.ProcessFailed);
 
-    return !isFailed
-      ? Ok(ResponseHelper.SuccessOnly())
-      : throw ErrorHelper.CustomError(
-        "An error occurred while deleting the movie", ErrorCodes.ProcessFailed);
+    return Ok(ResponseHelper.SuccessOnly());
   }
 }

@@ -22,10 +22,10 @@ public class RatingService(
     await createValidator.ValidateAndThrowAsync(input, token);
 
     // Ensure that movie exists, otherwise the constraints exception thrown 
-    if (!await movieService.ExistsAsync(x
-          => x.Id == input.MovieId && x.Status != MovieStatus.Published, token)) {
-      throw ErrorHelper.CustomError("Movie not found", ErrorCodes.NotFound);
-    }
+    var isFound = await movieService.ExistsAsync(x
+      => x.Id == input.MovieId && x.Status != MovieStatus.Published, token);
+    
+    ErrorHelper.ThrowWhenFalse(isFound, "Movie not found", ErrorCodes.NotFound);
 
     var record = await ratingRepo.GetOneAsync(x
       => x.UserId == input.UserId && x.MovieId == input.MovieId, token);
@@ -53,14 +53,14 @@ public class RatingService(
     return await ratingRepo.DeleteAsync(x
       => x.MovieId == movieId && x.UserId == userId, token) > 0;
   }
-  
+
   /// <summary>
   /// Format the rating object response (Select LINQ expression)
   /// </summary>
   /// <returns>The query select expression</returns>
   private Expression<Func<Rating, RatingResponse>> PrepareResponse() {
     return x => new RatingResponse {
-      Movie = new () {
+      Movie = new() {
         Id = x.MovieId,
         Title = x.Movie.Title,
         Slug = x.Movie.Slug,
@@ -90,7 +90,7 @@ public class RatingService(
 
     ErrorHelper.ThrowIfNull(record, "Rating not found", ErrorCodes.NotFound);
 
-    return record!;
+    return record;
   }
 
   /// <summary>
@@ -103,7 +103,7 @@ public class RatingService(
     Func<IQueryable<Rating>, IQueryable<Rating>>? query,
     CancellationToken token = default) {
     return ratingRepo.GetManyAsync(
-      q => query != null ? query.Invoke(q) : q,
+      q => query?.Invoke(q) ?? q,
       PrepareResponse(),
       token
     );

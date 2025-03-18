@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Movies.Application.Config;
+using Newtonsoft.Json.Serialization;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Results;
@@ -30,6 +31,40 @@ public static class ApplicationServiceCollectionExtensions {
 
     services.AddSingleton<AppConfiguration>(_ => config);
 
+    services.AddVersioning();
+
+    AddAuthentication(services, config);
+
+    AddErrorHandlers(services);
+
+    AddControllers(services);
+
+    services.AddEndpointsApiExplorer();
+
+    services.AddApplication();
+    services.AddDatabase(config);
+
+    return services;
+  }
+
+  /// <summary>
+  /// Adds MVC controllers to the service collection
+  /// </summary>
+  /// <param name="services">The ServiceCollection instance</param>
+  public static void AddControllers(IServiceCollection services) {
+    // Add services to the container.
+    services.AddControllers()
+      .AddNewtonsoftJson(options => {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+      });
+  }
+
+  /// <summary>
+  /// Adds authentication and authorization to the service collection
+  /// </summary>
+  /// <param name="services">The ServiceCollection instance</param>
+  /// <param name="config">The AppConfiguration instance</param>
+  public static void AddAuthentication(IServiceCollection services, AppConfiguration config) {
     #region JWT Authentication / Authorization
 
     services.AddAuthentication(x => {
@@ -39,7 +74,7 @@ public static class ApplicationServiceCollectionExtensions {
     }).AddJwtBearer(x => {
       x.TokenValidationParameters = new TokenValidationParameters() {
         IssuerSigningKey = new SymmetricSecurityKey(
-          Encoding.UTF8.GetBytes(config.JwtConfig().Key)
+          Encoding.UTF8.GetBytes(config.JwtConfig().Key!)
         ),
         ValidateIssuerSigningKey = true,
         ValidateLifetime = true,
@@ -67,6 +102,15 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddSingleton<AuthService>(_ => new AuthService(config.JwtConfig()));
 
     #endregion
+  }
+
+  /// <summary>
+  /// Adds error handlers / validation error transformers
+  /// </summary>
+  /// <param name="services">The ServiceCollection instance</param>
+  private static void AddErrorHandlers(IServiceCollection services) {
+    // See: https://learn.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-9.0
+    services.AddProblemDetails(/*o => { o.CustomizeProblemDetails = context => { context.Exception.Dump(); }; }*/);
 
     services.AddFluentValidationAutoValidation(c => {
       // Disable the built-in .NET model (data annotations) validation.
@@ -94,26 +138,14 @@ public static class ApplicationServiceCollectionExtensions {
       //c.OverrideDefaultResultFactoryWith<CustomResultFactory>();
     });
 
-
-    // Add services to the container.
-    services.AddControllers();
-    services.AddProblemDetails();
-    //services.AddExceptionHandler<ExceptionToProblemDetailsHandler>();
-
-    services.AddEndpointsApiExplorer();
-
-    services.AddApplication();
     services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly(), ServiceLifetime.Transient);
-    services.AddDatabase(config);
-
-    return services;
   }
 }
 
-public class CustomResultFactory : IFluentValidationAutoValidationResultFactory {
+/*public class CustomResultFactory : IFluentValidationAutoValidationResultFactory {
   public IActionResult CreateActionResult(ActionExecutingContext context,
     ValidationProblemDetails? validationProblemDetails) {
     return new BadRequestObjectResult(new
       { Title = "Validation errors" });
   }
-}
+}*/

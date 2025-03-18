@@ -5,6 +5,7 @@
 
 namespace Movies.Api.Controllers;
 
+[ApiVersion(ApiVersions.V10)]
 [ApiController]
 public class MoviesController(
   MovieService movieService,
@@ -55,7 +56,7 @@ public class MoviesController(
       query.GetPageOptions(), userId, token);
 
     return Ok(ResponseHelper.SuccessWithPaginated(
-      paginated.ToPaginatedResult(), true));
+      paginated.ToPaginatedResult()));
   }
 
   /// <summary>

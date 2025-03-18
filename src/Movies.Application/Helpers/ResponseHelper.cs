@@ -6,6 +6,9 @@ using Movies.Contracts.Responses;
 
 namespace Movies.Application.Helpers;
 
+/// <summary>
+/// Provides the utility methods for formatting the successful responses
+/// </summary>
 public static class ResponseHelper {
   /// <summary>
   /// Returns the successful response
@@ -17,21 +20,16 @@ public static class ResponseHelper {
   /// Returns the successful response with data object
   /// </summary>
   /// <param name="data">The dynamic object</param>
-  /// <param name="excludeNullValues">True will remove properties with null values, false will include 'em</param>
   /// <returns>The response object</returns>
-  public static ISuccessResponse SuccessWithData(
-    object? data, bool excludeNullValues = false) {
-    return data is null
-      ? SuccessOnly()
-      : new SuccessResponse(data, excludeNullValues);
+  public static ISuccessResponse SuccessWithData(object? data) {
+    return data is null ? SuccessOnly() : new SuccessResponse(data);
   }
 
   /// <summary>
   /// Returns the successful response with the paginated results
   /// </summary>
   /// <param name="result">The paginated results object</param>
-  /// <param name="excludeNullValues">True will remove properties with null values, false will include 'em</param>
   /// <returns>The paginated response object</returns>
-  public static PaginatedSuccessResponse SuccessWithPaginated(
-    PaginatedResult result, bool excludeNullValues = false) => new (result, excludeNullValues);
+  public static PaginatedSuccessResponse SuccessWithPaginated
+    (PaginatedResult result) => new(result);
 }

@@ -4,6 +4,7 @@
 
 namespace Movies.Api.Controllers;
 
+[ApiVersion(ApiVersions.V10)]
 [ApiController]
 public class IdentityController(
   UserService userService,

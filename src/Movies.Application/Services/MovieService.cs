@@ -30,7 +30,7 @@ public class MovieService(
       Title = input.Title,
       YearOfRelease = input.YearOfRelease
     };
-    
+
     var dbContext = movieRepo.GetDbContext();
 
     await using var transaction = await dbContext.BeginTransactionAsync(token);
@@ -71,17 +71,15 @@ public class MovieService(
 
     var movie = await movieRepo.GetOneAsync(x => x.UserId == input.UserId && x.Id == input.Id, token);
 
-    if (movie is null)
-      throw ErrorHelper.CustomError("Movie not found", ErrorCodes.NotFound);
+    ErrorHelper.ThrowIfNull(movie, "Movie not found", ErrorCodes.NotFound);
 
     var newSlug = movie.GenerateSlug(input.Title, input.YearOfRelease);
-    var sameMovieExists = !newSlug.Equals(movie.Slug) &&
-                          await movieRepo.ExistsAsync(x => x.Slug == newSlug, token);
+    var sameMovieExists =
+      !newSlug.Equals(movie.Slug)
+      && await movieRepo.ExistsAsync(x => x.Slug == newSlug, token);
 
-    if (sameMovieExists) {
-      throw ErrorHelper.CustomError(
-        "Movie with the same name and year of release is already exist.", ErrorCodes.DuplicateEntry);
-    }
+    ErrorHelper.ThrowWhenTrue(sameMovieExists,
+      "Movie with the same name and year of release is already exist.", ErrorCodes.DuplicateEntry);
 
     var dbContext = movieRepo.GetDbContext();
 
@@ -103,13 +101,13 @@ public class MovieService(
 
       await dbContext.SaveChangesAsync(token);
       await transaction.CommitAsync(token);
-
-      return movie;
     }
     catch (Exception e) {
       Console.WriteLine(e);
       return null;
     }
+
+    return movie;
   }
 
   /// <summary>
@@ -195,7 +193,7 @@ public class MovieService(
 
     ErrorHelper.ThrowIfNull(record, "Movie not found", ErrorCodes.NotFound);
 
-    return record!;
+    return record;
   }
 
   /// <summary>

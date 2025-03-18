@@ -12,10 +12,9 @@ public class IdentityService(
   UserService userService,
   IValidator<UserLoginCredentialDto> loginValidator
 ) : ServiceBase {
-  
   /// <summary>HTTPContext items identity key name</summary>
   public const string IdentityKey = "%UserIdentity%";
-  
+
   /// <summary>
   /// Logins the user by email and password
   /// </summary>
@@ -31,9 +30,8 @@ public class IdentityService(
 
     var user = await userService.GetByEmailAsync(input.Email, token);
 
-    if (user == null || !user.ValidatePassword(input.Password))
-      throw ErrorHelper.CustomError(
-        "Incorrect email address or password", ErrorCodes.AccessDenied);
+    ErrorHelper.ThrowWhenTrue(user == null || !user.ValidatePassword(input.Password),
+      "Incorrect email address or password", ErrorCodes.AccessDenied);
 
     if (user.Status != UserStatus.Active)
       ThrowBadStatusException(user.Status);
@@ -56,28 +54,26 @@ public class IdentityService(
     var user = await userService.GetByAuthKeyAsync(dto.Jti, token);
 
     // The missing user, which means the auth-key is no longer valid
-    if (user == null) {
-      throw ErrorHelper.CustomError(
-        "Token may invalidated or user not found",
-        401, "TOKEN_INVALIDATED");
-    }
+    ErrorHelper.ThrowIfNull(user,
+      "Token may invalidated or user not found", 401, "TOKEN_INVALIDATED");
 
     // Either a user is unverified or insufficient status
     if (user.Status != UserStatus.Active)
       ThrowBadStatusException(user.Status);
 
     // Forcefully logged-out user globally
-    if (user.Metadata.Security.TokenInvalidate is true) {
-      throw ErrorHelper.CustomError(
-        "Token has been disabled, or revoked. Please generate a new one",
-        ErrorCodes.AccessRevoked);
-    }
+    ErrorHelper.ThrowWhenTrue(user.Metadata.Security.TokenInvalidate is true,
+      "Token has been disabled, or revoked. Please generate a new one",
+      ErrorCodes.AccessRevoked);
+
+    // Forcefully logged-out user globally
+    ErrorHelper.ThrowWhenTrue(user.Metadata.Security.TokenInvalidate is true,
+      "Token has been disabled, or revoked. Please generate a new one",
+      ErrorCodes.AccessRevoked);
 
     // Role mismatched. Tempered JWT "role" claim?
-    if (user.Role != dto.Role) {
-      throw ErrorHelper.CustomError(
-        "Ineligible authorization role", 403, "INELIGIBLE_ROLE");
-    }
+    ErrorHelper.ThrowWhenTrue(user.Role != dto.Role,
+      "Ineligible authorization role", 403, "INELIGIBLE_ROLE");
 
     OnSuccessfulLogin(user, options);
 
@@ -100,17 +96,15 @@ public class IdentityService(
   /// <param name="status">The status to verify</param>
   /// <exception cref="ValidationException">Throws when abnormal status detected</exception>
   private static void ThrowBadStatusException(UserStatus status) {
-    if (status == UserStatus.Inactive) {
-      throw ErrorHelper.CustomError(
-        "Cannot signed in due to the pending account verification.",
-        401, "VERIFICATION_PENDING");
-    }
-
-    if (status is UserStatus.Blocked or UserStatus.Deleted or UserStatus.Disabled) {
-      throw ErrorHelper.CustomError(
-        $"Your account has been ${status.ToString().ToLower()}",
-        ErrorCodes.AccessRevoked);
-    }
+    // Pending account
+    ErrorHelper.ThrowWhenTrue(status == UserStatus.Inactive,
+      "Cannot signed in due to the pending account verification.",
+      401, "VERIFICATION_PENDING");
+    
+    // Abnormal account
+    ErrorHelper.ThrowWhenTrue(status is UserStatus.Blocked or UserStatus.Deleted or UserStatus.Disabled,
+      $"Your account has been ${status.ToString().ToLower()}",
+      ErrorCodes.AccessRevoked);
   }
 
   /// <summary>

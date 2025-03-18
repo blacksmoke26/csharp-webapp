@@ -21,11 +21,11 @@ public class UserService(
 
     var user = await CreateUserAsync(input, token);
 
-    ErrorHelper.ThrowIfNull(
-      user, "Failed to create account because there was an error while processing the request.",
+    ErrorHelper.ThrowIfNull(user,
+      "Failed to create account because there was an error while processing the request.",
       ErrorCodes.ProcessFailed);
 
-    return user!;
+    return user;
   }
 
   /// <summary>

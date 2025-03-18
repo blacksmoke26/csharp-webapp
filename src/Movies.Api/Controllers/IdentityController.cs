@@ -16,8 +16,7 @@ public class IdentityController(
   /// <param name="body">The request body</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The HTTP response</returns>
-  /// <exception cref="ValidationException">
-  /// When failed to create user account</exception>
+  /// <exception cref="FluentValidation.ValidationException">When failed to create user account</exception>
   [HttpPost(ApiEndpoints.Identity.Signup)]
   public async Task<IActionResult> Signup(
     [FromBody]
@@ -41,7 +40,7 @@ public class IdentityController(
   /// <param name="body">The request body</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The HTTP response</returns>
-  /// <exception cref="System.ComponentModel.DataAnnotations.ValidationException">When failed to authenticate</exception>
+  /// <exception cref="FluentValidation.ValidationException">When failed to authenticate</exception>
   [HttpPost(ApiEndpoints.Identity.Login)]
   public async Task<IActionResult> Login(
     [FromBody]
@@ -52,9 +51,8 @@ public class IdentityController(
       IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
     }, token);
 
-    if (user is null)
-      throw ErrorHelper.CustomError(
-        "Authenticate failed due to the unknown reason", 400, "AUTH_FAILED");
+    ErrorHelper.ThrowIfNull(user,
+      "Authenticate failed due to the unknown reason", 400, "AUTH_FAILED");
 
     return Ok(
       ResponseHelper.SuccessWithData(new {

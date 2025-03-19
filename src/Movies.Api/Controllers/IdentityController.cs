@@ -15,38 +15,13 @@ public class IdentityController(
   IdentityService idService,
   AuthService authService) : ControllerBase {
   /// <summary>
-  /// Registers a new user account
-  /// </summary>
-  /// <param name="body">The signup payload</param>
-  /// <param name="token">The cancellation token</param>
-  /// <returns>The HTTP response</returns>
-  /// <exception cref="FluentValidation.ValidationException">When failed to create user account</exception>
-  [HttpPost(ApiEndpoints.Identity.Signup)]
-  [SwaggerResponse(201, "The user account was created", typeof(SuccessWithMessageResponse))]
-  [SwaggerResponse(400, "When failed to create user account", typeof(ValidationFailureResponse))]
-  public async Task<IActionResult> Signup(
-    [FromBody, SwaggerRequestBody(Required = true)]
-    UserSignupPayload body, CancellationToken token) {
-    // creates a user account
-    await userService.CreateAsync(new() {
-      Email = body.Email,
-      Password = body.Password,
-      FirstName = body.FirstName,
-      LastName = body.LastName
-    }, token);
-
-    return StatusCode(201, ResponseHelper.SuccessWithMessage(
-      "You account has been created. Please check your inbox for verification email"));
-  }
-
-  /// <summary>
   /// Log in user against the credentials
   /// </summary>
   /// <param name="body">The user credentials</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The HTTP response</returns>
   /// <exception cref="FluentValidation.ValidationException">When failed to authenticate</exception>
-  [HttpPost(ApiEndpoints.Identity.Login)]
+  [HttpPost(ApiEndpoints.Identity.Login), AllowAnonymous]
   [SwaggerResponse(201, "The user was authenticated with credentials",
     typeof(SuccessResponse<UserAuthenticateResponse>))]
   [SwaggerResponse(400, "When failed to authenticated the user", typeof(ValidationFailureResponse))]
@@ -97,5 +72,30 @@ public class IdentityController(
   public async Task<IActionResult> Logout(CancellationToken token) {
     await idService.Logout(HttpContext.GetIdentity().User, token);
     return Ok(ResponseHelper.SuccessOnly());
+  }
+  
+  /// <summary>
+  /// Registers a new user account
+  /// </summary>
+  /// <param name="body">The signup payload</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The HTTP response</returns>
+  /// <exception cref="FluentValidation.ValidationException">When failed to create user account</exception>
+  [HttpPost(ApiEndpoints.Identity.Signup), AllowAnonymous]
+  [SwaggerResponse(201, "The user account was created", typeof(SuccessWithMessageResponse))]
+  [SwaggerResponse(400, "When failed to create user account", typeof(ValidationFailureResponse))]
+  public async Task<IActionResult> Signup(
+    [FromBody, SwaggerRequestBody(Required = true)]
+    UserSignupPayload body, CancellationToken token) {
+    // creates a user account
+    await userService.CreateAsync(new() {
+      Email = body.Email,
+      Password = body.Password,
+      FirstName = body.FirstName,
+      LastName = body.LastName
+    }, token);
+
+    return StatusCode(201, ResponseHelper.SuccessWithMessage(
+      "You account has been created. Please check your inbox for verification email"));
   }
 }

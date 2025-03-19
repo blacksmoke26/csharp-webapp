@@ -1,9 +1,13 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
+// Reference: https://scalar.com/#introduction
+// Integration guide: https://guides.scalar.com/scalar/scalar-api-references/net-integration
+// See: https://juldhais.net/create-a-beautiful-api-documentation-with-scalar-in-asp-net-core-d3d4d17570a6
 
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Movies.Api.Core.Swagger;
@@ -41,14 +45,16 @@ public static class SwaggerExtensions {
   /// <summary>Enables the swagger middleware and UI</summary>
   /// <param name="app">The WebApplication instance</param>
   public static void UseSwaggerApi(this WebApplication app) {
-    app.UseSwagger();
-    app.UseSwaggerUI(x => {
-      foreach (var description in app.DescribeApiVersions()) {
-        x.SwaggerEndpoint(
-          $"/swagger/{description.GroupName}/swagger.json",
-          description.GroupName.ToUpperInvariant()
-        );
-      }
+    var versions = app.DescribeApiVersions()
+      .Select(x => x.GroupName).ToArray();
+    app.UseSwagger(opt => { opt.RouteTemplate = "openapi/{documentName}.json"; });
+    
+    app.MapScalarApiReference(opt => {
+      opt.AddDocuments(versions);
+      opt.Title = $"Movies: API Reference ({app.Environment.EnvironmentName})";
+      opt.Theme = ScalarTheme.Purple;
+      opt.HideClientButton = true;
+      opt.HideDownloadButton = true;
     });
   }
 }

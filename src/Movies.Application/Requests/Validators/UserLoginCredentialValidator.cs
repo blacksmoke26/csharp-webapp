@@ -4,7 +4,7 @@
 
 namespace Movies.Application.Requests.Validators;
 
-public class UserLoginCredentialValidator : AbstractValidator<UserLoginCredentialDto> {
+public class UserLoginCredentialValidator : AbstractValidator<UserLoginCredentialPayload> {
   public UserLoginCredentialValidator() {
     RuleFor(x => x.Email)
       .EmailAddress()

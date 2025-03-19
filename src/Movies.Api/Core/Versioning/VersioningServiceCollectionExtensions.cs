@@ -6,7 +6,7 @@
 // Wiki: https://github.com/dotnet/aspnet-api-versioning/wiki/API-Version-Selector
 
 
-namespace Movies.Api.Domain.Versioning;
+namespace Movies.Api.Core.Versioning;
 
 /// <summary>
 /// Provides the extensions methods to support API Versioning
@@ -31,7 +31,9 @@ public static class VersioningApplicationServiceExtensions {
       x.UnsupportedApiVersionStatusCode = 501;
       // The name associated with the API version route constrain
       //x.RouteConstraintName = "version";
-    }).AddMvc();
+    }).AddMvc().AddApiExplorer(
+      // format the version as "'v'major[.minor][-status]"
+      options => options.GroupNameFormat = "'v'VVV" );
 
     return services;
   }

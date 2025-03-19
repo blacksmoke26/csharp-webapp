@@ -10,20 +10,18 @@ public struct LoginOptions {
 
 public class IdentityService(
   UserService userService,
-  IValidator<UserLoginCredentialDto> loginValidator
+  IValidator<UserLoginCredentialPayload> loginValidator
 ) : ServiceBase {
   /// <summary>HTTPContext items identity key name</summary>
   public const string IdentityKey = "%UserIdentity%";
 
-  /// <summary>
-  /// Logins the user by email and password
-  /// </summary>
+  /// <summary>Logins the user by email and password</summary>
   /// <param name="input">The user DTO object</param>
   /// <param name="options">Additional login options</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created user / null when failed</returns>
   public async Task<User?> LoginAsync(
-    UserLoginCredentialDto input, LoginOptions? options = null,
+    UserLoginCredentialPayload input, LoginOptions? options = null,
     CancellationToken token = default
   ) {
     await loginValidator.ValidateAndThrowAsync(input, token);
@@ -41,17 +39,15 @@ public class IdentityService(
     return await userService.SaveAsync(user, true, token);
   }
 
-  /// <summary>
-  /// Login the user as current identity against given JWT claims
-  /// </summary>
-  /// <param name="dto">The login claims object</param>
+  /// <summary>Login the user as current identity against given JWT claims</summary>
+  /// <param name="payload">The login claims object</param>
   /// <param name="options">Additional login options</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created user / null when failed</returns>
   public async Task<User?> LoginWithClaimAsync(
-    UserLoginClaimDto dto, LoginOptions? options = null, CancellationToken token = default
+    UserLoginClaimPayload payload, LoginOptions? options = null, CancellationToken token = default
   ) {
-    var user = await userService.GetByAuthKeyAsync(dto.Jti, token);
+    var user = await userService.GetByAuthKeyAsync(payload.Jti, token);
 
     // The missing user, which means the auth-key is no longer valid
     ErrorHelper.ThrowIfNull(user,
@@ -72,7 +68,7 @@ public class IdentityService(
       ErrorCodes.AccessRevoked);
 
     // Role mismatched. Tempered JWT "role" claim?
-    ErrorHelper.ThrowWhenTrue(user.Role != dto.Role,
+    ErrorHelper.ThrowWhenTrue(user.Role != payload.Role,
       "Ineligible authorization role", 403, "INELIGIBLE_ROLE");
 
     OnSuccessfulLogin(user, options);
@@ -80,9 +76,7 @@ public class IdentityService(
     return await userService.SaveAsync(user, true, token);
   }
 
-  /// <summary>
-  /// Creates a user
-  /// </summary>
+  /// <summary>Creates a user</summary>
   /// <param name="user">The user instance</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created user / null when failed</returns>
@@ -90,9 +84,7 @@ public class IdentityService(
     throw new NotImplementedException();
   }
 
-  /// <summary>
-  /// User account status verification excluding "active"
-  /// </summary>
+  /// <summary>User account status verification excluding "active"</summary>
   /// <param name="status">The status to verify</param>
   /// <exception cref="ValidationException">Throws when abnormal status detected</exception>
   private static void ThrowBadStatusException(UserStatus status) {
@@ -107,9 +99,7 @@ public class IdentityService(
       ErrorCodes.AccessRevoked);
   }
 
-  /// <summary>
-  /// A callback method which will be invoked when a user successfully authenticated
-  /// </summary>
+  /// <summary>A callback method which will be invoked when a user successfully authenticated</summary>
   /// <param name="user">The user object</param>
   /// <param name="options">The logged in options</param>
   private static void OnSuccessfulLogin(User user, LoginOptions? options = null) {

@@ -2,22 +2,19 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-
 namespace Movies.Contracts.Responses;
 
-/// <summary>
-/// This response class formats the successful success response using dynamic data.
-/// </summary>
-/// <param name="data">The dynamic object</param>
-public class SuccessResponse (object data) : ISuccessResponse {
-  /// <summary>
-  /// The success property means operation was a success 
-  /// </summary>
+[SwaggerSchema("This response class formats the successful success response using dynamic data.",
+  Required = ["Success", "Data"], ReadOnly = true)]
+public record SuccessResponse<T> : ISuccessResponse {
+  [SwaggerSchema("The success property means operation was a success")]
   public bool Success => true;
 
-  /// <summary>
-  /// This response class  represents the successful response
-  /// containing the `data` property
-  /// </summary>
-  public object Data { get; set; } = data;
+  [SwaggerSchema("The information / processed data")]
+  public required T Data { get; init; }
+}
+
+[SwaggerSchema("This response class formats the successful success response using dynamic data.",
+  Required = ["Success", "Data"], ReadOnly = true)]
+public record SuccessResponse : SuccessResponse<object> {
 }

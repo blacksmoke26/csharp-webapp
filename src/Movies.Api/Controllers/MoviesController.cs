@@ -3,28 +3,33 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 // See: https://blog.jetbrains.com/dotnet/2024/06/26/how-where-conditions-work-in-entity-framework-core/
 
+using Movies.Contracts.Responses.Movies;
+
 namespace Movies.Api.Controllers;
 
 [ApiVersion(ApiVersions.V10)]
 [ApiController]
+[Produces("application/json")]
+[SwaggerTag("Manage and list movies")]
 public class MoviesController(
   MovieService movieService,
   MoviesGetAllQueryValidator allQueryValidator
 ) : ControllerBase {
-  /// <summary>
-  /// Fetch the movie by its id or slug
-  /// </summary>
-  /// <param name="idOrSlug">Movie ID or Slug</param>
+  /// <summary>Fetch the movie ID or a Slug</summary>
+  /// <param name="idOrSlug">The requested movie id or slug</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.Get)]
+  [SwaggerResponse(200, "The fetch movie details", typeof(SuccessResponse<MovieResponse>))]
+  [SwaggerResponse(404, "Movie not found", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(410, "Movie is no longer available or disabled", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> Get(
     [FromRoute]
     string idOrSlug, CancellationToken token) {
     var movie = await movieService.GetBySlugOrPkAsync(idOrSlug, token);
 
     ErrorHelper.ThrowIfNull(
-      movie, "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable);
+      movie, "This movie is no longer available", ErrorCodes.NotFound);
 
     // Note: With the abnormal status, only owner user can access this object. 
     ErrorHelper.ThrowWhenTrue(
@@ -37,12 +42,14 @@ public class MoviesController(
   }
 
   /// <summary>
-  /// Fetch all movies
+  /// Fetch all movies using filters and sort order
   /// </summary>
-  /// <param name="query">The cancellation token</param>
+  /// <param name="query">The query to filter/sort the list of movies</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
+  [SwaggerResponse(200, "The paginated list", typeof(PaginatedResult<MovieResponse>))]
+  [SwaggerResponse(400, "If the query contains invalid values", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> GetAll(
     [FromQuery]
     MoviesGetAllQuery query, CancellationToken token
@@ -59,16 +66,19 @@ public class MoviesController(
   }
 
   /// <summary>
-  /// Creates a movie object
+  /// Creates a movie
   /// </summary>
-  /// <param name="body">The request body</param>
+  /// <param name="body">The updated movie payload</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created movie object</returns>
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpPost(ApiEndpoints.Movies.Create)]
+  [SwaggerResponse(200, "The movie is created", typeof(SuccessResponse<MovieResponse>))]
+  [SwaggerResponse(400, "Failed due to the validation errors", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(400, "Failed to create a movie", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> Create(
-    [FromBody]
-    MovieCreateDto body,
+    [FromBody, SwaggerRequestBody(Required = true)]
+    MovieCreatePayload body,
     CancellationToken token
   ) {
     var movie = await movieService.CreateAsync(new() {
@@ -87,15 +97,21 @@ public class MoviesController(
   /// <summary>
   /// Update the movie details against movie id
   /// </summary>
-  /// <param name="id">Movie ID</param>
-  /// <param name="body">Information to update</param>
+  /// <param name="id">The requested movie id</param>
+  /// <param name="body">The updated movie payload</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpPut(ApiEndpoints.Movies.Update)]
+  [SwaggerResponse(200, "The movie is updated", typeof(SuccessResponse<MovieResponse>))]
+  [SwaggerResponse(404, "Movie not found", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(400, "Failed to update a movie", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> Update(
-    [FromRoute]
-    long id, [FromBody] MovieUpdateDto body, CancellationToken token
+    [FromRoute, SwaggerRequestBody(Required = true)]
+    long id,
+    [FromBody, SwaggerRequestBody(Required = true)]
+    MovieUpdatePayload body,
+    CancellationToken token
   ) {
     var movie = await movieService.UpdateAsync(new() {
       Id = id,
@@ -112,15 +128,19 @@ public class MoviesController(
   }
 
   /// <summary>
-  /// Deletes the movie by its id
+  /// Deletes the movies
   /// </summary>
-  /// <param name="id">Movie ID</param>
+  /// <param name="id">The requested movie id</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>The response</returns>
+  /// <returns>The HTTP response</returns>
+  //[Obsolete("Method1 is deprecated, please use Method2 instead.", true)]
   [Authorize(AuthPolicies.AdminPolicy)]
   [HttpDelete(ApiEndpoints.Movies.Delete)]
+  [SwaggerResponse(200, "The movie is deleted", typeof(SuccessOnlyResponse))]
+  [SwaggerResponse(404, "Movie not found", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(400, "Failed to delete a movie", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> Delete(
-    [FromRoute]
+    [FromRoute, SwaggerRequestBody(Required = true)]
     long id, CancellationToken token
   ) {
     var isFound = await movieService.ExistsAsync(x
@@ -130,7 +150,7 @@ public class MoviesController(
 
     var isFailed = await movieService.DeleteAsync(x
       => x.UserId == HttpContext.GetId() && x.Id == id, token) == 0;
-    
+
     ErrorHelper.ThrowWhenTrue(isFailed,
       "An error occurred while deleting the movie", ErrorCodes.ProcessFailed);
 

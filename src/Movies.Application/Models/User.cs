@@ -4,6 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Movies.Contracts.Responses.Identity;
 
 namespace Movies.Application.Models;
 
@@ -42,7 +43,7 @@ public class User : ModelBase {
   public UserMetadata Metadata { get; set; } = null!;
 
   [Comment("Created Date")]
-  public DateTime? CreatedAt { get; set; }
+  public DateTime CreatedAt { get; set; }
 
   [Comment("Last Updated")]
   public DateTime? UpdatedAt { get; set; }
@@ -86,7 +87,7 @@ public class User : ModelBase {
   /// <summary>
   /// Generates the password reset token
   /// </summary>
-  public void GeneratePasswordResetToken() 
+  public void GeneratePasswordResetToken()
     => PasswordResetToken = IdentityHelper.GeneratePasswordResetToken();
 
   /// <summary>
@@ -97,7 +98,7 @@ public class User : ModelBase {
   /// <summary>
   /// Generates token authentication key
   /// </summary>
-  public void GenerateAuthKey() 
+  public void GenerateAuthKey()
     => AuthKey = IdentityHelper.GenerateAuthKey();
 
   /// <summary>
@@ -119,6 +120,37 @@ public class User : ModelBase {
     }
 
     return base.OnTrackChangesAsync(state, cancellationToken);
+  }
+
+  /// <summary>
+  /// Map the current user to the <c>UserLoggedInDetails</c> object
+  /// </summary>
+  /// <returns>The mapped object</returns>
+  public UserAuthInfo ToLoggedInDetails() {
+    return new UserAuthInfo {
+      Fullname = FullName,
+      FirstName = FirstName,
+      LastName = LastName,
+      Email = Email,
+      Role = Role
+    };
+  }
+
+  /// <summary>
+  /// Map the current user to the <c>UserMeDetails</c> object
+  /// </summary>
+  /// <returns>The mapped object</returns>
+  public UserMeResponse ToMeDetails() {
+    return new UserMeResponse {
+      Id = Id,
+      Fullname = FullName,
+      FirstName = FirstName,
+      LastName = LastName,
+      Email = Email,
+      Role = Role,
+      Status = Status.ToString().ToLower(),
+      CreatedAt = CreatedAt,
+    };
   }
 }
 

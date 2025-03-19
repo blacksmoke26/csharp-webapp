@@ -20,8 +20,6 @@ public class ValidationFailureResponse {
   /// <returns>The JSON text</returns>
   public object ToJson() {
     Dictionary<string, object> obj = [];
-    obj.Add("data", null!);
-
     if (!string.IsNullOrWhiteSpace(Message) && !Message.StartsWith("Validation failed:"))
       obj.Add("message", Message);
 

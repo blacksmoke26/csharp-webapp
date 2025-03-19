@@ -15,4 +15,4 @@ global using Movies.Application.Domain.Model;
 global using Movies.Application.Helpers;
 global using Movies.Application.Models;
 global using Movies.Application.Repositories;
-global using Movies.Contracts.Requests.Dto;
+global using Movies.Contracts.Requests.Payload;

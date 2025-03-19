@@ -4,11 +4,28 @@
 
 namespace Movies.Contracts.Responses;
 
-public struct PaginatedResult {
+[SwaggerSchema("This response class formats the paginated results ",
+  Required = ["Success", "Message"], ReadOnly = true)]
+public abstract record PaginatedResult<TEntity> {
+  [SwaggerSchema("The current page")] [DefaultValue(1)]
   public int CurrentPage { get; init; }
-  public int TotalPages { get; init; }
-  public int TotalCount { get; init; }
-  public bool HasPreviousPage { get; init; }
-  public bool HasNextPage { get; init; }
-  public IEnumerable<object> Rows { get; init; }
+
+  [SwaggerSchema("Count of total records")]
+  public required int TotalCount { get; init; }
+
+  [SwaggerSchema("Count of total pages")]
+  public required int TotalPages { get; init; }
+
+  [SwaggerSchema("Whatever there is a page before the current page")] [DefaultValue(false)]
+  public required bool HasPreviousPage { get; init; }
+
+  [SwaggerSchema("Whatever there is a page after the current page")] [DefaultValue(false)]
+  public required bool HasNextPage { get; init; }
+
+  [SwaggerSchema("List of entities")]
+  public required IEnumerable<TEntity> Rows { get; init; }
+}
+
+[SwaggerSchema("This response class formats the paginated results ", ReadOnly = true)]
+public record PaginatedResult : PaginatedResult<object> {
 }

@@ -4,15 +4,20 @@
 
 namespace Movies.Contracts.Responses;
 
+[SwaggerSchema("This class formats the validator errors response",
+  Required = ["Errors"], ReadOnly = true, Nullable = false)]
 public class ValidationFailureResponse {
+  [SwaggerSchema("The error code")]
   public string? ErrorCode { get; set; }
+  [SwaggerSchema("The error message")]
   public string Message { get; set; } = string.Empty;
-
-  /// <summary>
-  /// List of validation errors
-  /// </summary>
+  [SwaggerSchema("List of validation errors")]
   public required IEnumerable<ValidationResponse> Errors { get; init; }
 
+  /// <summary>
+  /// Transforms the current object into a JSON string representation
+  /// </summary>
+  /// <returns>The JSON text</returns>
   public object ToJson() {
     Dictionary<string, object> obj = [];
     obj.Add("data", null!);
@@ -36,9 +41,6 @@ public class ValidationFailureResponse {
             error.Add("propertyName", x.PropertyName);
 
           error.Add("message", x.Message);
-
-          if (x.AttemptedValue != null)
-            error.Add("attemptedValue", x.AttemptedValue);
           return error;
         }).ToList()
       );
@@ -48,24 +50,15 @@ public class ValidationFailureResponse {
   }
 }
 
+[SwaggerSchema("This response class formats the validation error",
+  Required = ["Message"], ReadOnly = true)]
 public class ValidationResponse {
-  /// <summary>
-  /// Failed validation property name
-  /// </summary>
+  [SwaggerSchema("The property name raising error")]
   public string? PropertyName { get; init; }
 
-  /// <summary>
-  /// The error message
-  /// </summary>
+  [SwaggerSchema("The error message", Nullable = false)]
   public required string Message { get; init; }
 
-  /// <summary>
-  /// The property value that caused the failure.
-  /// </summary>
-  public object? AttemptedValue { get; init; }
-
-  /// <summary>
-  /// Gets or sets the error code.
-  /// </summary>
-  public string? ErrorCode { get; init; }
+  [SwaggerSchema("The error code")]
+  public required string? ErrorCode { get; init; }
 }

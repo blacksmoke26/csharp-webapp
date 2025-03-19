@@ -31,6 +31,7 @@
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Riok.Mapperly" Version="4.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.3.2" />
   </ItemGroup>
 
   <ItemGroup>

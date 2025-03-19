@@ -4,13 +4,12 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api.Core.Swagger;
 using Movies.Application.Config;
 using Newtonsoft.Json.Serialization;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Results;
 
 namespace Movies.Api.Core.Extensions;
 
@@ -39,7 +38,7 @@ public static class ApplicationServiceCollectionExtensions {
 
     AddControllers(services);
 
-    services.AddEndpointsApiExplorer();
+    services.AddSwagger();
 
     services.AddApplication();
     services.AddDatabase(config);

@@ -1,9 +1,10 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using Microsoft.AspNetCore.HttpOverrides;
 using Movies.Api.Core.Middleware;
+using Movies.Api.Core.Swagger;
 
 namespace Movies.Api.Core.Extensions;
 
@@ -25,6 +26,8 @@ public static class BootstrapperWebApplicationBuilderExtensions {
     });
 
     #endregion
+    
+    app.UseSwaggerApi();
     
     app.UseExceptionHandler();
     app.UseStatusCodePages();

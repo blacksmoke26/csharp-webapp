@@ -22,7 +22,6 @@ public class ValidationMappingMiddleware(RequestDelegate next) {
         Errors = ex.Errors.Select(x => new ValidationResponse {
           PropertyName = x.PropertyName,
           Message = x.ErrorMessage,
-          AttemptedValue = x.AttemptedValue,
           ErrorCode = x.ErrorCode,
         })
       };

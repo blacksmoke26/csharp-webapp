@@ -4,7 +4,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Dumpify;
 using Movies.Contracts.Responses.Identity;
 
 namespace Movies.Application.Models;

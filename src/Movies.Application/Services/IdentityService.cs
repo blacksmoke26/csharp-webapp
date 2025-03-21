@@ -59,12 +59,7 @@ public class IdentityService(
 
     // Forcefully logged-out user globally
     ErrorHelper.ThrowWhenTrue(user.Metadata.Security.TokenInvalidate is true,
-      "Token has been disabled, or revoked. Please generate a new one",
-      ErrorCodes.AccessRevoked);
-
-    // Forcefully logged-out user globally
-    ErrorHelper.ThrowWhenTrue(user.Metadata.Security.TokenInvalidate is true,
-      "Token has been disabled, or revoked. Please generate a new one",
+      "The token is either disabled or revoked. Please sign in again.",
       ErrorCodes.AccessRevoked);
 
     // Role mismatched. Tempered JWT "role" claim?
@@ -81,7 +76,8 @@ public class IdentityService(
   /// <param name="token">The cancellation token</param>
   /// <returns>The created user / null when failed</returns>
   public Task Logout(User user, CancellationToken token = default) {
-    throw new NotImplementedException();
+    user.SetTokenInvalidateState(true);
+    return userService.SaveAsync(user, true, token);
   }
 
   /// <summary>User account status verification excluding "active"</summary>
@@ -92,7 +88,7 @@ public class IdentityService(
     ErrorHelper.ThrowWhenTrue(status == UserStatus.Inactive,
       "Cannot signed in due to the pending account verification.",
       401, "VERIFICATION_PENDING");
-    
+
     // Abnormal account
     ErrorHelper.ThrowWhenTrue(status is UserStatus.Blocked or UserStatus.Deleted or UserStatus.Disabled,
       $"Your account has been ${status.ToString().ToLower()}",
@@ -103,9 +99,7 @@ public class IdentityService(
   /// <param name="user">The user object</param>
   /// <param name="options">The logged in options</param>
   private static void OnSuccessfulLogin(User user, LoginOptions? options = null) {
-    user.Metadata.Security.TokenInvalidate = false;
-    user.Metadata.LoggedInHistory.SuccessCount += 1;
-    user.Metadata.LoggedInHistory.LastIp = options?.IpAddress ?? null;
-    user.Metadata.LoggedInHistory.LastDate = DateTime.UtcNow;
+    user.SetTokenInvalidateState(false);
+    user.Metadata.LoggedInHistory.OnLogin(options?.IpAddress);
   }
 }

@@ -4,6 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Dumpify;
 using Movies.Contracts.Responses.Identity;
 
 namespace Movies.Application.Models;
@@ -62,16 +63,23 @@ public class User : ModelBase {
   /// Returns the user's fullname
   /// </summary>
   [NotMapped]
-  public virtual string FullName => string.Concat(FirstName?.Trim(), " ", LastName?.Trim());
+  public virtual string FullName => string.Concat(FirstName.Trim(), " ", LastName.Trim());
 
   /// <summary>
   /// Encrypt the password and also generate the password hash
   /// </summary>
+  /// <param name="password">The password to set</param>
   public void SetPassword(string password) {
     var result = IdentityHelper.EncryptPassword(password);
     Password = result.Password;
     PasswordHash = result.PasswordHash;
   }
+
+  /// <summary>
+  /// Sets the token invalidation state
+  /// </summary>
+  /// <param name="state">The invalidate state to set</param>
+  public void SetTokenInvalidateState(bool state) => Metadata.Security.TokenInvalidate = state;
 
   /// <summary>
   /// Validates the given password against the existing password
@@ -165,21 +173,59 @@ public class UserMetadataLoggedInHistory {
   public DateTime? LastDate { get; set; }
   public int SuccessCount { get; set; } = 0;
   public int FailedCount { get; set; } = 0;
+
+  /// <summary>An event method which invoked which user successfully authenticated</summary>
+  /// <summary>An event method which invoked upon authentication</summary>
+  /// <param name="ipAddress">The current IP address</param>
+  public void OnLogin(string? ipAddress = null) {
+    LastIp = ipAddress;
+    LastDate = DateTime.UtcNow;
+    FailedCount = 0;
+    SuccessCount += 1;
+  }
 }
 
 public class UserMetadataPassword {
   public DateTime? LastResetAt { get; set; }
   public string? ResetCode { get; set; }
-  public DateTime? ResetCodeRequestAt { get; set; }
+  public DateTime? ResetCodeRequestedAt { get; set; }
   public int ResetCount { get; set; } = 0;
   public DateTime? LastUpdatedAt { get; set; }
   public int UpdatedCount { get; set; } = 0;
+
+  /// <summary>An event method which invoked upon changing the password</summary>
+  public void OnUpdate() {
+    UpdatedCount += 1;
+    LastUpdatedAt = DateTime.UtcNow;
+  }
+
+  /// <summary>An event method which invoked upon requesting for a password reset</summary>
+  public void OnResetRequest() {
+    ResetCode = IdentityHelper.GeneratePasswordResetCode();
+    ResetCodeRequestedAt = DateTime.UtcNow;
+  }
+
+  /// <summary>An event method which invoked upon resetting the password</summary>
+  public void OnReset() {
+    ResetCode = null;
+    ResetCodeRequestedAt = null;
+    ResetCount += 1;
+    LastResetAt = DateTime.UtcNow;
+  }
+
+  public bool IsResetCodeExpired() {
+    if (ResetCodeRequestedAt is null) return false;
+    return ResetCodeRequestedAt.Value.ToUniversalTime().AddDays(3d)
+      .CompareTo(DateTime.UtcNow) < 0;
+  }
 }
 
 public class UserMetadataSecurity {
   public bool? TokenInvalidate { get; set; }
 }
 
+[Keyless]
+[ComplexType]
 public class UserMetadata {
   public string Language { get; set; } = "en-US";
   public string Timezone { get; set; } = "UTC";

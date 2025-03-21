@@ -41,7 +41,10 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddSwagger();
 
     services.AddApplication();
+    
     services.AddDatabase(config);
+
+    services.AddHttpContextAccessor();
 
     return services;
   }

@@ -2,6 +2,9 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
+using System.Net;
+using CaseConverter;
+
 namespace Movies.Api.Core.Middleware;
 
 /// <summary>
@@ -14,13 +17,14 @@ public class ValidationMappingMiddleware(RequestDelegate next) {
       await next(context);
     }
     catch (ValidationException ex) {
-      context.Response.StatusCode = (int)(ex.Data[ValidationHelper.StatusCodeKey] ?? 400);
+      context.Response.StatusCode =
+        (int)(ex.Data[ValidationHelper.StatusCodeKey] ?? HttpStatusCode.UnprocessableEntity);
 
       ValidationFailureResponse validationFailureResponse = new() {
         Message = ex.Message,
         ErrorCode = (string?)(ex.Data[ValidationHelper.ErrorCodeKey] ?? null),
         Errors = ex.Errors.Select(x => new ValidationResponse {
-          PropertyName = x.PropertyName,
+          PropertyName = x.PropertyName.ToCamelCase(),
           Message = x.ErrorMessage,
           ErrorCode = x.ErrorCode,
         })

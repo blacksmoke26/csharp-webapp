@@ -2,21 +2,21 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
+using Movies.Application.Core.Interfaces;
+
 namespace Movies.Application.Services;
 
 public class UserService(
   UserRepository userRepo,
   IValidator<UserCreateModel> createValidator
-) : ServiceBase {
+) : ServiceBase, IDbSaveChanges<User>, IDbJsonbSaveChanges<User> {
   /// <summary>
   /// Creates a new user account
   /// </summary>
   /// <param name="input">The user DTO object</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created user / null when failed</returns>
-  public async Task<User> CreateAsync(
-    UserCreateModel input, CancellationToken token = default
-  ) {
+  public async Task<User> CreateAsync(UserCreateModel input, CancellationToken token = default) {
     await createValidator.ValidateAndThrowAsync(input, token);
 
     var user = await CreateUserAsync(input, token);
@@ -36,6 +36,16 @@ public class UserService(
   /// <returns>The fetched object, otherwise null if not found</returns>
   public Task<User?> GetByPkAsync(long id, CancellationToken token = default)
     => userRepo.GetOneAsync(x => x.Id == id, token);
+
+  /// <summary>
+  /// Fetch a single record against the given condition
+  /// </summary>
+  /// <param name="predicate">A function to test each element for a condition.</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The fetched object, otherwise null if not found</returns>
+  public Task<User?> GetOne(
+    Expression<Func<User, bool>> predicate, CancellationToken token = default)
+    => userRepo.GetOneAsync(predicate, token);
 
   /// <summary>
   /// Fetch the user by Email address
@@ -100,30 +110,51 @@ public class UserService(
   /// <summary>
   /// Regenerates the authentication key
   /// </summary>
-  /// <param name="user">The user</param>
+  /// <param name="user">The user object</param>
+  /// <param name="newPassword">The password to change</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>The updated object, otherwise null on failed</returns>
-  public Task<User?> RefreshAuthKeyAndSaveAsync(User user, CancellationToken token = default) {
+  /// <returns>Whatever the password changed or not</returns>
+  public async Task<bool> ChangePassword(User user, string newPassword, CancellationToken token = default) {
+    user.SetPassword(newPassword);
+    user.Metadata.Password.UpdatedCount += 1;
+    user.Metadata.Password.LastUpdatedAt = DateTime.UtcNow;
     user.GenerateAuthKey();
-    return SaveAsync(user, false, token);
+
+    return await SaveAsync(user, true, token) != null;
   }
 
   /// <summary>
-  /// Writes the user object changes into a database
+  /// Sends a request for a password reset
   /// </summary>
-  /// <param name="user">The change user object</param>
-  /// <param name="jsonbChanged">When you make changes in JSONB columns, set this true to save changes as well</param>
+  /// <param name="user">The user object</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>The user instance if updated successfully, Null upon failed</returns>
-  public async Task<User?> SaveAsync(
-    User user, bool jsonbChanged = true, CancellationToken token = default) {
-    userRepo.GetDataSet().Add(user);
+  /// <returns>Whatever the process was a success or failure</returns>
+  public async Task<bool> SendResetPasswordRequest(User user, CancellationToken token = default) {
+    user.Metadata.Password.OnResetRequest();
+    return await SaveAsync(user, true, token) != null;
+  }
 
-    if (jsonbChanged) {
-      // !Note: You must have this like to detected JSONB object changes
-      userRepo.GetDataSet().Update(user).Property(x => x.Metadata).IsModified = true;
-    }
+  /// <summary>
+  /// Changes the account password
+  /// </summary>
+  /// <param name="user">The user object</param>
+  /// <param name="password">The password to set</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>Whatever the process was a success or failure</returns>
+  public async Task<bool> ResetPassword(User user, string password, CancellationToken token = default) {
+    user.SetPassword(password);
+    user.SetTokenInvalidateState(true);
+    user.Metadata.Password.OnReset();
+    return await SaveAsync(user, true, token) != null;
+  }
 
-    return await userRepo.GetDbContext().SaveChangesAsync(token) > 0 ? user : null;
+  /// <inheritdoc/>
+  public Task<User?> SaveAsync(User entity, CancellationToken token = default) {
+    return userRepo.SaveAsync(entity, token);
+  }
+
+  /// <inheritdoc/>
+  public Task<User?> SaveAsync(User entity, bool jsonbChanged = true, CancellationToken token = default) {
+    return userRepo.SaveAsync(entity, jsonbChanged, token);
   }
 }

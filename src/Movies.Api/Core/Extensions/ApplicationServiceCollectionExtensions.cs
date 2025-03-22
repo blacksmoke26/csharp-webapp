@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api.Core.Caching;
 using Movies.Api.Core.Health;
 using Movies.Api.Core.Swagger;
 using Movies.Application.Config;
@@ -35,6 +36,7 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddVersioning();
 
     //services.AddResponseCaching();
+    services.AddOutputCaching();
 
     AddAuthentication(services, config);
 

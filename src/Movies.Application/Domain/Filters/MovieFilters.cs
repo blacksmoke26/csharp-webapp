@@ -46,6 +46,7 @@ public sealed class MovieFilters : IEntityFilters<Movie, MoviesGetAllQuery> {
   public static Func<IQueryable<Movie>, IQueryable<Movie>> GetAllQuery(
     MoviesGetAllQuery query, long? userId = null) {
     return q => q
+      .AsNoTracking()
       .FilterILike("Title", query.Title)
       .FilterCompare("UserId", query.UserId, FilterComparison.Equal)
       .FilterCompare("YearOfRelease", query.Year, FilterComparison.Equal)

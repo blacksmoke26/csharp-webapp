@@ -59,7 +59,8 @@ public class DatabaseContext : DbContext {
           y.EnableParameterLogging();
         }))
       // use snake_care for table and columns name explicitly 
-      .UseSnakeCaseNamingConvention(CultureInfo.InvariantCulture);
+      .UseSnakeCaseNamingConvention(CultureInfo.InvariantCulture)
+      .EnableDetailedErrors();
   }
 
   /// <inheritdoc/>

@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Movies.Api.Core.Swagger;
+namespace Movies.Api.Core.Swagger.Filters;
 
-public class SwaggerDefaultValues : IOperationFilter {
+public class VersioningOperationFilter : IOperationFilter {
   /// <inheritdoc/>
   public void Apply(OpenApiOperation operation, OperationFilterContext context) {
     var apiDescription = context.ApiDescription;

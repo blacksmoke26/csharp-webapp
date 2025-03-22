@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Movies.Api.Core.Swagger.Filters;
 using Scalar.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -22,7 +23,8 @@ public static class SwaggerExtensions {
     services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
     services.AddSwaggerGen(x => {
-      x.OperationFilter<SwaggerDefaultValues>();
+      x.OperationFilter<VersioningOperationFilter>();
+      x.OperationFilter<ObsoleteOperationFilter>();
       x.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme {
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
@@ -48,7 +50,7 @@ public static class SwaggerExtensions {
     var versions = app.DescribeApiVersions()
       .Select(x => x.GroupName).ToArray();
     app.UseSwagger(opt => { opt.RouteTemplate = "openapi/{documentName}.json"; });
-    
+
     app.MapScalarApiReference(opt => {
       opt.AddDocuments(versions);
       opt.Title = $"Movies: API Reference ({app.Environment.EnvironmentName})";

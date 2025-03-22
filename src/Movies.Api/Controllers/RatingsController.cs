@@ -91,6 +91,6 @@ public class RatingsController(
         => x.Where(r => r.UserId == HttpContext.GetId()),
       query.GetPageOptions(), true, token);
 
-    return Ok(ResponseHelper.SuccessWithPaginated(paginated.ToPaginatedResult()));
+    return Ok(ResponseHelper.SuccessWithPaginated(paginated));
   }
 }

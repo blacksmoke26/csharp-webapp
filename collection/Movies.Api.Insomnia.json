@@ -1,1 +1,766 @@
-{"_type":"export","__export_format":4,"__export_date":"2025-03-18T05:44:22.887Z","__export_source":"insomnia.desktop.app:v10.3.1","resources":[{"_id":"req_8b34b777992a4f85a4fe7a9ba7c230e1","parentId":"fld_84f0da26054942ee90e04f5411ea53ae","modified":1742235444262,"created":1740920361704,"url":"{{ _.BaseUrlApiV1 }}/identity/signup","name":"Signup","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"firstName\": \"{% faker 'randomFirstName' %}\",\n\t\"lastName\": \"{% faker 'randomLastName' %}\",\n\t\"email\": \"{% faker 'randomEmail' %}\",\n\t\"password\": \"Password@123\"\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json"},{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"none"},"metaSortKey":-1740920365667,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"fld_84f0da26054942ee90e04f5411ea53ae","parentId":"wrk_7b102cc0326e4a0e993a4638a3311435","modified":1740920367961,"created":1740920354915,"name":"Identity","description":"","environment":{},"environmentPropertyOrder":null,"metaSortKey":-1739805271292.5,"environmentType":"kv","_type":"request_group"},{"_id":"wrk_7b102cc0326e4a0e993a4638a3311435","parentId":null,"modified":1740760702381,"created":1740760702381,"name":"Movies WebApi","description":"","scope":"collection","_type":"workspace"},{"_id":"req_cee0d0e215bf40cdbce4d8a645c6ff20","parentId":"fld_84f0da26054942ee90e04f5411ea53ae","modified":1742235429345,"created":1741022608209,"url":"{{ _.BaseUrlApiV1 }}/identity/login","name":"Login (User)","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n    \"email\": \"jarred55@yahoo.com\",\n    \"password\": \"Password@123\" \n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json"},{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"none"},"metaSortKey":-1740543753933.5,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_7669184c23e9479098e4a6edb6715d6c","parentId":"fld_84f0da26054942ee90e04f5411ea53ae","modified":1742235450192,"created":1741022875669,"url":"{{ _.BaseUrlApiV1 }}/identity/login","name":"Login (Admin)","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n    \"email\": \"rollin81@yahoo.com\",\n    \"password\": \"Password@123\" \n}"},"parameters":[{"id":"pair_79460162c5e547c5810a043e05686a89","name":"api-version","value":"1.0","description":"","disabled":false}],"headers":[{"name":"Content-Type","value":"application/json"},{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"none"},"metaSortKey":-1740480985311.25,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_ac1fe3291bf54ace95840ba2702cb5be","parentId":"fld_84f0da26054942ee90e04f5411ea53ae","modified":1742235456013,"created":1741016981115,"url":"{{ _.BaseUrlApiV1 }}/identity/me","name":"Me","description":"","method":"GET","body":{},"parameters":[],"headers":[{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.Admin }}","prefix":"","disabled":false},"metaSortKey":-1740480985211.25,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_28e85dded5a64cfdbac3dda8ccf90a45","parentId":"fld_384cd50ac3b1495f87b4aabbbf4309cf","modified":1742235461924,"created":1739543698765,"url":"{{ _.BaseUrlApiV1 }}/movies","name":"Create","description":"","method":"POST","body":{"mimeType":"application/json","text":"{\n\t\"title\": \"{% faker 'randomProductName' %}\",\n\t\"yearOfRelease\": {% randomFloating 0, 1900, 2025 %},\n\t\"genres\": [\n\t\t\"Comedy\"\n\t]\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json"},{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.Admin }}","prefix":""},"metaSortKey":-1732731266777.125,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"fld_384cd50ac3b1495f87b4aabbbf4309cf","parentId":"wrk_7b102cc0326e4a0e993a4638a3311435","modified":1741713083253,"created":1739543555451,"name":"Movies","description":"","environment":{},"environmentPropertyOrder":null,"metaSortKey":-1739740012092.875,"environmentType":"kv","_type":"request_group"},{"_id":"req_cce57835dacf4e4f903facb1192adf48","parentId":"fld_384cd50ac3b1495f87b4aabbbf4309cf","modified":1742235468454,"created":1739547730826,"url":"{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID', 'Movie ID', 'id', '', false, true %}","name":"Update","description":"","method":"PUT","body":{"mimeType":"application/json","text":"{\n\t\"title\": \"Ergonomic Plastic Computer\",\n\t\"yearOfRelease\": 2013,\n\t\"slug\": \"nick-the-greek-2023\",\n\t\"genres\": [\n\t\t\"Horror\"\n\t]\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json"},{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.Admin }}"},"metaSortKey":-1725918834789.25,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_4f1fbb94000341ff89d0226ffcf71e62","parentId":"fld_384cd50ac3b1495f87b4aabbbf4309cf","modified":1742235473514,"created":1739546978828,"url":"{{ _.BaseUrlApiV1 }}/movies","name":"Get all","description":"","method":"GET","body":{},"parameters":[{"id":"pair_92bee44894d640069e65b46b36fbf39d","name":"year","value":"1911","description":"","disabled":true},{"id":"pair_a58eab82675941558365ee7191db8963","name":"title","value":"Steel","description":"","disabled":true},{"id":"pair_cfdcd529a2c44a1a991f0293f1fb9902","name":"userId","value":"11","description":"","disabled":true},{"id":"pair_620dda8f78624bbc9174f04befc582d8","name":"sortBy","value":"-year","description":"","disabled":true},{"id":"pair_7e910aa7e8b54ea388a6502c22c89f05","name":"page","value":"1","description":"","disabled":true},{"id":"pair_3316f1ebb7194478bd352334da2912f9","name":"pageSize","value":"1","description":"","disabled":true}],"headers":[{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.Admin }}","disabled":false},"metaSortKey":-1719106402801.375,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_0cb32db5273e45488e43a5b60558f026","parentId":"fld_384cd50ac3b1495f87b4aabbbf4309cf","modified":1742235481066,"created":1739546875628,"url":"{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID or Slug', 'Movie ID or Slug', 'value', '', false, true %}","name":"Get one By ID","description":"","method":"GET","body":{},"parameters":[],"headers":[{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{},"metaSortKey":-1712293970813.5,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_8b2e201f7e4a41018e130ae17d51cc53","parentId":"fld_384cd50ac3b1495f87b4aabbbf4309cf","modified":1742235490654,"created":1739547978012,"url":"{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID', 'Movie ID', 'id', '', false, true %}","name":"Delete","description":"","method":"DELETE","body":{},"parameters":[],"headers":[{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.Admin }}"},"metaSortKey":-1698669106737.75,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_12cec10ec2f64e06ae4efaf44b71d1e3","parentId":"fld_8cdf9c769019408fb8d2ae02e8329d1c","modified":1742237262624,"created":1741977858140,"url":"{{ _.BaseUrlApiV1 }}/ratings/me","name":"Get all","description":"Generic error messages for CRUD operations could include: \"Record not found\", \"Failed to create record\", \"Unable to update record\", \"Could not delete record\", \"Invalid data provided\", \"Data conflict detected\", \"Operation not allowed\", \"System error occurred\", \"Please try again later\", and \"Missing required fields\" depending on the specific CRUD action and potential errors encountered. \nBreakdown by CRUD operation:\nCreate (C):\n\"Failed to create new record.\" \n\"Invalid data provided for creation.\" \n\"Duplicate record already exists.\"\n\"Missing required fields to create record.\"\nRead (R):\n\"Record not found.\" \n\"No data available for this request.\"\n\"Access denied to this record.\"\nUpdate (U):\n\"Unable to update record.\" \n\"Record not found for update.\" \n\"Data conflict during update.\" \nDelete (D):\n\"Could not delete record.\" \n\"Record is currently in use, cannot delete.\"\n\"Deletion failed due to system error.\" \nImportant considerations:\nSpecific error codes:\nWhere possible, pair generic messages with relevant HTTP status codes (e.g., \"404 Not Found\" for a missing record) to provide more technical context. \nUser-friendly language:\nAdapt the wording to be understandable for the intended user, avoiding technical jargon where possible. \nDetailed error information:\nWhen appropriate, include additional details about the issue, such as which field caused the validation error or the specific reason for the failure. ","method":"GET","body":{},"parameters":[],"headers":[{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.User }}"},"metaSortKey":-1741713125639,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"fld_8cdf9c769019408fb8d2ae02e8329d1c","parentId":"wrk_7b102cc0326e4a0e993a4638a3311435","modified":1741713075567,"created":1741712994552,"name":"Ratings","description":"","environment":{},"environmentPropertyOrder":null,"metaSortKey":-1739674752893.25,"environmentType":"kv","_type":"request_group"},{"_id":"req_40efdfcc9c1c4e96ac02cf34172ac499","parentId":"fld_8cdf9c769019408fb8d2ae02e8329d1c","modified":1742235500602,"created":1741713120136,"url":"{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID or Slug', 'Movie ID or Slug', 'value', '', false, true %}/ratings","name":"Rate Movie","description":"Generic error messages for CRUD operations could include: \"Record not found\", \"Failed to create record\", \"Unable to update record\", \"Could not delete record\", \"Invalid data provided\", \"Data conflict detected\", \"Operation not allowed\", \"System error occurred\", \"Please try again later\", and \"Missing required fields\" depending on the specific CRUD action and potential errors encountered. \nBreakdown by CRUD operation:\nCreate (C):\n\"Failed to create new record.\" \n\"Invalid data provided for creation.\" \n\"Duplicate record already exists.\"\n\"Missing required fields to create record.\"\nRead (R):\n\"Record not found.\" \n\"No data available for this request.\"\n\"Access denied to this record.\"\nUpdate (U):\n\"Unable to update record.\" \n\"Record not found for update.\" \n\"Data conflict during update.\" \nDelete (D):\n\"Could not delete record.\" \n\"Record is currently in use, cannot delete.\"\n\"Deletion failed due to system error.\" \nImportant considerations:\nSpecific error codes:\nWhere possible, pair generic messages with relevant HTTP status codes (e.g., \"404 Not Found\" for a missing record) to provide more technical context. \nUser-friendly language:\nAdapt the wording to be understandable for the intended user, avoiding technical jargon where possible. \nDetailed error information:\nWhen appropriate, include additional details about the issue, such as which field caused the validation error or the specific reason for the failure. ","method":"PUT","body":{"mimeType":"application/json","text":"{\n\t\"rating\": {% randomFloating 0, 0, 5 %},\n\t\"feedback\": \"{% faker 'randomLoremParagraph' %}\"\n}"},"parameters":[],"headers":[{"name":"Content-Type","value":"application/json"},{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.User }}"},"metaSortKey":-1741713125539,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"req_54ead80a537d4804a64ed71191229353","parentId":"fld_8cdf9c769019408fb8d2ae02e8329d1c","modified":1742235504469,"created":1741976833749,"url":"{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID or Slug', 'Movie ID or Slug', 'value', '', false, true %}/ratings","name":"Delete","description":"Generic error messages for CRUD operations could include: \"Record not found\", \"Failed to create record\", \"Unable to update record\", \"Could not delete record\", \"Invalid data provided\", \"Data conflict detected\", \"Operation not allowed\", \"System error occurred\", \"Please try again later\", and \"Missing required fields\" depending on the specific CRUD action and potential errors encountered. \nBreakdown by CRUD operation:\nCreate (C):\n\"Failed to create new record.\" \n\"Invalid data provided for creation.\" \n\"Duplicate record already exists.\"\n\"Missing required fields to create record.\"\nRead (R):\n\"Record not found.\" \n\"No data available for this request.\"\n\"Access denied to this record.\"\nUpdate (U):\n\"Unable to update record.\" \n\"Record not found for update.\" \n\"Data conflict during update.\" \nDelete (D):\n\"Could not delete record.\" \n\"Record is currently in use, cannot delete.\"\n\"Deletion failed due to system error.\" \nImportant considerations:\nSpecific error codes:\nWhere possible, pair generic messages with relevant HTTP status codes (e.g., \"404 Not Found\" for a missing record) to provide more technical context. \nUser-friendly language:\nAdapt the wording to be understandable for the intended user, avoiding technical jargon where possible. \nDetailed error information:\nWhen appropriate, include additional details about the issue, such as which field caused the validation error or the specific reason for the failure. ","method":"DELETE","body":{},"parameters":[],"headers":[{"name":"User-Agent","value":"insomnia/10.3.1"}],"authentication":{"type":"bearer","token":"{{ _.AuthToken.User }}","disabled":false},"metaSortKey":-1741316745603,"isPrivate":false,"pathParameters":[],"settingStoreCookies":true,"settingSendCookies":true,"settingDisableRenderRequestBody":false,"settingEncodeUrl":true,"settingRebuildPath":true,"settingFollowRedirects":"global","_type":"request"},{"_id":"env_564cc608d6b443e4b9cfd7ea812d8227","parentId":"wrk_7b102cc0326e4a0e993a4638a3311435","modified":1739543546393,"created":1739543546393,"name":"Base Environment","data":{},"dataPropertyOrder":null,"color":null,"isPrivate":false,"metaSortKey":1739543546393,"environmentType":"kv","_type":"environment"},{"_id":"jar_6d5cfb72f9a242e69ac733376a6f99f5","parentId":"wrk_7b102cc0326e4a0e993a4638a3311435","modified":1739543546396,"created":1739543546396,"name":"Default Jar","cookies":[],"_type":"cookie_jar"},{"_id":"env_846f415303244379b18130ddac4d2733","parentId":"env_564cc608d6b443e4b9cfd7ea812d8227","modified":1742235389557,"created":1739543563820,"name":"Local","data":{"BaseUrl":"http://localhost:5001","BaseUrlApiV1":"{{ _.BaseUrl }}/api/v1","AuthToken":{"User":"{% response 'body', 'req_cee0d0e215bf40cdbce4d8a645c6ff20', 'b64::JC5kYXRhLmF1dGgudG9rZW4=::46b', 'when-expired', 28800 %}","Admin":"{% response 'body', 'req_7669184c23e9479098e4a6edb6715d6c', 'b64::JC5kYXRhLmF1dGgudG9rZW4=::46b', 'when-expired', 28800 %}"}},"dataPropertyOrder":{"&":["BaseUrl","BaseUrlApiV1","AuthToken"],"&~|AuthToken":["User","Admin"]},"color":null,"isPrivate":false,"metaSortKey":1739543563820,"environmentType":"json","kvPairData":[],"_type":"environment"}]}
+type: collection.insomnia.rest/5.0
+name: Movies WebApi
+meta:
+  id: wrk_7b102cc0326e4a0e993a4638a3311435
+  created: 1740760702381
+  modified: 1740760702381
+collection:
+  - name: Movies
+    meta:
+      id: fld_384cd50ac3b1495f87b4aabbbf4309cf
+      created: 1739543555451
+      modified: 1741713083253
+      sortKey: -1739740012092.875
+    children:
+      - url: "{{ _.BaseUrlApiV1 }}/movies"
+        name: Create
+        meta:
+          id: req_28e85dded5a64cfdbac3dda8ccf90a45
+          created: 1739543698765
+          modified: 1742235461924
+          isPrivate: false
+          sortKey: -1732731266777.125
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"title": "{% faker 'randomProductName' %}",
+            	"yearOfRelease": {% randomFloating 0, 1900, 2025 %},
+            	"genres": [
+            		"Comedy"
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID or
+          Slug', 'Movie ID or Slug', 'value', '', false, true %}"
+        name: Get one By ID
+        meta:
+          id: req_0cb32db5273e45488e43a5b60558f026
+          created: 1739546875628
+          modified: 1742235481066
+          isPrivate: false
+          sortKey: -1712293970813.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/movies"
+        name: Get all
+        meta:
+          id: req_4f1fbb94000341ff89d0226ffcf71e62
+          created: 1739546978828
+          modified: 1742235473514
+          isPrivate: false
+          sortKey: -1719106402801.375
+        method: GET
+        parameters:
+          - id: pair_92bee44894d640069e65b46b36fbf39d
+            name: year
+            value: "1911"
+            disabled: true
+          - id: pair_a58eab82675941558365ee7191db8963
+            name: title
+            value: Steel
+            disabled: true
+          - id: pair_cfdcd529a2c44a1a991f0293f1fb9902
+            name: userId
+            value: "11"
+            disabled: true
+          - id: pair_620dda8f78624bbc9174f04befc582d8
+            name: sortBy
+            value: -year
+            disabled: true
+          - id: pair_7e910aa7e8b54ea388a6502c22c89f05
+            name: page
+            value: "1"
+            disabled: true
+          - id: pair_3316f1ebb7194478bd352334da2912f9
+            name: pageSize
+            value: "1"
+            disabled: true
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+          disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID',
+          'Movie ID', 'id', '', false, true %}"
+        name: Update
+        meta:
+          id: req_cce57835dacf4e4f903facb1192adf48
+          created: 1739547730826
+          modified: 1742235468454
+          isPrivate: false
+          sortKey: -1725918834789.25
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"title": "Ergonomic Plastic Computer",
+            	"yearOfRelease": 2013,
+            	"slug": "nick-the-greek-2023",
+            	"genres": [
+            		"Horror"
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID',
+          'Movie ID', 'id', '', false, true %}"
+        name: Delete
+        meta:
+          id: req_8b2e201f7e4a41018e130ae17d51cc53
+          created: 1739547978012
+          modified: 1742235490654
+          isPrivate: false
+          sortKey: -1698669106737.75
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Identity
+    meta:
+      id: fld_84f0da26054942ee90e04f5411ea53ae
+      created: 1740920354915
+      modified: 1740920367961
+      sortKey: -1739805271292.5
+    children:
+      - url: "{{ _.BaseUrlApiV1 }}/identity/signup"
+        name: Signup
+        meta:
+          id: req_8b34b777992a4f85a4fe7a9ba7c230e1
+          created: 1740920361704
+          modified: 1742557475823
+          isPrivate: false
+          sortKey: -1740920365667
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+            	"firstName": "{% faker 'name', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'firstName', '', '', '', '', '', '', '', 'en' %}",
+            	"lastName": "{% faker 'name', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'lastName', '', '', '', '', '', '', '', 'en' %}",
+            	"email": "{% faker 'internet', '', '', '', '', '', '', '', '', '', '', '', '', '', 'email', '', '', '', '', '', '', '', '', '', '', '', 'en' %}",
+            	"password": "Password@123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: none
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/identity/password-reset-request"
+        name: "Request reset password "
+        meta:
+          id: req_c88919a3c1d246ff9ef7c4325349ef05
+          created: 1742456485621
+          modified: 1742485356874
+          isPrivate: false
+          sortKey: -1740669291178
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "jarred55@yahoo.com"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: none
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/identity/password-reset"
+        name: "Reset password "
+        meta:
+          id: req_1dd021adb12745339139126ec48ce86c
+          created: 1742473197700
+          modified: 1742496948915
+          isPrivate: false
+          sortKey: -1740543753933.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"email": "jarred55@yahoo.com",
+              "resetCode": "OBWAKL",
+              "newPassword": "Password@123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: none
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Ratings
+    meta:
+      id: fld_8cdf9c769019408fb8d2ae02e8329d1c
+      created: 1741712994552
+      modified: 1741713075567
+      sortKey: -1739674752893.25
+    children:
+      - url: "{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID or
+          Slug', 'Movie ID or Slug', 'value', '', false, true %}/ratings"
+        name: Rate Movie
+        meta:
+          id: req_40efdfcc9c1c4e96ac02cf34172ac499
+          created: 1741713120136
+          modified: 1742235500602
+          isPrivate: false
+          description: >-
+            Generic error messages for CRUD operations could include: "Record
+            not found", "Failed to create record", "Unable to update record",
+            "Could not delete record", "Invalid data provided", "Data conflict
+            detected", "Operation not allowed", "System error occurred", "Please
+            try again later", and "Missing required fields" depending on the
+            specific CRUD action and potential errors encountered. 
+
+            Breakdown by CRUD operation:
+
+            Create (C):
+
+            "Failed to create new record." 
+
+            "Invalid data provided for creation." 
+
+            "Duplicate record already exists."
+
+            "Missing required fields to create record."
+
+            Read (R):
+
+            "Record not found." 
+
+            "No data available for this request."
+
+            "Access denied to this record."
+
+            Update (U):
+
+            "Unable to update record." 
+
+            "Record not found for update." 
+
+            "Data conflict during update." 
+
+            Delete (D):
+
+            "Could not delete record." 
+
+            "Record is currently in use, cannot delete."
+
+            "Deletion failed due to system error." 
+
+            Important considerations:
+
+            Specific error codes:
+
+            Where possible, pair generic messages with relevant HTTP status codes (e.g., "404 Not Found" for a missing record) to provide more technical context. 
+
+            User-friendly language:
+
+            Adapt the wording to be understandable for the intended user, avoiding technical jargon where possible. 
+
+            Detailed error information:
+
+            When appropriate, include additional details about the issue, such as which field caused the validation error or the specific reason for the failure. 
+          sortKey: -1741713125539
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"rating": {% randomFloating 0, 0, 5 %},
+            	"feedback": "{% faker 'randomLoremParagraph' %}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.User }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/movies/{% prompt 'Please enter the movie GUID or
+          Slug', 'Movie ID or Slug', 'value', '', false, true %}/ratings"
+        name: Delete
+        meta:
+          id: req_54ead80a537d4804a64ed71191229353
+          created: 1741976833749
+          modified: 1742235504469
+          isPrivate: false
+          description: >-
+            Generic error messages for CRUD operations could include: "Record
+            not found", "Failed to create record", "Unable to update record",
+            "Could not delete record", "Invalid data provided", "Data conflict
+            detected", "Operation not allowed", "System error occurred", "Please
+            try again later", and "Missing required fields" depending on the
+            specific CRUD action and potential errors encountered. 
+
+            Breakdown by CRUD operation:
+
+            Create (C):
+
+            "Failed to create new record." 
+
+            "Invalid data provided for creation." 
+
+            "Duplicate record already exists."
+
+            "Missing required fields to create record."
+
+            Read (R):
+
+            "Record not found." 
+
+            "No data available for this request."
+
+            "Access denied to this record."
+
+            Update (U):
+
+            "Unable to update record." 
+
+            "Record not found for update." 
+
+            "Data conflict during update." 
+
+            Delete (D):
+
+            "Could not delete record." 
+
+            "Record is currently in use, cannot delete."
+
+            "Deletion failed due to system error." 
+
+            Important considerations:
+
+            Specific error codes:
+
+            Where possible, pair generic messages with relevant HTTP status codes (e.g., "404 Not Found" for a missing record) to provide more technical context. 
+
+            User-friendly language:
+
+            Adapt the wording to be understandable for the intended user, avoiding technical jargon where possible. 
+
+            Detailed error information:
+
+            When appropriate, include additional details about the issue, such as which field caused the validation error or the specific reason for the failure. 
+          sortKey: -1741316745603
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.User }}"
+          disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/ratings/me"
+        name: Get all
+        meta:
+          id: req_12cec10ec2f64e06ae4efaf44b71d1e3
+          created: 1741977858140
+          modified: 1742237262624
+          isPrivate: false
+          description: >-
+            Generic error messages for CRUD operations could include: "Record
+            not found", "Failed to create record", "Unable to update record",
+            "Could not delete record", "Invalid data provided", "Data conflict
+            detected", "Operation not allowed", "System error occurred", "Please
+            try again later", and "Missing required fields" depending on the
+            specific CRUD action and potential errors encountered. 
+
+            Breakdown by CRUD operation:
+
+            Create (C):
+
+            "Failed to create new record." 
+
+            "Invalid data provided for creation." 
+
+            "Duplicate record already exists."
+
+            "Missing required fields to create record."
+
+            Read (R):
+
+            "Record not found." 
+
+            "No data available for this request."
+
+            "Access denied to this record."
+
+            Update (U):
+
+            "Unable to update record." 
+
+            "Record not found for update." 
+
+            "Data conflict during update." 
+
+            Delete (D):
+
+            "Could not delete record." 
+
+            "Record is currently in use, cannot delete."
+
+            "Deletion failed due to system error." 
+
+            Important considerations:
+
+            Specific error codes:
+
+            Where possible, pair generic messages with relevant HTTP status codes (e.g., "404 Not Found" for a missing record) to provide more technical context. 
+
+            User-friendly language:
+
+            Adapt the wording to be understandable for the intended user, avoiding technical jargon where possible. 
+
+            Detailed error information:
+
+            When appropriate, include additional details about the issue, such as which field caused the validation error or the specific reason for the failure. 
+          sortKey: -1741713125639
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.User }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: User
+    meta:
+      id: fld_fbd3ca3c82cf458bb91e50e37fb4bcb6
+      created: 1742401784377
+      modified: 1742401784377
+      sortKey: -1742401784377
+    children:
+      - url: "{{ _.BaseUrlApiV1 }}/user/change-password"
+        name: Change Password
+        meta:
+          id: req_06a2a71c930a4a6693a23bdc4b126424
+          created: 1742401792497
+          modified: 1742402532306
+          isPrivate: false
+          sortKey: -1742401795712
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"currentPassword": "Password@123",
+            	"newPassword": "Password@123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/user/me"
+        name: Me
+        meta:
+          id: req_8aaf844372224d15bfd350aae4c8446c
+          created: 1742560885426
+          modified: 1742560885426
+          isPrivate: false
+          sortKey: -1742401795762
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+          disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Auth
+    meta:
+      id: fld_e12f42c67a06491297b1398160181cec
+      created: 1742407889761
+      modified: 1742407889761
+      sortKey: -1742407889761
+    children:
+      - url: "{{ _.BaseUrlApiV1 }}/auth/login"
+        name: Login (User)
+        meta:
+          id: req_cee0d0e215bf40cdbce4d8a645c6ff20
+          created: 1741022608209
+          modified: 1742407896713
+          isPrivate: false
+          sortKey: -1742407896514
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "jarred55@yahoo.com",
+              "password": "Password@123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: none
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/auth/login"
+        name: Login (Admin)
+        meta:
+          id: req_7669184c23e9479098e4a6edb6715d6c
+          created: 1741022875669
+          modified: 1742407929560
+          isPrivate: false
+          sortKey: -1742407896414
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "email": "rollin81@yahoo.com",
+                "password": "Password@123" 
+            }
+        parameters:
+          - id: pair_79460162c5e547c5810a043e05686a89
+            name: api-version
+            value: "1.0"
+            disabled: false
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: none
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.BaseUrlApiV1 }}/auth/logout"
+        name: Logout
+        meta:
+          id: req_d9f8b6f35b8440069cfb0de8762f4108
+          created: 1742407909345
+          modified: 1742407948370
+          isPrivate: false
+          sortKey: -1742404846113
+        method: POST
+        parameters:
+          - id: pair_79460162c5e547c5810a043e05686a89
+            name: api-version
+            value: "1.0"
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Test
+    meta:
+      id: fld_ff92fda65df64da5921e3759ae7f680d
+      created: 1742560872607
+      modified: 1742560872607
+      sortKey: -1742560872607
+    children:
+      - url: "{{ _.BaseUrlApiV1 }}/test"
+        name: Test
+        meta:
+          id: req_ac1fe3291bf54ace95840ba2702cb5be
+          created: 1741016981115
+          modified: 1742561364072
+          isPrivate: false
+          sortKey: -1742560889009
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: "{{ _.AuthToken.Admin }}"
+          disabled: true
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_6d5cfb72f9a242e69ac733376a6f99f5
+    created: 1739543546396
+    modified: 1739543546396
+environments:
+  name: Base Environment
+  meta:
+    id: env_564cc608d6b443e4b9cfd7ea812d8227
+    created: 1739543546393
+    modified: 1739543546393
+    isPrivate: false
+  subEnvironments:
+    - name: Local
+      meta:
+        id: env_846f415303244379b18130ddac4d2733
+        created: 1739543563820
+        modified: 1742235389557
+        isPrivate: false
+        sortKey: 1739543563820
+      data:
+        BaseUrl: http://localhost:5001
+        BaseUrlApiV1: "{{ _.BaseUrl }}/api/v1"
+        AuthToken:
+          User: "{% response 'body', 'req_cee0d0e215bf40cdbce4d8a645c6ff20',
+            'b64::JC5kYXRhLmF1dGgudG9rZW4=::46b', 'when-expired', 28800 %}"
+          Admin: "{% response 'body', 'req_7669184c23e9479098e4a6edb6715d6c',
+            'b64::JC5kYXRhLmF1dGgudG9rZW4=::46b', 'when-expired', 28800 %}"

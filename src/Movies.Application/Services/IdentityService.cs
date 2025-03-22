@@ -8,12 +8,19 @@ public struct LoginOptions {
   public string? IpAddress { get; init; }
 }
 
+public struct ApiKeyLoginOptions {
+  public string? IpAddress { get; init; }
+}
+
 public class IdentityService(
   UserService userService,
   IValidator<UserLoginCredentialPayload> loginValidator
 ) : ServiceBase {
   /// <summary>HTTPContext items identity key name</summary>
   public const string IdentityKey = "%UserIdentity%";
+  
+  /// <summary>Header name for <c>api-key</c></summary>
+  public const string ApiKeyHeader = "x-api-key";
 
   /// <summary>Logins the user by email and password</summary>
   /// <param name="input">The user DTO object</param>
@@ -43,7 +50,7 @@ public class IdentityService(
   /// <param name="payload">The login claims object</param>
   /// <param name="options">Additional login options</param>
   /// <param name="token">The cancellation token</param>
-  /// <returns>The created user / null when failed</returns>
+  /// <returns>The authenticated entity / null when failed</returns>
   public async Task<User?> LoginWithClaimAsync(
     UserLoginClaimPayload payload, LoginOptions? options = null, CancellationToken token = default
   ) {
@@ -58,7 +65,7 @@ public class IdentityService(
       ThrowBadStatusException(user.Status);
 
     // Forcefully logged-out user globally
-    ErrorHelper.ThrowWhenTrue(user.Metadata.Security.TokenInvalidate is true,
+    ErrorHelper.ThrowWhenTrue(user.Metadata.Security.TokenInvalidate,
       "The token is either disabled or revoked. Please sign in again.",
       ErrorCodes.AccessRevoked);
 
@@ -69,6 +76,17 @@ public class IdentityService(
     OnSuccessfulLogin(user, options);
 
     return await userService.SaveAsync(user, true, token);
+  }
+
+  /// <summary>Login identity by using the Api Key</summary>
+  /// <param name="apiKey">The api key</param>
+  /// <param name="options">Additional login options</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The authenticated entity / null when failed</returns>
+  public Task<User?> LoginWithApiKeyAsync(
+    string apiKey, ApiKeyLoginOptions? options = null, CancellationToken token = default) {
+    // TODO: Implement the logic here
+    return userService.GetByPkAsync(11, token);
   }
 
   /// <summary>Creates a user</summary>
@@ -101,5 +119,11 @@ public class IdentityService(
   private static void OnSuccessfulLogin(User user, LoginOptions? options = null) {
     user.SetTokenInvalidateState(false);
     user.Metadata.LoggedInHistory.OnLogin(options?.IpAddress);
+  }
+
+  /// <summary>A callback method which will be invoked when a user successfully authenticated</summary>
+  /// <param name="user">The user object</param>
+  /// <param name="options">The logged in options</param>
+  private static void OnSuccessfulApiKey(User user, LoginOptions? options = null) {
   }
 }

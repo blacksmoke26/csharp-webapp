@@ -5,7 +5,9 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api.Core.Auth;
 using Movies.Api.Core.Caching;
+using Movies.Api.Core.Filters;
 using Movies.Api.Core.Health;
 using Movies.Api.Core.Swagger;
 using Movies.Application.Config;
@@ -76,6 +78,10 @@ public static class ApplicationServiceCollectionExtensions {
   /// <param name="services">The ServiceCollection instance</param>
   /// <param name="config">The AppConfiguration instance</param>
   public static void AddAuthentication(IServiceCollection services, AppConfiguration config) {
+    services.AddScoped<ApiKeyAuthFilter>();
+
+    services.AddSingleton<AuthService>(_ => new AuthService(config.JwtConfig()));
+    
     #region JWT Authentication / Authorization
 
     services.AddAuthentication(x => {
@@ -92,7 +98,7 @@ public static class ApplicationServiceCollectionExtensions {
         ValidIssuer = config.JwtConfig().Issuer,
         ValidAudience = config.JwtConfig().Audience,
         ValidateIssuer = true,
-        ValidateAudience = true
+        ValidateAudience = true,
       };
     });
 
@@ -108,9 +114,11 @@ public static class ApplicationServiceCollectionExtensions {
       // Policy Type: Trusted
       x.AddPolicy(AuthPolicies.AuthPolicy, p
         => p.RequireRole(UserRole.Admin, UserRole.User));
-    });
 
-    services.AddSingleton<AuthService>(_ => new AuthService(config.JwtConfig()));
+      // Policy Type: Trusted
+      x.AddPolicy(AuthPolicies.AuthPolicy, p
+        => p.AddRequirements(new AuthRequirements()));
+    });
 
     #endregion
   }

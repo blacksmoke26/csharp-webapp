@@ -25,6 +25,11 @@ public static class UserRole {
   /// Only allowed for `User` role
   /// </summary>
   public const string User = "user";
+
+  /// <summary>
+  /// Returns the list of user roles
+  /// </summary>
+  public static string[] GetRoles() => [Admin, User];
 }
 
 public class UserRepository(DatabaseContext dbContext)

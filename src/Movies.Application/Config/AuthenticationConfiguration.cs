@@ -16,4 +16,9 @@ public struct AuthenticationConfiguration {
   /// <remarks>This will invalidate the token completely and user have to sign-in again.</remarks>
   /// </summary>
   public bool ExpireTokenAfterLogout { get; init; }
+
+  /// <summary>
+  /// The list of API keys {userId: apiKey} to bypass the token authorization
+  /// </summary>
+  public Dictionary<long, string> ApiKeys { get; init; }
 }

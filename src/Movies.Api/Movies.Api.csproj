@@ -39,7 +39,6 @@
 
   <ItemGroup>
     <Folder Include="Core\Exceptions\" />
-    <Folder Include="Core\Filters\" />
   </ItemGroup>
 
 </Project>

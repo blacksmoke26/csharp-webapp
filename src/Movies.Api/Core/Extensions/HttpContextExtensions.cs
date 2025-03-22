@@ -28,6 +28,16 @@ public static class HttpContextExtensions {
   }
 
   /// <summary>
+  /// Returns the <c>api-key</c> from a request headers
+  /// </summary>
+  /// <param name="context">HttpContext instance</param>
+  /// <returns>The api key, null if not present</returns>
+  public static string? GetApiKeyFromHeaders(this HttpContext context) {
+    return !context.Request.Headers.TryGetValue(IdentityService.ApiKeyHeader, out var apiKey)
+      ? null : apiKey.ToString();
+  }
+
+  /// <summary>
   /// Returns the authentication user role if user is authenticated
   /// </summary>
   /// <param name="context">HttpContext instance</param>

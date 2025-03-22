@@ -6,6 +6,7 @@
 using CaseConverter;
 using Microsoft.AspNetCore.OutputCaching;
 using Movies.Api.Core.Caching;
+using Movies.Api.Core.Filters;
 using Movies.Contracts.Responses.Movies;
 
 namespace Movies.Api.Controllers;
@@ -81,7 +82,8 @@ public class MoviesController(
   /// <param name="body">The updated movie payload</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The created movie object</returns>
-  [Authorize(AuthPolicies.AuthPolicy)]
+  //[Authorize(AuthPolicies.AuthPolicy)]
+  [ServiceFilter<ApiKeyAuthFilter>]
   [HttpPost(ApiEndpoints.Movies.Create)]
   [SwaggerResponse(StatusCodes.Status200OK, "Movie created", typeof(SuccessResponse<MovieResponse>))]
   [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized access")]
@@ -92,6 +94,9 @@ public class MoviesController(
     MovieCreatePayload body,
     CancellationToken token
   ) {
+
+    return Ok("OK");
+    
     var movie = await movieService.CreateAsync(new() {
       UserId = HttpContext.GetId(),
       Title = body.Title,

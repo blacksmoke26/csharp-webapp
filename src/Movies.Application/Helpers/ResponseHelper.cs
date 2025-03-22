@@ -37,8 +37,8 @@ public static class ResponseHelper {
   /// <summary>
   /// Returns the successful response with the paginated results
   /// </summary>
-  /// <param name="result">The paginated results object</param>
+  /// <param name="instance">The paginated list instance</param>
   /// <returns>The paginated response object</returns>
-  public static PaginatedSuccessResponse SuccessWithPaginated(PaginatedResult result)
-    => new(result);
+  public static PaginatedSuccessResponse SuccessWithPaginated<T>(PaginatedList<T> instance)
+    => new(instance.ToPaginatedResult());
 }

@@ -4,6 +4,8 @@
 // See: https://blog.jetbrains.com/dotnet/2024/06/26/how-where-conditions-work-in-entity-framework-core/
 
 using CaseConverter;
+using Microsoft.AspNetCore.OutputCaching;
+using Movies.Api.Core.Caching;
 using Movies.Contracts.Responses.Movies;
 
 namespace Movies.Api.Controllers;
@@ -14,6 +16,7 @@ namespace Movies.Api.Controllers;
 [SwaggerTag("Manage and list movies")]
 public class MoviesController(
   MovieService movieService,
+  IOutputCacheStore cacheStore,
   MoviesGetAllQueryValidator allQueryValidator
 ) : ControllerBase {
   /// <summary>Fetch the movie ID or a Slug</summary>
@@ -22,6 +25,7 @@ public class MoviesController(
   /// <returns>The movie response object</returns>
   //[Obsolete("Use the <code>GetAll</code> instead")]
   [HttpGet(ApiEndpoints.Movies.Get)]
+  [OutputCache(PolicyName = CachePolicies.Movies.Tag)]
   //[ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByHeader = "Accept, Accept-Encoding, Accept-Language")]
   [SwaggerResponse(StatusCodes.Status200OK, "Movie details", typeof(SuccessResponse<MovieResponse>))]
   [SwaggerResponse(StatusCodes.Status404NotFound, "Not found", typeof(OperationFailureResponse))]
@@ -52,6 +56,7 @@ public class MoviesController(
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
+  [OutputCache(PolicyName = CachePolicies.Movies.Tag)]
   [SwaggerResponse(StatusCodes.Status200OK, "Movie List", typeof(PaginatedResult<MovieResponse>))]
   [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, "Validation errors", typeof(ValidationFailureResponse))]
   [SwaggerResponse(StatusCodes.Status400BadRequest, "Process failed", typeof(OperationFailureResponse))]
@@ -67,7 +72,7 @@ public class MoviesController(
       MovieFilters.GetAllQuery(query, userId),
       query.GetPageOptions(), userId, token);
 
-    return Ok(ResponseHelper.SuccessWithPaginated(paginated.ToPaginatedResult()));
+    return Ok(ResponseHelper.SuccessWithPaginated(paginated));
   }
 
   /// <summary>
@@ -96,6 +101,8 @@ public class MoviesController(
 
     ErrorHelper.ThrowIfNull(movie,
       "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
+
+    await cacheStore.EvictByTagAsync(CachePolicies.Movies.Tag, token);
 
     return Ok(ResponseHelper.SuccessWithData(movie));
   }
@@ -132,6 +139,8 @@ public class MoviesController(
     ErrorHelper.ThrowIfNull(movie,
       "An error occurred while updating the movie", ErrorCodes.ProcessFailed);
 
+    await cacheStore.EvictByTagAsync(CachePolicies.Movies.Tag, token);
+
     return Ok(ResponseHelper.SuccessWithData(movie));
   }
 
@@ -161,6 +170,8 @@ public class MoviesController(
 
     ErrorHelper.ThrowWhenTrue(isFailed,
       "An error occurred while deleting the movie", ErrorCodes.ProcessFailed);
+
+    await cacheStore.EvictByTagAsync(CachePolicies.Movies.Tag, token);
 
     return Ok(ResponseHelper.SuccessOnly());
   }

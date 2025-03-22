@@ -3,6 +3,7 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using Microsoft.AspNetCore.HttpOverrides;
+using Movies.Api.Core.Caching;
 using Movies.Api.Core.Health;
 using Movies.Api.Core.Middleware;
 using Movies.Api.Core.Swagger;
@@ -31,6 +32,8 @@ public static class BootstrapperWebApplicationBuilderExtensions {
 
     //  Warning: UseCors must be called before UseResponseCaching when using CORS middleware.
     //app.UseCors();
+    
+    app.UseOutputCaching();
     
     // Guide: https://learn.microsoft.com/en-us/aspnet/core/performance/caching/middleware
     //app.UseResponseCaching();

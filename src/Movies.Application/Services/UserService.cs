@@ -66,15 +66,6 @@ public class UserService(
     => userRepo.GetOneAsync(x => x.AuthKey == authKey, token);
 
   /// <summary>
-  /// Fetch the user by Password reset token
-  /// </summary>
-  /// <param name="resetToken">The password reset token</param>
-  /// <param name="token">The cancellation token</param>
-  /// <returns>The fetched object, otherwise null if not found</returns>
-  public Task<User?> GetByPasswordResetTokenAsync(string resetToken, CancellationToken token = default)
-    => userRepo.GetOneAsync(x => x.PasswordResetToken == resetToken, token);
-
-  /// <summary>
   /// Verify that the given email address actually exists
   /// </summary>
   /// <param name="email">The email address</param>
@@ -116,8 +107,7 @@ public class UserService(
   /// <returns>Whatever the password changed or not</returns>
   public async Task<bool> ChangePassword(User user, string newPassword, CancellationToken token = default) {
     user.SetPassword(newPassword);
-    user.Metadata.Password.UpdatedCount += 1;
-    user.Metadata.Password.LastUpdatedAt = DateTime.UtcNow;
+    user.Metadata.Password.OnUpdate();
     user.GenerateAuthKey();
 
     return await SaveAsync(user, true, token) != null;

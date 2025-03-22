@@ -5,7 +5,7 @@
 namespace Movies.Api;
 
 public static class ApiEndpoints {
-  private const string ApiBase = "api/v{version:apiVersion}";
+  public const string ApiBase = "api/v{version:apiVersion}";
 
   public static class Movies {
     private const string Base = $"{ApiBase}/movies";

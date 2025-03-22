@@ -3,6 +3,7 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 // See: https://blog.jetbrains.com/dotnet/2024/06/26/how-where-conditions-work-in-entity-framework-core/
 
+using CaseConverter;
 using Movies.Contracts.Responses.Movies;
 
 namespace Movies.Api.Controllers;
@@ -19,10 +20,13 @@ public class MoviesController(
   /// <param name="idOrSlug">The requested movie id or slug</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
+  //[Obsolete("Use the <code>GetAll</code> instead")]
   [HttpGet(ApiEndpoints.Movies.Get)]
-  [SwaggerResponse(200, "The fetch movie details", typeof(SuccessResponse<MovieResponse>))]
-  [SwaggerResponse(404, "Movie not found", typeof(ValidationFailureResponse))]
-  [SwaggerResponse(410, "Movie is no longer available or disabled", typeof(ValidationFailureResponse))]
+  //[ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, VaryByHeader = "Accept, Accept-Encoding, Accept-Language")]
+  [SwaggerResponse(StatusCodes.Status200OK, "Movie details", typeof(SuccessResponse<MovieResponse>))]
+  [SwaggerResponse(StatusCodes.Status404NotFound, "Not found", typeof(OperationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, "Validation errors", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status410Gone, "Unavailable", typeof(OperationFailureResponse))]
   public async Task<IActionResult> Get(
     [FromRoute]
     string idOrSlug, CancellationToken token) {
@@ -34,7 +38,7 @@ public class MoviesController(
     // Note: With the abnormal status, only owner user can access this object. 
     ErrorHelper.ThrowWhenTrue(
       !HttpContext.GetIdentity().CheckSameId(HttpContext.GetIdOrNull(), true)
-      && Enum.Parse<MovieStatus>(movie.Status!) != MovieStatus.Published,
+      && Enum.Parse<MovieStatus>(movie.Status.ToPascalCase()) != MovieStatus.Published,
       "This movie is no longer available or disabled by the owner", ErrorCodes.Unavailable
     );
 
@@ -48,8 +52,9 @@ public class MoviesController(
   /// <param name="token">The cancellation token</param>
   /// <returns>The movie response object</returns>
   [HttpGet(ApiEndpoints.Movies.GetAll)]
-  [SwaggerResponse(200, "The paginated list", typeof(PaginatedResult<MovieResponse>))]
-  [SwaggerResponse(400, "If the query contains invalid values", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status200OK, "Movie List", typeof(PaginatedResult<MovieResponse>))]
+  [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, "Validation errors", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status400BadRequest, "Process failed", typeof(OperationFailureResponse))]
   public async Task<IActionResult> GetAll(
     [FromQuery]
     MoviesGetAllQuery query, CancellationToken token
@@ -73,9 +78,10 @@ public class MoviesController(
   /// <returns>The created movie object</returns>
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpPost(ApiEndpoints.Movies.Create)]
-  [SwaggerResponse(200, "The movie is created", typeof(SuccessResponse<MovieResponse>))]
-  [SwaggerResponse(400, "Failed due to the validation errors", typeof(ValidationFailureResponse))]
-  [SwaggerResponse(400, "Failed to create a movie", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status200OK, "Movie created", typeof(SuccessResponse<MovieResponse>))]
+  [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized access")]
+  [SwaggerResponse(StatusCodes.Status400BadRequest, "Process failed", typeof(OperationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, "Validation errors", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> Create(
     [FromBody, SwaggerRequestBody(Required = true)]
     MovieCreatePayload body,
@@ -103,9 +109,11 @@ public class MoviesController(
   /// <returns>The movie response object</returns>
   [Authorize(AuthPolicies.AuthPolicy)]
   [HttpPut(ApiEndpoints.Movies.Update)]
-  [SwaggerResponse(200, "The movie is updated", typeof(SuccessResponse<MovieResponse>))]
-  [SwaggerResponse(404, "Movie not found", typeof(ValidationFailureResponse))]
-  [SwaggerResponse(400, "Failed to update a movie", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status200OK, "Movie updated", typeof(SuccessResponse<MovieResponse>))]
+  [SwaggerResponse(StatusCodes.Status400BadRequest, "Process failed", typeof(OperationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status401Unauthorized, "Unauthorized access")]
+  [SwaggerResponse(StatusCodes.Status404NotFound, "Not found", typeof(OperationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status422UnprocessableEntity, "Validation errors", typeof(ValidationFailureResponse))]
   public async Task<IActionResult> Update(
     [FromRoute, SwaggerRequestBody(Required = true)]
     long id,
@@ -136,9 +144,9 @@ public class MoviesController(
   //[Obsolete("Method1 is deprecated, please use Method2 instead.", true)]
   [Authorize(AuthPolicies.AdminPolicy)]
   [HttpDelete(ApiEndpoints.Movies.Delete)]
-  [SwaggerResponse(200, "The movie is deleted", typeof(SuccessOnlyResponse))]
-  [SwaggerResponse(404, "Movie not found", typeof(ValidationFailureResponse))]
-  [SwaggerResponse(400, "Failed to delete a movie", typeof(ValidationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status200OK, "Movie deleted", typeof(SuccessResponse<SuccessOnlyResponse>))]
+  [SwaggerResponse(StatusCodes.Status404NotFound, "Not found", typeof(OperationFailureResponse))]
+  [SwaggerResponse(StatusCodes.Status400BadRequest, "Process failed", typeof(OperationFailureResponse))]
   public async Task<IActionResult> Delete(
     [FromRoute, SwaggerRequestBody(Required = true)]
     long id, CancellationToken token

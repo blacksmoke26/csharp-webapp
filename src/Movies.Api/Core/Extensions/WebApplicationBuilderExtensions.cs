@@ -28,7 +28,12 @@ public static class BootstrapperWebApplicationBuilderExtensions {
     });
 
     #endregion
+
+    //  Warning: UseCors must be called before UseResponseCaching when using CORS middleware.
+    //app.UseCors();
     
+    // Guide: https://learn.microsoft.com/en-us/aspnet/core/performance/caching/middleware
+    //app.UseResponseCaching();
     app.UseSwaggerApi();
     
     app.UseExceptionHandler();

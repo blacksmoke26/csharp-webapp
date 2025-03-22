@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Movies.Api.Core.Health;
 using Movies.Api.Core.Swagger;
 using Movies.Application.Config;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
@@ -33,6 +34,8 @@ public static class ApplicationServiceCollectionExtensions {
 
     services.AddVersioning();
 
+    //services.AddResponseCaching();
+
     AddAuthentication(services, config);
 
     AddErrorHandlers(services);
@@ -43,7 +46,7 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddHealthCheck();
 
     services.AddApplication();
-    
+
     services.AddDatabase(config);
 
     services.AddHttpContextAccessor();
@@ -60,6 +63,8 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddControllers()
       .AddNewtonsoftJson(options => {
         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.Converters.Add(new StringEnumConverter
+          { NamingStrategy = new SnakeCaseNamingStrategy() });
       });
   }
 
@@ -114,7 +119,7 @@ public static class ApplicationServiceCollectionExtensions {
   /// <param name="services">The ServiceCollection instance</param>
   private static void AddErrorHandlers(IServiceCollection services) {
     // See: https://learn.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-9.0
-    services.AddProblemDetails(/*o => { o.CustomizeProblemDetails = context => { context.Exception.Dump(); }; }*/);
+    services.AddProblemDetails( /*o => { o.CustomizeProblemDetails = context => { context.Exception.Dump(); }; }*/);
 
     services.AddFluentValidationAutoValidation(c => {
       // Disable the built-in .NET model (data annotations) validation.

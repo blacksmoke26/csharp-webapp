@@ -5,6 +5,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Api.Core.Health;
 using Movies.Api.Core.Swagger;
 using Movies.Application.Config;
 using Newtonsoft.Json.Serialization;
@@ -39,6 +40,7 @@ public static class ApplicationServiceCollectionExtensions {
     AddControllers(services);
 
     services.AddSwagger();
+    services.AddHealthCheck();
 
     services.AddApplication();
     

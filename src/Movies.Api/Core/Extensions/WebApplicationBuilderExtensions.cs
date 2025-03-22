@@ -3,6 +3,7 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using Microsoft.AspNetCore.HttpOverrides;
+using Movies.Api.Core.Health;
 using Movies.Api.Core.Middleware;
 using Movies.Api.Core.Swagger;
 
@@ -17,6 +18,7 @@ public static class BootstrapperWebApplicationBuilderExtensions {
   public static WebApplication UseBootstrapper(this WebApplication app) {
     #region JWT Authentication / Authorization
 
+    app.UseHealthCheck();
     app.UseAuthentication();
     app.UseAuthorization();
 

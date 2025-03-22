@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Application", "src\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Contracts", "src\Movies.Contracts\Movies.Contracts.csproj", "{A060AAEE-D5AB-476F-A205-DA16F8B0CD09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.MinimalApi", "Movies.MinimalApi\Movies.MinimalApi.csproj", "{FC104B72-75C9-445D-A3BA-671E6EBA088D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{A060AAEE-D5AB-476F-A205-DA16F8B0CD09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A060AAEE-D5AB-476F-A205-DA16F8B0CD09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A060AAEE-D5AB-476F-A205-DA16F8B0CD09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC104B72-75C9-445D-A3BA-671E6EBA088D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC104B72-75C9-445D-A3BA-671E6EBA088D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC104B72-75C9-445D-A3BA-671E6EBA088D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC104B72-75C9-445D-A3BA-671E6EBA088D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

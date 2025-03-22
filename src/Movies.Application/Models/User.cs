@@ -4,43 +4,41 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Movies.Contracts.Responses.Identity;
 
 namespace Movies.Application.Models;
 
 public class User : ModelBase {
-  [Key] [Comment("Primary Key")]
+  [Key, Comment("Primary Key")]
   public long Id { get; set; }
 
-  [MaxLength(20)] [Comment("First name")]
+  [Required, MaxLength(20), Comment("First name")]
   public string FirstName { get; set; } = null!;
 
-  [MaxLength(20)] [Comment("Last name")]
+  [Required, MaxLength(20)] [Comment("Last name")]
   public string LastName { get; set; } = null!;
 
-  [MaxLength(255)] [Comment("Email Address")]
+  [Required, MaxLength(255)] [Comment("Email Address")]
   public string Email { get; set; } = null!;
 
-  [MaxLength(60)] [Comment("Password")]
+  [Required, MaxLength(60)] [Comment("Password")]
   public string Password { get; set; } = null!;
 
-  [MaxLength(64)] [Comment("Authorization Key")]
+  [Required, MaxLength(64)] [Comment("Authorization Key")]
   public string AuthKey { get; set; } = null!;
 
-  [MaxLength(150)] [Comment("Password Hash")]
+  [Required, MaxLength(150)] [Comment("Password Hash")]
   public string PasswordHash { get; set; } = null!;
 
-  [MaxLength(100)] [Comment("Password Reset Token")]
-  public string? PasswordResetToken { get; set; }
-
   [Required] [MaxLength(20)] [Comment("Role")]
-  public string Role { get; set; } = null!;
+  public string Role { get; set; } = UserRole.User;
 
   [Comment("Account Status")]
-  public UserStatus Status { get; set; }
+  public UserStatus Status { get; set; } = UserStatus.Inactive;
 
-  [Comment("Additional Metadata")] [Column(TypeName = "jsonb")]
-  public UserMetadata Metadata { get; set; } = null!;
+  [Comment("Additional Metadata")]
+  public UserMetadata Metadata { get; set; } = new();
 
   [Comment("Created Date")]
   public DateTime CreatedAt { get; set; }
@@ -90,17 +88,6 @@ public class User : ModelBase {
       Password = password,
       PasswordHash = PasswordHash,
     });
-
-  /// <summary>
-  /// Generates the password reset token
-  /// </summary>
-  public void GeneratePasswordResetToken()
-    => PasswordResetToken = IdentityHelper.GeneratePasswordResetToken();
-
-  /// <summary>
-  /// Removes password reset token
-  /// </summary>
-  public void RemovePasswordResetToken() => PasswordResetToken = null;
 
   /// <summary>
   /// Generates token authentication key
@@ -161,14 +148,28 @@ public class User : ModelBase {
   }
 }
 
-public class UserMetadataActivation {
+public record UserMetadata {
+  [StringLength(10), JsonPropertyName("language")]
+  public string Language { get; set; } = "en-US";
+  [StringLength(20), JsonPropertyName("timezone")]
+  public string Timezone { get; set; } = "UTC";
+  public UserMetadataSecurity Security { get; set; } = new();
+  public UserMetadataActivation Activation { get; set; } = new();
+  public UserMetadataPassword Password { get; set; } = new();
+  public UserMetadataLoggedInHistory LoggedInHistory { get; set; } = new();
+}
+
+[Owned]
+public record UserMetadataActivation {
   public bool? Pending { get; set; }
   public DateTime? RequestedAt { get; set; }
   public DateTime? CompletedAt { get; set; }
 }
 
-public class UserMetadataLoggedInHistory {
-  public string? LastIp { get; set; }
+[Owned]
+public record UserMetadataLoggedInHistory {
+  [MaxLength(20)]
+  public string? LastIp { get; set; } = null;
   public DateTime? LastDate { get; set; }
   public int SuccessCount { get; set; } = 0;
   public int FailedCount { get; set; } = 0;
@@ -184,13 +185,15 @@ public class UserMetadataLoggedInHistory {
   }
 }
 
-public class UserMetadataPassword {
+[Owned]
+public record UserMetadataPassword {
   public DateTime? LastResetAt { get; set; }
+  [StringLength(IdentityHelper.PasswordResetCodeSize)]
   public string? ResetCode { get; set; }
   public DateTime? ResetCodeRequestedAt { get; set; }
-  public int ResetCount { get; set; } = 0;
+  public int ResetCount { get; set; }
   public DateTime? LastUpdatedAt { get; set; }
-  public int UpdatedCount { get; set; } = 0;
+  public int UpdatedCount { get; set; }
 
   /// <summary>An event method which invoked upon changing the password</summary>
   public void OnUpdate() {
@@ -219,17 +222,7 @@ public class UserMetadataPassword {
   }
 }
 
-public class UserMetadataSecurity {
-  public bool? TokenInvalidate { get; set; }
-}
-
-[Keyless]
-[ComplexType]
-public class UserMetadata {
-  public string Language { get; set; } = "en-US";
-  public string Timezone { get; set; } = "UTC";
-  public UserMetadataSecurity Security { get; set; } = new();
-  public UserMetadataActivation Activation { get; set; } = new();
-  public UserMetadataPassword Password { get; set; } = new();
-  public UserMetadataLoggedInHistory LoggedInHistory { get; set; } = new();
+[Owned]
+public record UserMetadataSecurity {
+  public bool TokenInvalidate { get; set; }
 }

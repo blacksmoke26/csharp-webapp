@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions {
     var config = new AppConfiguration(configuration);
 
     services.AddSingleton<AppConfiguration>(_ => config);
+    RequestDecompressionConfigurator.Configure(services, config);
     CorsConfigurator.Configure(services, config);
 
     ApiVersioningConfigurator.Configure(services, config);

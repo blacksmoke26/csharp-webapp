@@ -5,7 +5,6 @@
 
 using CaseConverter;
 using Microsoft.AspNetCore.OutputCaching;
-using Movies.Api.Core.Caching;
 using Movies.Contracts.Responses.Movies;
 
 namespace Movies.Api.Controllers;

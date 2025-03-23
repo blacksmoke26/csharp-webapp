@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Application", "src\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Contracts", "src\Movies.Contracts\Movies.Contracts.csproj", "{A060AAEE-D5AB-476F-A205-DA16F8B0CD09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Minimal", "Movies.Minimal\Movies.Minimal.csproj", "{FC104B72-75C9-445D-A3BA-671E6EBA088D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Minimal", "src\Movies.Minimal\Movies.Minimal.csproj", "{FC104B72-75C9-445D-A3BA-671E6EBA088D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

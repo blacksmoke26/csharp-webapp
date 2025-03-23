@@ -13,6 +13,7 @@ public static class WebApplicationExtensions {
   /// </summary>
   /// <param name="app">WebApplication instance</param>
   public static void UseBootstrapper(this WebApplication app) {
+    RequestDecompressionConfigurator.Use(app);
     ErrorHandlerConfigurator.Use(app);
 
     ControllersConfigurator.Use(app);

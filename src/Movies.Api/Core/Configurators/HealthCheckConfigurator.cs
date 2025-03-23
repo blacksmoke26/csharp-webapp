@@ -1,13 +1,33 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
-// Guide: https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/health-checks?view=aspnetcore-9.0
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Movies.Api.Core.Interfaces;
+using Movies.Application.Config;
 using Movies.Application.Database;
 
-namespace Movies.Api.Core.Health;
+namespace Movies.Api.Core.Configurators;
+
+public abstract class HealthCheckConfigurator : IApplicationServiceConfigurator {
+  /// <summary>
+  /// Configures the health-check to the services collection
+  /// </summary>
+  /// <inheritdoc/>
+  public static void Configure(IServiceCollection services, AppConfiguration _) {
+    services.AddHealthChecks()
+      .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
+  }
+
+  /// <summary>
+  /// Configures the health-check to the web application
+  /// </summary>
+  /// <inheritdoc/>
+  public static void Use(WebApplication app) {
+    app.MapHealthChecks("health-check");
+  }
+}
 
 public class DatabaseHealthCheck(
   DatabaseContext dbContext,

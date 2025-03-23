@@ -6,7 +6,7 @@ using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Movies.Api.Core.Swagger.Filters;
+namespace Movies.Api.Core.Filters.Swagger;
 
 internal class ObsoleteOperationFilter : IOperationFilter {
   public void Apply(OpenApiOperation operation, OperationFilterContext context) {

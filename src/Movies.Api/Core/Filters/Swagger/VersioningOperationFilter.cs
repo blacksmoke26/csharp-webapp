@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Movies.Api.Core.Swagger.Filters;
+namespace Movies.Api.Core.Filters.Swagger;
 
 public class VersioningOperationFilter : IOperationFilter {
   /// <inheritdoc/>

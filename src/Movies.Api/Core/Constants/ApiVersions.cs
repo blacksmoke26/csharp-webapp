@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-namespace Movies.Api.Core.Versioning;
+namespace Movies.Api.Core.Constants;
 
 public static class ApiVersions {
   public const string V10 = "1.0";

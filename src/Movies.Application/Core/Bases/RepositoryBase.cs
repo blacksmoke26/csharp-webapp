@@ -18,7 +18,8 @@ public abstract class RepositoryBase<TEntity> :
   IQueryCountable<TEntity>,
   IQueryExists<TEntity>,
   IQueryDeletable<TEntity>,
-  IQueryPaginated<TEntity>
+  IQueryPaginated<TEntity>,
+  IDbSaveChanges<TEntity>
   where TEntity : ModelBase {
   /// <inheritdoc/>
   public abstract DatabaseContext GetDbContext();
@@ -123,7 +124,7 @@ public abstract class RepositoryBase<TEntity> :
     Func<IQueryable<TEntity>, IQueryable<TEntity>> queryable, CancellationToken token = default) {
     return GetDataSet().AddQuery(queryable).CountAsync(token);
   }
-  
+
   /// <inheritdoc/>
   public Task<PaginatedList<TEntity>> GetPaginatedAsync(
     Func<IQueryable<TEntity>, IQueryable<TEntity>>? queryable,
@@ -140,7 +141,13 @@ public abstract class RepositoryBase<TEntity> :
     var source = (queryable != null
       ? queryable.Invoke(GetDataSet())
       : GetDataSet()).AsSplitQuery();
-    
+
     return PaginatedList<TEntity>.CreateWithSelectorAsync(source, selector, options, token);
+  }
+
+  /// <inheritdoc/>
+  public async Task<TEntity?> SaveAsync(TEntity entity, CancellationToken token = default) {
+    GetDataSet().Update(entity).State = EntityState.Modified;
+    return await GetDbContext().SaveChangesAsync(token) > 0 ? entity : null;
   }
 }

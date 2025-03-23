@@ -3,7 +3,6 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 // Read more: https://medium.com/@serhiikokhan/jsonb-in-postgresql-with-ef-core-cc945f1aba2a
 
-using System.Globalization;
 using Movies.Application.Core.Interfaces;
 
 namespace Movies.Application.Repositories;
@@ -29,10 +28,20 @@ public static class UserRole {
 }
 
 public class UserRepository(DatabaseContext dbContext)
-  : RepositoryBase<User> {
+  : RepositoryBase<User>, IDbJsonbSaveChanges<User> {
   /// <inheritdoc/>
   public override DatabaseContext GetDbContext() => dbContext;
 
   /// <inheritdoc/>
   public override DbSet<User> GetDataSet() => dbContext.Users;
+
+  /// <inheritdoc/>
+  public Task<User?> SaveAsync(User entity, bool jsonbChanged = true, CancellationToken token = default) {
+    if (jsonbChanged) {
+      // !Note: You must have this like to detected JSONB object changes
+      GetDataSet().Update(entity).Property(x => x.Metadata).IsModified = true;
+    }
+
+    return SaveAsync(entity, token);
+  }
 }

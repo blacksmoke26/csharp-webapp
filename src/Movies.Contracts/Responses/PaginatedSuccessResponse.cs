@@ -4,34 +4,44 @@
 
 namespace Movies.Contracts.Responses;
 
-/// <summary>
-/// This response class formats the successful success response using <c>Paginated</c> results.
-/// </summary>
-/// <param name="result">The PaginatedResult object</param>
-public class PaginatedSuccessResponse(PaginatedResult result) : ISuccessResponse {
-  /// <summary>
-  /// The success property means operation was a success 
-  /// </summary>
+[SwaggerSchema("This response class formats the successful success response containing paginated results.",
+  ReadOnly = true)]
+public record PaginatedSuccessResponse<TEntity> : ISuccessResponse {
+  protected PaginatedResult Result = null!;
+
+  /// <param name="result">The PaginatedResult object</param>
+  public PaginatedSuccessResponse(PaginatedResult? result = null) {
+    Result = result ?? new() {
+      Rows = [],
+      TotalCount = 0,
+      TotalPages = 0,
+      HasNextPage = false,
+      HasPreviousPage = false
+    };
+  }
+
+  [SwaggerSchema("The success property means operation was a success")]
   public bool Success => true;
 
-  /// <summary>
-  /// The total count of records
-  /// </summary>
-  public int TotalCount => result.TotalCount;
+  [SwaggerSchema("The total count of records")]
+  public int TotalCount => Result.TotalCount;
 
-  /// <summary>
-  /// This response class  represents the successful response
-  /// containing the list of `entities`
-  /// </summary>
-  public object Data => new SuccessResponse(result.Rows).Data;
+  [SwaggerSchema("This response class  represents the successful response containing the list of `entities`")]
+  public IEnumerable<TEntity> Data => Result.Rows.Cast<TEntity>();
 
-  /// <summary>
-  /// The pagination parameters
-  /// </summary>
+  [SwaggerSchema("The pagination information")]
   public PageInfo PageInfo => new() {
-    CurrentPage = result.CurrentPage,
-    TotalPages = result.TotalPages,
-    HasPreviousPage = result.HasPreviousPage,
-    HasNextPage = result.HasNextPage,
+    CurrentPage = Result.CurrentPage,
+    TotalPages = Result.TotalPages,
+    HasPreviousPage = Result.HasPreviousPage,
+    HasNextPage = Result.HasNextPage,
   };
+}
+
+[SwaggerSchema("This response class formats the successful success response containing paginated results.",
+  ReadOnly = true)]
+public record PaginatedSuccessResponse : PaginatedSuccessResponse<object> {
+  public PaginatedSuccessResponse(PaginatedResult result) {
+    Result = result;
+  }
 }

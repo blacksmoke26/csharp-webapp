@@ -14,22 +14,31 @@ public static class ResponseHelper {
   /// Returns the successful response
   /// </summary>
   /// <returns>The response object</returns>
-  public static ISuccessResponse SuccessOnly() => new SuccessOnlyResponse();
+  public static SuccessOnlyResponse SuccessOnly() => new();
 
   /// <summary>
   /// Returns the successful response with data object
   /// </summary>
   /// <param name="data">The dynamic object</param>
   /// <returns>The response object</returns>
-  public static ISuccessResponse SuccessWithData(object? data) {
-    return data is null ? SuccessOnly() : new SuccessResponse(data);
+  public static SuccessResponse SuccessWithData(object? data) {
+    return new() { Data = data ?? "Nothing to be returned" };
+  }
+
+  /// <summary>
+  /// Returns the successful response with data object
+  /// </summary>
+  /// <param name="message">The informational message</param>
+  /// <returns>The response object</returns>
+  public static SuccessWithMessageResponse SuccessWithMessage(string message) {
+    return new() { Message = message };
   }
 
   /// <summary>
   /// Returns the successful response with the paginated results
   /// </summary>
-  /// <param name="result">The paginated results object</param>
+  /// <param name="instance">The paginated list instance</param>
   /// <returns>The paginated response object</returns>
-  public static PaginatedSuccessResponse SuccessWithPaginated
-    (PaginatedResult result) => new(result);
+  public static PaginatedSuccessResponse SuccessWithPaginated<T>(PaginatedList<T> instance)
+    => new(instance.ToPaginatedResult());
 }

@@ -5,21 +5,22 @@
 // Example: https://github.com/dotnet/aspnet-api-versioning/blob/main/examples/AspNetCore/WebApi/BasicExample
 // Wiki: https://github.com/dotnet/aspnet-api-versioning/wiki/API-Version-Selector
 
+using Movies.Api.Core.Interfaces;
+using Movies.Application.Config;
 
-namespace Movies.Api.Domain.Versioning;
+namespace Movies.Api.Core.Configurators;
 
 /// <summary>
 /// Provides the extensions methods to support API Versioning
 /// <p>Read more about
 /// <see href="https://github.com/dotnet/aspnet-api-versioning/wiki/API-Versioning-Options">API Versioning Options</see></p>
 /// </summary>
-public static class VersioningApplicationServiceExtensions {
+public abstract class ApiVersioningConfigurator : IServiceConfigurator {
   /// <summary>
-  /// An extension methods which enables the API Versioning throughout the MVC application
+  /// Configures the api-versioning to the service collection
   /// </summary>
-  /// <param name="services">The ServiceCollection instance</param>
-  /// <returns>The ServiceCollection instance</returns>
-  public static IServiceCollection AddVersioning(this IServiceCollection services) {
+  /// <inheritdoc/>
+  public static void Configure(IServiceCollection services, AppConfiguration config) {
     services.AddApiVersioning(x => {
       // The default API version applied to services that do not have explicit versions
       x.DefaultApiVersion = ApiVersions.FromText(ApiVersions.V10);
@@ -31,8 +32,8 @@ public static class VersioningApplicationServiceExtensions {
       x.UnsupportedApiVersionStatusCode = 501;
       // The name associated with the API version route constrain
       //x.RouteConstraintName = "version";
-    }).AddMvc();
-
-    return services;
+    }).AddMvc().AddApiExplorer(
+      // format the version as "'v'major[.minor][-status]"
+      options => options.GroupNameFormat = "'v'VVV");
   }
 }

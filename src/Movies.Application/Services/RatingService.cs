@@ -11,9 +11,7 @@ public class RatingService(
   MovieService movieService,
   IValidator<RatingCreateModel> createValidator)
   : ServiceBase {
-  /// <summary>
-  /// Rates the movie against the movie id by the user 
-  /// </summary>
+  /// <summary>Rates the movie against the movie id by the user</summary>
   /// <param name="input">The user id</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>Whatever the rating was a success or failure</returns>
@@ -22,10 +20,10 @@ public class RatingService(
     await createValidator.ValidateAndThrowAsync(input, token);
 
     // Ensure that movie exists, otherwise the constraints exception thrown 
-    if (!await movieService.ExistsAsync(x
-          => x.Id == input.MovieId && x.Status != MovieStatus.Published, token)) {
-      throw ErrorHelper.CustomError("Movie not found", ErrorCodes.NotFound);
-    }
+    var isFound = await movieService.ExistsAsync(x
+      => x.Id == input.MovieId && x.Status != MovieStatus.Published, token);
+
+    ErrorHelper.ThrowWhenFalse(isFound, "Movie not found", ErrorCodes.NotFound);
 
     var record = await ratingRepo.GetOneAsync(x
       => x.UserId == input.UserId && x.MovieId == input.MovieId, token);
@@ -41,9 +39,7 @@ public class RatingService(
     return await ratingRepo.GetDbContext().SaveChangesAsync(token) > 0;
   }
 
-  /// <summary>
-  /// Deletes move rating against the user and the movie id 
-  /// </summary>
+  /// <summary>Deletes move rating against the user and the movie id</summary>
   /// <param name="movieId">The movie ID</param>
   /// <param name="userId">The user ID</param>
   /// <param name="token">The cancellation token</param>
@@ -53,28 +49,27 @@ public class RatingService(
     return await ratingRepo.DeleteAsync(x
       => x.MovieId == movieId && x.UserId == userId, token) > 0;
   }
-  
-  /// <summary>
-  /// Format the rating object response (Select LINQ expression)
-  /// </summary>
+
+  /// <summary>Format the rating object response (Select LINQ expression)</summary>
+  /// <param name="includeMovie">Include movie that associated with each rating</param>
   /// <returns>The query select expression</returns>
-  private Expression<Func<Rating, RatingResponse>> PrepareResponse() {
+  private Expression<Func<Rating, RatingResponse>> PrepareResponse(bool includeMovie = false) {
     return x => new RatingResponse {
-      Movie = new () {
-        Id = x.MovieId,
-        Title = x.Movie.Title,
-        Slug = x.Movie.Slug,
-      },
+      Id = x.Id,
+      MovieId = x.MovieId,
       Score = x.Score,
       Feedback = x.Feedback,
       CreatedAt = x.CreatedAt,
-      UpdatedAt = x.UpdatedAt
+      UpdatedAt = x.UpdatedAt,
+      Movie = includeMovie ? new MovieRatingResponse {
+        Title = x.Movie.Title,
+        YearOfRelease = x.Movie.YearOfRelease,
+        Slug = x.Movie.Slug
+      } : null,
     };
   }
 
-  /// <summary>
-  /// Fetches a single record from a database
-  /// </summary>
+  /// <summary>Fetches a single record from a database</summary>
   /// <param name="query">The query to filter/sort results</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>The fetch record</returns>
@@ -90,12 +85,10 @@ public class RatingService(
 
     ErrorHelper.ThrowIfNull(record, "Rating not found", ErrorCodes.NotFound);
 
-    return record!;
+    return record;
   }
 
-  /// <summary>
-  /// Fetches the multiple records from a database
-  /// </summary>
+  /// <summary>Fetches the multiple records from a database</summary>
   /// <param name="query">The query to filter/sort results</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>List of fetched records</returns>
@@ -103,9 +96,23 @@ public class RatingService(
     Func<IQueryable<Rating>, IQueryable<Rating>>? query,
     CancellationToken token = default) {
     return ratingRepo.GetManyAsync(
-      q => query != null ? query.Invoke(q) : q,
+      q => query?.Invoke(q) ?? q,
       PrepareResponse(),
       token
+    );
+  }
+
+  /// <summary>Fetches the multiple paginated ratings</summary>
+  /// <param name="queryable">A callback function to perform a query on a current sequence.</param>
+  /// <param name="options">The pagination options</param>
+  /// <param name="includeMovie">Include movie that associated with each rating</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The fetched records</returns>
+  public Task<PaginatedList<RatingResponse>> GetPaginatedAsync(
+    Func<IQueryable<Rating>, IQueryable<Rating>>? queryable,
+    PaginatorOptions options, bool includeMovie = false, CancellationToken token = default) {
+    return ratingRepo.GetPaginatedAsync(
+      queryable, PrepareResponse(includeMovie), options, token
     );
   }
 }

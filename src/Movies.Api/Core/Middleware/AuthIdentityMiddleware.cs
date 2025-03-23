@@ -9,6 +9,7 @@ namespace Movies.Api.Core.Middleware;
 /// Server middleware to validate against auth-key, fetch user and set as current identity upon verified
 /// </summary>
 /// <param name="next">The middleware delegate</param>
+/// <param name="idService">The IdentityService instance</param>
 public class AuthValidationMiddleware(
   RequestDelegate next,
   IdentityService idService

@@ -5,7 +5,7 @@
 namespace Movies.Api;
 
 public static class ApiEndpoints {
-  private const string ApiBase = "api/v{version:apiVersion}";
+  public const string ApiBase = "api/v{version:apiVersion}";
 
   public static class Movies {
     private const string Base = $"{ApiBase}/movies";
@@ -25,19 +25,22 @@ public static class ApiEndpoints {
     public const string GetUserRatings = $"{Base}/me";
   }
 
-  public static class Token {
-    public const string Base = "token";
-    public const string Create = $"{Base}/create";
+  public static class Auth {
+    public const string Base = $"{ApiBase}/auth";
+    public const string Login = $"{Base}/login";
+    public const string Logout = $"{Base}/logout";
   }
 
   public static class Identity {
     public const string Base = $"{ApiBase}/identity";
-    public const string Me = $"{Base}/me";
     public const string Signup = $"{Base}/signup";
-    public const string Login = $"{Base}/login";
-    public const string Logout = $"{Base}/logout";
-    public const string ChangePassword = $"{Base}/change-password";
     public const string PasswordResetRequest = $"{Base}/password-reset-request";
     public const string PasswordReset = $"{Base}/password-reset";
+  }
+
+  public static class User {
+    public const string Base = $"{ApiBase}/user";
+    public const string Me = $"{Base}/me";
+    public const string ChangePassword = $"{Base}/change-password";
   }
 }

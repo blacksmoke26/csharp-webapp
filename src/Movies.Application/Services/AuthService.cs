@@ -6,19 +6,19 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using Movies.Contracts.Responses.Identity;
 
 namespace Movies.Application.Services;
 
 public class AuthService(JwtConfiguration config) : ServiceBase {
-  /// <summary>
-  /// GeneratesJWT token against the given user
-  /// </summary>
+  /// <summary>Generates JWT token against the given user</summary>
   /// <param name="user">The user model instance</param>
   /// <param name="options">Additional options to customize the token</param>
   /// <returns>The generated Json Web Token</returns>
-  public TokenResult GenerateToken(User user, JwtOptions? options = null) {
+  public AuthTokenResult GenerateToken(User user, JwtOptions? options = null) {
     JwtSecurityTokenHandler tokenHandler = new();
 
+    ArgumentNullException.ThrowIfNull(config.Key);
     SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(config.Key));
 
     var issuedAt = DateTime.UtcNow;
@@ -44,9 +44,7 @@ public class AuthService(JwtConfiguration config) : ServiceBase {
     };
   }
 
-  /// <summary>
-  /// Generate the token claims
-  /// </summary>
+  /// <summary>Generate the token claims</summary>
   /// <param name="user">The user</param>
   /// <param name="options">Additional options to customize the token</param>
   /// <returns>The generated claims list</returns>
@@ -72,34 +70,29 @@ public class AuthService(JwtConfiguration config) : ServiceBase {
 /// <p>Check <see cref="AuthService"/> class for usage.</p>
 /// </summary>
 public static class AuthPolicies {
-  /// <summary>
-  /// Applicable to `Admin` role
-  /// </summary>
+  /// <summary>Applicable to `Admin` role</summary>
   public const string AdminPolicy = "AdminPolicy";
 
-  /// <summary>
-  /// Applicable to `User` role
-  /// </summary>
+  /// <summary>Applicable to `User` role</summary>
   public const string UserPolicy = "UserPolicy";
 
-  /// <summary>
-  /// Applicable to signed-in users
-  /// </summary>
+  /// <summary>Applicable to signed-in users</summary>
   public const string AuthPolicy = "AuthPolicy";
 }
 
-public struct TokenResult {
-  public required string Token { get; init; }
-  public DateTime IssuedAt { get; init; }
-  public DateTime Expires { get; init; }
-}
-
-/// <summary>
-/// Additional JWT options to customize the token
-/// </summary>
+/// <summary>Additional JWT options to customize the token</summary>
 public struct JwtOptions {
+  /// <summary>The issuer domain</summary>
+  /// <example><code>https://example.com</code></example>
   public string Issuer { get; init; }
+  
+  /// <summary>The target audience domain</summary>
+  /// <example><code>https://department.example.com</code></example>
   public string Audience { get; init; }
+  
+  /// <summary>Expiration time in hours</summary>
   public int ExpirationInHours { get; init; }
+  
+  /// <summary>The claims to provide</summary>
   public readonly IList<Claim> Claims => [];
 }

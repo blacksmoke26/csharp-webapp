@@ -25,5 +25,5 @@ public struct UserMeResponse {
   public required string Status { get; set; }
 
   [SwaggerSchema("Account registered date")]
-  public required DateTime CreatedAt { get; set; }
+  public required DateTime? CreatedAt { get; set; }
 }

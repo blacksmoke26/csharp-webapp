@@ -1,71 +1,68 @@
-// Licensed to the end users under one or more agreements.
+﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
-// See more: https://learn.microsoft.com/en-us/ef/core/modeling/relationships/one-to-one
 
 using System.ComponentModel.DataAnnotations;
 
 namespace Movies.Application.Models;
 
+[Table("movies")]
+[Index("Title", Name = "IDX_movies_title")]
+[Index("Title", "YearOfRelease", Name = "UNQ_Title_YoR", IsUnique = true)]
+[Index("Slug", Name = "UNQ_slug", IsUnique = true)]
 public class Movie : ModelBase {
-  [Key] [Comment("Primary Key")]
+  /// <summary>ID</summary>
+  [Key] [Column("id")]
   public long Id { get; set; }
 
-  [Required] [Comment("Owner User")]
+  /// <summary>User</summary>
+  [Column("user_id")]
   public long UserId { get; set; }
 
-  [Required] [MaxLength(60)] [Comment("Movie name")]
+  /// <summary>Title</summary>
+  [Column("title")] [StringLength(60)]
   public string Title { get; set; } = null!;
 
-  [Required] [Comment("Year of Release")]
+  /// <summary>Year of Release</summary>
+  [Column("year_of_release")]
   public short YearOfRelease { get; set; }
 
-  [MaxLength(255)] [Comment("Slug")]
-  public string? Slug { get; set; }
+  /// <summary>Slug</summary>
+  [Column("slug")] [StringLength(90)]
+  public string Slug { get; set; } = null!;
 
-  [Comment("Status")]
-  public MovieStatus Status { get; set; } = MovieStatus.Published;
+  /// <summary>Status</summary>
+  [Column("status")]
+  public MovieStatus Status { get; set; } = MovieStatus.Pending;
 
-  [Comment("Created Date")]
+  /// <summary>Created</summary>
+  [Column("created_at", TypeName = "timestamp without time zone")]
   public DateTime? CreatedAt { get; set; }
 
-  [Comment("Last Updated")]
+  /// <summary>Updated</summary>
+  [Column("updated_at", TypeName = "timestamp without time zone")]
   public DateTime? UpdatedAt { get; set; }
 
-  /// <summary>
-  /// List of genres associated with this movie
-  /// </summary>
-  public virtual List<Genre> Genres { get; set; } = [];
+  [InverseProperty("Movie")]
+  public virtual ICollection<Genre> Genres { get; set; } = new List<Genre>();
 
-  /// <summary>
-  /// List of ratings associated with this movie
-  /// </summary>
-  public virtual List<Rating> Ratings { get; set; } = [];
+  [InverseProperty("Movie")]
+  public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+  [ForeignKey("UserId")] [InverseProperty("Movies")]
+  public virtual User User { get; set; } = null!;
 
   /// <inheritdoc/>
-  public override Task OnTrackChangesAsync(
-    EntityState state, CancellationToken cancellationToken = default) {
+  public override Task OnTrackChangesAsync(EntityState state, CancellationToken token = default) {
     if (state is EntityState.Added) {
       CreatedAt = DateTime.UtcNow;
     }
 
     if (state is EntityState.Added or EntityState.Modified) {
-      GenerateSlug();
+      this.GenerateSlug();
       UpdatedAt = DateTime.UtcNow;
     }
 
-    return base.OnTrackChangesAsync(state, cancellationToken);
+    return Task.CompletedTask;
   }
-
-  /// <summary>
-  /// Generates a slug against current values
-  /// </summary>
-  public void GenerateSlug()
-    => Slug = GenerateSlug(Title, YearOfRelease);
-
-  /// <summary>
-  /// Generates a slug based on a movie name and the year of release
-  /// </summary>
-  public string GenerateSlug(string title, short yearOfRelease)
-    => Slug = StringHelper.GenerateSlug(title, " ", yearOfRelease);
 }

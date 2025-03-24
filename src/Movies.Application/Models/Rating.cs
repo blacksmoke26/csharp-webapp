@@ -6,47 +6,51 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Movies.Application.Models;
 
+[Table("ratings")]
+[Index("UserId", "MovieId", Name = "IDX_ratings_user_id_movie_id", IsUnique = true)]
 public class Rating : ModelBase {
-  [Key] [Comment("Primary Key")]
+  /// <summary>ID</summary>
+  [Key] [Column("id")]
   public long Id { get; set; }
 
-  [Required] [Comment("Owner User")]
+  /// <summary>User</summary>
+  [Column("user_id")]
   public long UserId { get; set; }
 
-  [Required] [Comment("Target Movie")]
+  /// <summary>Movie</summary>
+  [Column("movie_id")]
   public long MovieId { get; set; }
 
-  [Required] [Comment("Score")]
+  /// <summary>Score</summary>
+  [Column("score")]
   public short Score { get; set; }
 
-  [MaxLength(1000)] [Comment("User's Feedback")]
+  /// <summary>Feedback</summary>
+  [MaxLength(1000), Column("feedback")]
   public string? Feedback { get; set; }
 
-  [Comment("Created Date")]
+  /// <summary>Created</summary>
+  [Column("created_at", TypeName = "timestamp without time zone")]
   public DateTime? CreatedAt { get; set; }
 
-  [Comment("Last Updated")]
+  /// <summary>Updated</summary>
+  [Column("updated_at", TypeName = "timestamp without time zone")]
   public DateTime? UpdatedAt { get; set; }
 
-  /// <summary>
-  /// The movie associated with this rating
-  /// </summary>
+  [ForeignKey("MovieId")] [InverseProperty("Ratings")]
   public virtual Movie Movie { get; set; } = null!;
 
-  /// <summary>
-  /// The user associated with this rating
-  /// </summary>
+  [ForeignKey("UserId")] [InverseProperty("Ratings")]
   public virtual User User { get; set; } = null!;
 
   /// <inheritdoc/>
-  public override Task OnTrackChangesAsync(
-    EntityState state, CancellationToken cancellationToken = default) {
+  public override Task OnTrackChangesAsync(EntityState state, CancellationToken token = default) {
     if (state is EntityState.Added)
       CreatedAt = DateTime.UtcNow;
 
     if (state is EntityState.Added or EntityState.Modified)
       UpdatedAt = DateTime.UtcNow;
 
-    return base.OnTrackChangesAsync(state, cancellationToken);
+    return Task.CompletedTask;
   }
 }

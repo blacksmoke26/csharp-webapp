@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Movies.Api.Core.Interfaces;
 using Movies.Application.Config;
-using Movies.Application.Database;
+using Movies.Application.Context;
 
 namespace Movies.Api.Core.Configurators;
 
@@ -30,7 +30,7 @@ public abstract class HealthCheckConfigurator : IApplicationServiceConfigurator 
 }
 
 public class DatabaseHealthCheck(
-  DatabaseContext dbContext,
+  MovieDbContext dbContext,
   ILogger<DatabaseHealthCheck> logger
 ) : IHealthCheck {
   public const string Name = "Database";

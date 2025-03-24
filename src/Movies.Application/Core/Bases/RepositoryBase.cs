@@ -22,7 +22,7 @@ public abstract class RepositoryBase<TEntity> :
   IDbSaveChanges<TEntity>
   where TEntity : ModelBase {
   /// <inheritdoc/>
-  public abstract DatabaseContext GetDbContext();
+  public abstract MovieDbContext GetDbContext();
 
   /// <inheritdoc/>
   public abstract DbSet<TEntity> GetDataSet();

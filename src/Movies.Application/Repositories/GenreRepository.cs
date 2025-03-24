@@ -4,9 +4,9 @@
 
 namespace Movies.Application.Repositories;
 
-public class GenreRepository(DatabaseContext dbContext) : RepositoryBase<Genre> {
+public class GenreRepository(MovieDbContext dbContext) : RepositoryBase<Genre> {
   /// <inheritdoc/>
-  public override DatabaseContext GetDbContext() => dbContext;
+  public override MovieDbContext GetDbContext() => dbContext;
 
   /// <inheritdoc/>
   public override DbSet<Genre> GetDataSet() => dbContext.Genres;

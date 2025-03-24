@@ -13,10 +13,10 @@ public enum MovieStatus {
 }
 
 public class MovieRepository(
-  DatabaseContext dbContext
+  MovieDbContext dbContext
 ) : RepositoryBase<Movie> {
   /// <inheritdoc/>
-  public override DatabaseContext GetDbContext() => dbContext;
+  public override MovieDbContext GetDbContext() => dbContext;
 
   /// <inheritdoc/>
   public override DbSet<Movie> GetDataSet() => dbContext.Movies;

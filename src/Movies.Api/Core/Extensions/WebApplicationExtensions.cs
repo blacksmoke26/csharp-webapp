@@ -3,7 +3,9 @@
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Movies.Api.Core.Configurators;
+using Movies.Application.Context;
 
 namespace Movies.Api.Core.Extensions;
 
@@ -17,15 +19,15 @@ public static class WebApplicationExtensions {
     ErrorHandlerConfigurator.Use(app);
 
     ControllersConfigurator.Use(app);
-    
+
     CorsConfigurator.Use(app);
-    
+
     app.UseForwardedHeaders(new ForwardedHeadersOptions {
       ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     });
 
     JwtAuthenticationConfigurator.Use(app);
-    
+
     RateLimiterConfigurator.Use(app);
     HealthCheckConfigurator.Use(app);
 
@@ -35,5 +37,21 @@ public static class WebApplicationExtensions {
 
     SwaggerConfigurator.Use(app);
     MiddlewareConfigurator.Use(app);
+  }
+
+  /// <summary>
+  /// Initialize the application 
+  /// </summary>
+  /// <param name="app">WebApplication instance</param>
+  public static async Task InitializeAsync(this WebApplication app) {
+    var dbContext = app.Services.GetRequiredService<MovieDbContext>();
+    
+    try {
+      await dbContext.Database.MigrateAsync();
+      await dbContext.Database.EnsureCreatedAsync();
+    }
+    catch (Exception) {
+      // ignored
+    }
   }
 }

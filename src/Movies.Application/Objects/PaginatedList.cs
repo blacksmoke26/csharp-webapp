@@ -1,11 +1,11 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
-// See: https://learn.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page?view=aspnetcore-9.0#add-paging-to-students-index
+// See: https://learn.microsoft.com/en-us/aspnet/core/data/ef-mvc/sort-filter-page#add-paging-to-students-index
 
 using Movies.Contracts.Responses;
 
-namespace Movies.Application.Database;
+namespace Movies.Application.Objects;
 
 public record PaginatorOptions {
   /// <summary>A page number to start skipping from</summary>
@@ -16,7 +16,7 @@ public record PaginatorOptions {
 }
 
 /// <summary>
-/// This class represents the fetching and implenetation of entities pagination
+/// This class represents the fetching and implementation of entities pagination
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class PaginatedList<T> : List<T> {

@@ -16,7 +16,7 @@ public static class ApplicationServiceCollectionExtensions {
   /// </summary>
   /// <param name="services">ServiceCollection instance</param>
   /// <returns>The updated service collection instance</returns>
-  public static IServiceCollection AddApplication(this IServiceCollection services) {
+  public static void AddApplication(this IServiceCollection services) {
     // repos
     services.AddSingleton<GenreRepository>();
     services.AddSingleton<MovieRepository>();
@@ -31,8 +31,6 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddSingleton<UserService>();
 
     services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
-    
-    return services;
   }
 
   /// <summary>
@@ -41,12 +39,11 @@ public static class ApplicationServiceCollectionExtensions {
   /// <param name="services">ServiceCollection instance</param>
   /// <param name="config">Application configuration</param>
   /// <returns>The updated service collection instance</returns>
-  public static IServiceCollection AddDatabase(this IServiceCollection services, AppConfiguration config) {
-    services.AddSingleton<DatabaseContext>(_ => {
-      DatabaseContext instance = new(config.DbConfig());
+  public static void AddDatabase(this IServiceCollection services, AppConfiguration config) {
+    services.AddSingleton<MovieDbContext>(_ => {
+      MovieDbContext instance = new(config.DbConfig());
       instance.Database.ExecuteSql($"SET timezone = '+00:00'");
       return instance;
     });
-    return services;
   }
 }

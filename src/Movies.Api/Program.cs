@@ -9,6 +9,7 @@ builder.Services.InitBootstrapper(builder.Configuration);
 var app = builder.Build();
 
 app.UseBootstrapper();
+await app.InitializeAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {

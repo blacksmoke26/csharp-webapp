@@ -5,10 +5,10 @@
 namespace Movies.Application.Repositories;
 
 public class RatingRepository(
-  DatabaseContext dbContext
+  MovieDbContext dbContext
 ) : RepositoryBase<Rating> {
   /// <inheritdoc/>
-  public override DatabaseContext GetDbContext() => dbContext;
+  public override MovieDbContext GetDbContext() => dbContext;
 
   /// <inheritdoc/>
   public override DbSet<Rating> GetDataSet() => dbContext.Ratings;

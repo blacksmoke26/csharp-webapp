@@ -27,10 +27,10 @@ public static class UserRole {
   public const string User = "user";
 }
 
-public class UserRepository(DatabaseContext dbContext)
+public class UserRepository(MovieDbContext dbContext)
   : RepositoryBase<User>, IDbJsonbSaveChanges<User> {
   /// <inheritdoc/>
-  public override DatabaseContext GetDbContext() => dbContext;
+  public override MovieDbContext GetDbContext() => dbContext;
 
   /// <inheritdoc/>
   public override DbSet<User> GetDataSet() => dbContext.Users;

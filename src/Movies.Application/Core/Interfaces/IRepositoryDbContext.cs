@@ -4,12 +4,12 @@
 
 namespace Movies.Application.Core.Interfaces;
 
-public interface IRepositoryDbContext<TModel> where TModel : ModelBase {
+public interface IRepositoryDbContext<TModel> where TModel : class {
   /// <summary>
   /// Returns the instance of database context
   /// </summary>
   /// <returns>The database context</returns>
-  public DatabaseContext GetDbContext();
+  public MovieDbContext GetDbContext();
   
   /// <summary>
   /// Returns the model specific data-set context instance

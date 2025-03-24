@@ -14,6 +14,7 @@ global using Movies.Api.Core.Extensions;
 global using Movies.Api.Domain.Query.Validators;
 global using Movies.Application;
 global using Movies.Application.Core.Extensions;
+global using Movies.Application.Domain.Extensions;
 global using Movies.Application.Domain.Filters;
 global using Movies.Application.Helpers;
 global using Movies.Application.Objects;

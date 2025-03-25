@@ -26,6 +26,9 @@ public static class IdentityHelper {
 
   /// <summary>The char. size of reset password code</summary>
   public const int PasswordResetCodeSize = 8;
+  
+  /// <summary>The char. size of reset password code</summary>
+  public const int ActivationCodeSize = 8;
 
   /// <summary>The regex to validate the reset code</summary>
   public const string PasswordResetCodeRegex = "^[A-Z0-9]+$";
@@ -88,5 +91,10 @@ public static class IdentityHelper {
   /// <returns>The generated reset code</returns>
   public static string GeneratePasswordResetCode() {
     return Nanoid.Generate(Nanoid.Alphabets.UppercaseLettersAndDigits, PasswordResetCodeSize);
+  }
+  /// <summary>Generates the account activation code</summary>
+  /// <returns>The generated code</returns>
+  public static string GenerateActivationCode() {
+    return Nanoid.Generate(Nanoid.Alphabets.UppercaseLettersAndDigits, ActivationCodeSize);
   }
 }

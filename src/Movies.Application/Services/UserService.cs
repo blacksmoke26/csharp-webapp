@@ -91,6 +91,8 @@ public class UserService(
       Metadata = dto.Metadata ?? new()
     };
 
+    user.Metadata.Activation.OnSignedUp();
+
     user.SetPassword(dto.Password);
 
     userRepo.GetDataSet().Add(user);

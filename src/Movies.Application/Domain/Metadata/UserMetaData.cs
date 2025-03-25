@@ -20,9 +20,24 @@ public record UserMetadata {
 
 [Owned]
 public record UserMetadataActivation {
+  public string? Code { get; set; }
   public bool? Pending { get; set; }
   public DateTime? RequestedAt { get; set; }
   public DateTime? CompletedAt { get; set; }
+  
+  /// <summary>An event method which invoked which account successfully created</summary>
+  public void OnSignedUp() {
+    Pending = true;
+    Code = IdentityHelper.GenerateActivationCode();
+    RequestedAt = DateTime.UtcNow;
+  }
+  
+  /// <summary>An event method which invoked which account successfully verified</summary>
+  public void OnActivated() {
+    Pending = false;
+    Code = null;
+    CompletedAt = DateTime.UtcNow;
+  }
 }
 
 [Owned]
@@ -33,8 +48,7 @@ public record UserMetadataLoggedInHistory {
   public int SuccessCount { get; set; } = 0;
   public int FailedCount { get; set; } = 0;
 
-  /// <summary>An event method which invoked which user successfully authenticated</summary>
-  /// <summary>An event method which invoked upon authentication</summary>
+  /// <summary>An event method which invoked upon successful authentication</summary>
   /// <param name="ipAddress">The current IP address</param>
   public void OnLogin(string? ipAddress = null) {
     LastIp = ipAddress;
@@ -54,7 +68,7 @@ public record UserMetadataPassword {
   public DateTime? LastUpdatedAt { get; set; }
   public int UpdatedCount { get; set; }
 
-  /// <summary>An event method which invoked upon changing the password</summary>
+  /// <summary>An event method which invoked upon password changing</summary>
   public void OnUpdate() {
     UpdatedCount += 1;
     LastUpdatedAt = DateTime.UtcNow;
@@ -74,6 +88,7 @@ public record UserMetadataPassword {
     LastResetAt = DateTime.UtcNow;
   }
 
+  /// <summary>Verifies the reset code is expired or not</summary>
   public bool IsResetCodeExpired() {
     if (ResetCodeRequestedAt is null) return false;
     return ResetCodeRequestedAt.Value.ToUniversalTime().AddDays(3d)

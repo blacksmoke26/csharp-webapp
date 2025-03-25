@@ -19,15 +19,15 @@ public class ChangePasswordValidator : AbstractValidator<ChangePasswordPayload> 
     RuleFor(x => x.CurrentPassword)
       .MinimumLength(6)
       .MaximumLength(20)
-      .Must(value => context.HttpContext!.GetIdentity().User.ValidatePassword(value))
+      .Must(value => context.HttpContext!.GetIdentity().User.ValidatePassword(value ?? string.Empty))
       .WithMessage("The current password is not valid")
       .NotEmpty();
 
     RuleFor(x => x.NewPassword)
       .MinimumLength(8)
       .MaximumLength(20)
-      .Must((payload, value) => payload.CurrentPassword != value)
-      .WithMessage("Current and new password should be different")
+      .Must((payload, value) => payload.CurrentPassword != (value ?? string.Empty))
+      .WithMessage("The new password should be different")
       .NotEmpty();
   }
 }

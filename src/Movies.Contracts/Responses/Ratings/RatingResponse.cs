@@ -41,7 +41,7 @@ public struct MovieRatingResponse {
   public string? Title { get; set; }
 
   [SwaggerSchema("The year of release", Nullable = false)]
-  public long? YearOfRelease { get; set; }
+  public short? YearOfRelease { get; set; }
 
   [SwaggerSchema("The slug of movie", Nullable = false)]
   public string? Slug { get; set; }

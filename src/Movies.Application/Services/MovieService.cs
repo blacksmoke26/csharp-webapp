@@ -21,7 +21,7 @@ public class MovieService(
   /// <param name="input">The input object</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>Whatever the movie is created or not</returns>
-  public async Task<Movie?> CreateAsync(
+  public async Task<MovieResponse?> CreateAsync(
     MovieCreateModel input, CancellationToken token = default) {
     await createValidator.ValidateAndThrowAsync(input, token);
 
@@ -55,7 +55,7 @@ public class MovieService(
       return null;
     }
 
-    return movie;
+    return await GetByPkAsync(movie.Id, token);
   }
 
   /// <summary>
@@ -65,7 +65,7 @@ public class MovieService(
   /// <param name="token">The cancellation token</param>
   /// <returns>Whatever the movie is updated or not</returns>
   /// <exception cref="ValidationException">When the inputs validation failed</exception>
-  public async Task<Movie?> UpdateAsync(
+  public async Task<MovieResponse?> UpdateAsync(
     MovieUpdateModel input, CancellationToken token = default) {
     await updateValidator.ValidateAndThrowAsync(input, token);
 
@@ -107,7 +107,7 @@ public class MovieService(
       return null;
     }
 
-    return movie;
+    return await GetByPkAsync(movie.Id, token);
   }
 
   /// <summary>

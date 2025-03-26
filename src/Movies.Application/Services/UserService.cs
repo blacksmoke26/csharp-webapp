@@ -57,6 +57,22 @@ public class UserService(
     => userRepo.GetOneAsync(x => x.Email == email, token);
 
   /// <summary>
+  /// Fetch the user by Email address and request reset code
+  /// </summary>
+  /// <param name="email">The email address</param>
+  /// <param name="resetCode">The request reset code</param>
+  /// <param name="token">The cancellation token</param>
+  /// <returns>The fetched object, otherwise null if not found</returns>
+  public Task<User?> GetByEmailAndResetCodeAsync(string email, string resetCode, CancellationToken token = default) {
+    return userRepo.GetOneAsync(q => q
+      .AsNoTracking()
+      .Where(x =>
+        x.Email == email
+        && x.Status == UserStatus.Active
+        && x.Metadata.Password.ResetCode == resetCode), token);
+  }
+
+  /// <summary>
   /// Fetch the user by Authorization Key
   /// </summary>
   /// <param name="authKey">The authorization Key</param>

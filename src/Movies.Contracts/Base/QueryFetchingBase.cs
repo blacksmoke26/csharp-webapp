@@ -13,10 +13,10 @@ public abstract record RequestQueryFetching {
   public string? SortBy { get; set; } = null;
   
   /// <remarks>Applicable for <c>number</c> pagination</remarks>
-  [SwaggerSchema("The page number to start from")] [DefaultValue(1)]
+  [SwaggerSchema("The page number to start from")] [DefaultValue(1U)]
   public uint? Page { get; set; } = null;
 
   /// <remarks>Applicable for <c>number</c> pagination</remarks>
-  [SwaggerSchema("No. of record to be fetched on each page")] [DefaultValue(10)]
+  [SwaggerSchema("No. of record to be fetched on each page")] [DefaultValue(10U)]
   public uint? PageSize { get; set; } = null;
 }

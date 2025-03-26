@@ -11,8 +11,8 @@ public static class UpdateMovieEndpoint {
   public const string Name = "UpdateMovie";
 
   public static IEndpointRouteBuilder MapUpdateMovie(this IEndpointRouteBuilder app) {
-    app.MapPut(ApiEndpoints.Movies.Update,
-      async (long id, MovieCreatePayload body,
+    app.MapPut(ApiEndpoints.Movies.Update, async (
+        long id, MovieCreatePayload body,
         HttpContext context,
         MovieService movieService, CancellationToken token
       ) => {
@@ -28,7 +28,9 @@ public static class UpdateMovieEndpoint {
           "An error occurred while updating the movie", ErrorCodes.ProcessFailed);
 
         return TypedResults.Ok(ResponseHelper.SuccessWithData(movie));
-      }).RequireAuthorization(AuthPolicies.AuthPolicy);
+      })
+      .WithName(Name)
+      .RequireAuthorization(AuthPolicies.AuthPolicy);
 
     return app;
   }

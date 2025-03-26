@@ -31,6 +31,7 @@ public static class ListUserRatingEndpoint {
 
         return TypedResults.Ok(ResponseHelper.SuccessWithPaginated(paginated));
       })
+      .WithName(Name)
       .RequireAuthorization(AuthPolicies.AuthPolicy);
 
     return app;

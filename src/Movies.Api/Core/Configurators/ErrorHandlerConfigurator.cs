@@ -45,7 +45,7 @@ public abstract class ErrorHandlerConfigurator : IApplicationServiceConfigurator
       //c.OverrideDefaultResultFactoryWith<CustomResultFactory>();
     });
 
-    services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly(), ServiceLifetime.Transient);
+    services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient);
   }
 
   /// <summary>

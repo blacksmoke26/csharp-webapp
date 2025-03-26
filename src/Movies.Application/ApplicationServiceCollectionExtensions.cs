@@ -30,7 +30,7 @@ public static class ApplicationServiceCollectionExtensions {
     services.AddSingleton<RatingService>();
     services.AddSingleton<UserService>();
 
-    services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
+    services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Transient);
   }
 
   /// <summary>

@@ -20,6 +20,9 @@ $files = @(
 	Resolve-Path "${dirMoviesApi}/Movies.Contracts.dll" -ErrorAction Ignore
 	Resolve-Path "${dirMoviesApi}/Movies.Contracts.exe" -ErrorAction Ignore
 	Resolve-Path "${dirMoviesApi}/Movies.Contracts.pdb" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Minimal.dll" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Minimal.exe" -ErrorAction Ignore
+	Resolve-Path "${dirMoviesApi}/Movies.Minimal.pdb" -ErrorAction Ignore
 );
 
 $filesPath = ('"' + ( $files -join '","') + '"');

@@ -30,7 +30,7 @@ public static class UpdateMovieEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessWithData(movie));
       })
       .WithName(Name)
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .RequireAuthorization();
 
     return app;
   }

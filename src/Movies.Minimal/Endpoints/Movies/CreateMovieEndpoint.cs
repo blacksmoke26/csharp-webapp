@@ -29,7 +29,7 @@ public static class CreateMovieEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessWithData(movie));
       })
       .WithName(Name)
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .RequireAuthorization();
 
     return app;
   }

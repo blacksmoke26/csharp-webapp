@@ -29,7 +29,7 @@ public static class ChangePasswordEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
       .WithName(Name)
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .RequireAuthorization();
 
     return app;
   }

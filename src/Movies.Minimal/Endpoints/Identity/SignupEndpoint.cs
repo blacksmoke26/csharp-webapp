@@ -26,8 +26,7 @@ public static class SignupEndpoint {
             "You account has been created. Please check your inbox for verification email"),
           statusCode: StatusCodes.Status201Created);
       })
-      .WithName(Name)
-      .AllowAnonymous();
+      .WithName(Name);
     
     return app;
   }

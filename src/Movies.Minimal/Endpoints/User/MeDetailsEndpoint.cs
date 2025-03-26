@@ -18,7 +18,7 @@ public static class MeDetailsEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessWithData(meDetails));
       })
       .WithName(Name)
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .RequireAuthorization();
 
     return app;
   }

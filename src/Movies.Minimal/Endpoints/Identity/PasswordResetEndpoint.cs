@@ -33,8 +33,7 @@ public static class PasswordResetEndpoint {
 
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
-      .WithName(Name)
-      .AllowAnonymous();
+      .WithName(Name);
 
     return app;
   }

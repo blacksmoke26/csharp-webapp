@@ -30,7 +30,7 @@ public static class RateMovieEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
       .WithName(Name)
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .RequireAuthorization();
     return app;
   }
 }

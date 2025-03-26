@@ -12,7 +12,7 @@ public class RatingService(
   IValidator<RatingCreateModel> createValidator)
   : ServiceBase {
   /// <summary>Rates the movie against the movie id by the user</summary>
-  /// <param name="input">The user id</param>
+  /// <param name="input">The input object</param>
   /// <param name="token">The cancellation token</param>
   /// <returns>Whatever the rating was a success or failure</returns>
   public async Task<bool> RateMovieAsync(
@@ -35,7 +35,11 @@ public class RatingService(
     model.Score = input.Score;
     model.Feedback = input.Feedback;
 
-    ratingRepo.GetDataSet().Add(model);
+    if (record is null)
+      ratingRepo.GetDataSet().Add(model);
+    else
+      ratingRepo.GetDataSet().Update(model);
+
     return await ratingRepo.GetDbContext().SaveChangesAsync(token) > 0;
   }
 
@@ -61,11 +65,13 @@ public class RatingService(
       Feedback = x.Feedback,
       CreatedAt = x.CreatedAt,
       UpdatedAt = x.UpdatedAt,
-      Movie = includeMovie ? new MovieRatingResponse {
-        Title = x.Movie.Title,
-        YearOfRelease = x.Movie.YearOfRelease,
-        Slug = x.Movie.Slug
-      } : null,
+      Movie = includeMovie
+        ? new MovieRatingResponse {
+          Title = x.Movie.Title,
+          YearOfRelease = x.Movie.YearOfRelease,
+          Slug = x.Movie.Slug
+        }
+        : null,
     };
   }
 

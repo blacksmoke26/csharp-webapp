@@ -20,7 +20,8 @@ public static class DeleteRatingEndpoint {
 
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .WithName(Name)
+      .RequireAuthorization();
     return app;
   }
 }

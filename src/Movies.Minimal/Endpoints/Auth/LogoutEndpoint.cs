@@ -18,8 +18,8 @@ public static class LogoutEndpoint {
 
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
-      .RequireAuthorization(AuthPolicies.AuthPolicy)
-      .WithName(Name);
+      .WithName(Name)
+      .RequireAuthorization();
 
     return app;
   }

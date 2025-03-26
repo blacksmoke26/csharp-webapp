@@ -15,19 +15,21 @@ public static class ChangePasswordEndpoint {
 
   public static IEndpointRouteBuilder MapChangePassword(this IEndpointRouteBuilder app) {
     app.MapPost(ApiEndpoints.User.ChangePassword, async (
-      ChangePasswordPayload body,
-      UserService userService, HttpContext context,
-      ChangePasswordValidator changePasswordValidator,
-      CancellationToken token) => {
-      await changePasswordValidator.ValidateAndThrowAsync(body, token);
-      
-      var isChanged = await userService.ChangePassword(
-        context.GetIdentity().User, body.NewPassword, token);
-      ErrorHelper.ThrowWhenFalse(isChanged, 
-        "Failed to change the password", ErrorCodes.ProcessFailed);
-      
-      return TypedResults.Ok(ResponseHelper.SuccessOnly());
-    }).RequireAuthorization(AuthPolicies.AuthPolicy);
+        ChangePasswordPayload body,
+        UserService userService, HttpContext context,
+        ChangePasswordValidator changePasswordValidator,
+        CancellationToken token) => {
+        await changePasswordValidator.ValidateAndThrowAsync(body, token);
+
+        var isChanged = await userService.ChangePassword(
+          context.GetIdentity().User, body.NewPassword, token);
+        ErrorHelper.ThrowWhenFalse(isChanged,
+          "Failed to change the password", ErrorCodes.ProcessFailed);
+
+        return TypedResults.Ok(ResponseHelper.SuccessOnly());
+      })
+      .WithName(Name)
+      .RequireAuthorization();
 
     return app;
   }

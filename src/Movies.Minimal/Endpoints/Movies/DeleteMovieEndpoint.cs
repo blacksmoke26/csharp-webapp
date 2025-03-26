@@ -11,8 +11,8 @@ public static class DeleteMovieEndpoint {
   public const string Name = "DeleteMovie";
 
   public static IEndpointRouteBuilder MapDeleteMovie(this IEndpointRouteBuilder app) {
-    app.MapDelete(ApiEndpoints.Movies.Delete,
-      async (long id,
+    app.MapDelete(ApiEndpoints.Movies.Delete, async (
+        long id,
         MovieService movieService, HttpContext context, CancellationToken token) => {
         var isFound = await movieService.ExistsAsync(x
           => x.UserId == context.GetId() && x.Id == id, token);
@@ -26,7 +26,9 @@ public static class DeleteMovieEndpoint {
           "An error occurred while deleting the movie", ErrorCodes.ProcessFailed);
 
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
-      }).RequireAuthorization(AuthPolicies.AdminPolicy);
+      })
+      .WithName(Name)
+      .RequireAuthorization(AuthPolicies.AdminPolicy);
 
     return app;
   }

@@ -13,8 +13,8 @@ public static class PasswordResetRequestEndpoint {
   public const string Name = "PasswordResetRequestIdentity";
 
   public static IEndpointRouteBuilder MapPasswordResetRequestIdentity(this IEndpointRouteBuilder app) {
-    app.MapPost(ApiEndpoints.Identity.PasswordResetRequest,
-      async (PasswordResetRequestPayload body,
+    app.MapPost(ApiEndpoints.Identity.PasswordResetRequest, async (
+        PasswordResetRequestPayload body,
         PasswordResetRequestPayloadValidator resetRequestPayloadValidator,
         UserService userService,
         CancellationToken token
@@ -36,7 +36,8 @@ public static class PasswordResetRequestEndpoint {
           "Process failed due to the unknown error", ErrorCodes.ProcessFailed);
 
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
-      }).AllowAnonymous();
+      })
+      .WithName(Name);
 
     return app;
   }

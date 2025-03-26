@@ -16,8 +16,9 @@ public static class GetAllMoviesEndpoint {
   public const string Name = "GetAllMovies";
 
   public static IEndpointRouteBuilder MapGetAllMovies(this IEndpointRouteBuilder app) {
-    app.MapGet(ApiEndpoints.Movies.GetAll,
-      async ([AsParameters] MoviesGetAllQuery query,
+    app.MapGet(ApiEndpoints.Movies.GetAll, async (
+        [AsParameters]
+        MoviesGetAllQuery query,
         MoviesGetAllQueryValidator allQueryValidator,
         HttpContext context,
         MovieService movieService, CancellationToken token
@@ -30,7 +31,8 @@ public static class GetAllMoviesEndpoint {
           query.GetPageOptions(), userId, token);
 
         return TypedResults.Ok(ResponseHelper.SuccessWithPaginated(paginated));
-      });
+      })
+      .WithName(Name);
 
     return app;
   }

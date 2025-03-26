@@ -12,11 +12,13 @@ public static class MeDetailsEndpoint {
   public const string Name = "MeDetails";
 
   public static IEndpointRouteBuilder MapMeDetails(this IEndpointRouteBuilder app) {
-    app.MapGet(ApiEndpoints.User.Me, (HttpContext context) => {
+    app.MapGet(ApiEndpoints.User.Me, (
+        HttpContext context) => {
         var meDetails = context.GetIdentity().User.ToMeDetails();
-        return TypedResults.Ok(ResponseHelper.SuccessWithData(context.GetIdentity().User));
+        return TypedResults.Ok(ResponseHelper.SuccessWithData(meDetails));
       })
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .WithName(Name)
+      .RequireAuthorization();
 
     return app;
   }

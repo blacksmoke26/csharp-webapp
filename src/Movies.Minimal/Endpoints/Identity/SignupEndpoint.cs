@@ -10,8 +10,8 @@ public static class SignupEndpoint {
   public const string Name = "SignupIdentity";
 
   public static IEndpointRouteBuilder MapSignupIdentity(this IEndpointRouteBuilder app) {
-    app.MapPost(ApiEndpoints.Identity.Signup,
-      async (UserSignupPayload body,
+    app.MapPost(ApiEndpoints.Identity.Signup, async (
+        UserSignupPayload body,
         UserService userService, CancellationToken token
       ) => {
         await userService.CreateAsync(new() {
@@ -25,7 +25,9 @@ public static class SignupEndpoint {
           ResponseHelper.SuccessWithMessage(
             "You account has been created. Please check your inbox for verification email"),
           statusCode: StatusCodes.Status201Created);
-      }).AllowAnonymous();
+      })
+      .WithName(Name);
+    
     return app;
   }
 }

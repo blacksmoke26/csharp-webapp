@@ -29,7 +29,8 @@ public static class LoginEndpoint {
           User = user.ToLoggedInDetails()
         })
       );
-    });
+    })
+    .WithName(Name);
 
     return app;
   }

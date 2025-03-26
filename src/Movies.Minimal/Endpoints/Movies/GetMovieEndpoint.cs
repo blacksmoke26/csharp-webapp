@@ -12,8 +12,8 @@ public static class GetMovieEndpoint {
   public const string Name = "GetMovie";
 
   public static IEndpointRouteBuilder MapGetMovie(this IEndpointRouteBuilder app) {
-    app.MapGet(ApiEndpoints.Movies.Get,
-      async (string idOrSlug,
+    app.MapGet(ApiEndpoints.Movies.Get, async (
+        string idOrSlug,
         MovieService movieService, HttpContext context, CancellationToken token) => {
         var movie = await movieService.GetBySlugOrPkAsync(idOrSlug, token);
 
@@ -28,7 +28,8 @@ public static class GetMovieEndpoint {
         );
 
         return TypedResults.Ok(ResponseHelper.SuccessWithData(movie));
-      });
+      })
+      .WithName(Name);
 
     return app;
   }

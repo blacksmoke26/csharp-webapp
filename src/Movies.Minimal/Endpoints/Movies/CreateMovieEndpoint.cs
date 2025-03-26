@@ -11,8 +11,8 @@ public static class CreateMovieEndpoint {
   public const string Name = "CreateMovie";
 
   public static IEndpointRouteBuilder MapCreateMovie(this IEndpointRouteBuilder app) {
-    app.MapPost(ApiEndpoints.Movies.Create,
-      async (MovieCreatePayload body,
+    app.MapPost(ApiEndpoints.Movies.Create, async (
+        MovieCreatePayload body,
         HttpContext context,
         MovieService movieService, CancellationToken token
       ) => {
@@ -27,7 +27,9 @@ public static class CreateMovieEndpoint {
           "An error occurred while creating the movie", ErrorCodes.ProcessFailed);
 
         return TypedResults.Ok(ResponseHelper.SuccessWithData(movie));
-      }).RequireAuthorization(AuthPolicies.AuthPolicy);
+      })
+      .WithName(Name)
+      .RequireAuthorization();
 
     return app;
   }

@@ -26,10 +26,11 @@ public static class RateMovieEndpoint {
 
         ErrorHelper.ThrowWhenFalse(
           isRated, "An error occurred while rating the movie", ErrorCodes.ProcessFailed);
-        
+
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
-      .RequireAuthorization(AuthPolicies.AuthPolicy);
+      .WithName(Name)
+      .RequireAuthorization();
     return app;
   }
 }

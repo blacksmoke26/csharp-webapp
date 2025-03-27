@@ -4,18 +4,17 @@
 
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema("This response class contains the pagination information",
-  Required = ["CurrentPage", "TotalPages", "HasPreviousPage", "HasNextPage"], ReadOnly = true)]
+[Description("This response class contains the pagination information")]
 public struct PageInfo {
-  [SwaggerSchema("The current page")]
+  [Required, JsonPropertyName("currentPage"), Description("The current page")]
   public required int CurrentPage { get; init; }
-  
-  [SwaggerSchema("Count of total pages")]
+
+  [Required, JsonPropertyName("totalPages"), Description("Count of total pages")]
   public required int TotalPages { get; init; }
-  
-  [SwaggerSchema("Whatever there is a page before the current page")]
+
+  [Required, JsonPropertyName("hasPreviousPage"), Description("Whatever there is a page before the current page")]
   public required bool HasPreviousPage { get; init; }
-  
-  [SwaggerSchema("Whatever there is a page after the current page")]
+
+  [Required, JsonPropertyName("hasNextPage"), Description("Whatever there is a page after the current page")]
   public required bool HasNextPage { get; init; }
 }

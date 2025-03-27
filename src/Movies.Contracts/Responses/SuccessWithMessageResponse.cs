@@ -2,15 +2,13 @@
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository:https://github.com/blacksmoke26/csharp-webapp
 
-
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema("This response class formats the successful informational message ",
-  Required = ["Success", "Message"], ReadOnly = true)]
+[Description("This response class formats the successful informational message")]
 public record SuccessWithMessageResponse : ISuccessResponse {
-  [SwaggerSchema("The success property means operation was a success")]
+  [JsonPropertyName("success"), Description("The operation was successful")]
   public bool Success => true;
 
-  [SwaggerSchema("The informational message")]
+  [Required, JsonPropertyName("message"), Description("The informational message")]
   public required string Message { get; init; }
 }

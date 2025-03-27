@@ -4,15 +4,17 @@
 
 namespace Movies.Contracts.Requests.Payload;
 
-[SwaggerSchema("Use to update a movie",
-  Required = ["Title", "YearOfRelease", "Genres"], WriteOnly = true)]
+[Description("Use to update a movie")]
 public struct MovieUpdatePayload {
-  [Required] [DefaultValue("Face Off")] [SwaggerSchema("The title of movie", Nullable = false)]
+  [Required, JsonPropertyName("title"), Description("The title of movie")]
+  [property: Range(3, 60)]
   public string Title { get; set; }
 
-  [Required] [DefaultValue("2025")] [SwaggerSchema("Official year of release", Nullable = false)]
+  [Required, JsonPropertyName("yearOfRelease"), Description("Official year of release")]
+  [property: Range(1950, 2025)]
   public short YearOfRelease { get; set; }
 
-  [Required] [SwaggerSchema("The list of genres", Nullable = false)]
+  [property: Range(1, 5)]
+  [Required, JsonPropertyName("genres"), Description("The list of genres")]
   public IEnumerable<string> Genres { get; set; }
 }

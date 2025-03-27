@@ -4,8 +4,7 @@
 
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema("This response class formats the successful success response containing paginated results.",
-  ReadOnly = true)]
+[Description("This response class formats the successful success response containing paginated results.")]
 public record PaginatedSuccessResponse<TEntity> : ISuccessResponse {
   protected PaginatedResult Result = null!;
 
@@ -20,16 +19,16 @@ public record PaginatedSuccessResponse<TEntity> : ISuccessResponse {
     };
   }
 
-  [SwaggerSchema("The success property means operation was a success")]
+  [JsonPropertyName("success"), Description("The operation was successful")]
   public bool Success => true;
 
-  [SwaggerSchema("The total count of records")]
+  [JsonPropertyName("totalCount"), Description("The total count of records")]
   public int TotalCount => Result.TotalCount;
 
-  [SwaggerSchema("This response class  represents the successful response containing the list of `entities`")]
+  [JsonPropertyName("data"), Description("The list of entities")]
   public IEnumerable<TEntity> Data => Result.Rows.Cast<TEntity>();
 
-  [SwaggerSchema("The pagination information")]
+  [JsonPropertyName("pageInfo"), Description("The pagination information")]
   public PageInfo PageInfo => new() {
     CurrentPage = Result.CurrentPage,
     TotalPages = Result.TotalPages,
@@ -38,8 +37,7 @@ public record PaginatedSuccessResponse<TEntity> : ISuccessResponse {
   };
 }
 
-[SwaggerSchema("This response class formats the successful success response containing paginated results.",
-  ReadOnly = true)]
+[Description("This response class formats the successful success response containing paginated results.")]
 public record PaginatedSuccessResponse : PaginatedSuccessResponse<object> {
   public PaginatedSuccessResponse(PaginatedResult result) {
     Result = result;

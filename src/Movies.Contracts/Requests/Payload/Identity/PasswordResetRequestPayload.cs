@@ -4,10 +4,9 @@
 
 namespace Movies.Contracts.Requests.Payload.Identity;
 
-[SwaggerSchema("Use to send a request for a password reset", WriteOnly = true)]
+[Description("Use to send a request for a password reset")]
 public struct PasswordResetRequestPayload {
-  [Required]
-  [DefaultValue("john.doe@domain.com")]
-  [SwaggerSchema("The email address", Format = "email", Nullable = false)]
+  [Required, JsonPropertyName("email"), Description("The email address")]
+  [property: MaxLength(255)]
   public string Email { get; init; }
 }

@@ -4,12 +4,12 @@
 
 namespace Movies.Contracts.Requests.Payload;
 
-[SwaggerSchema("Use to rate a movie",
-  Required = ["Rating"], WriteOnly = true)]
+[Description("Use to rate a movie")]
 public struct MovieRatingPayload {
-  [Required] [SwaggerSchema("Overall rating", Nullable = false)]
+  [Required, JsonPropertyName("rating"), Description("Overall rating")] [property: Range(0, 5)]
   public short Rating { get; init; }
 
-  [SwaggerSchema("Additional feedback")]
+  [JsonPropertyName("feedback"), Description("Additional feedback")]
+  [property: MaxLength(1000)]
   public string? Feedback { get; init; }
 }

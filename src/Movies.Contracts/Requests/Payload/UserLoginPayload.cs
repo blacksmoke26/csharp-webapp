@@ -4,13 +4,12 @@
 
 namespace Movies.Contracts.Requests.Payload;
 
-[SwaggerSchema("Use to login the existing user with credentials",
-  Required = ["Email", "Password"], WriteOnly = true)]
+[Description("Use to login the existing user with credentials")]
 public struct UserLoginCredentialPayload {
-  [SwaggerSchema("The email address", Format = "email", Nullable = false)] [Required] [DefaultValue("john.doe@example")]
+  [Required, JsonPropertyName("email"), Description("The email address")] [property: MaxLength(255)]
   public required string Email { get; init; }
 
-  [SwaggerSchema("The account password", Format = "password", Nullable = false)] [Required] [DefaultValue("<password>")]
+  [Required, JsonPropertyName("password"), Description("The account password")] [property: Range(8, 20)]
   public required string Password { get; init; }
 }
 

@@ -4,17 +4,16 @@
 
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema("This response class formats the successful success response using dynamic data.",
-  Required = ["Success", "Data"], ReadOnly = true)]
+[Description("This response class formats the successful success response using dynamic data.")]
 public record SuccessResponse<T> : ISuccessResponse {
-  [SwaggerSchema("The success property means operation was a success")]
+  [JsonPropertyName("success"), Description("The operation was successful")]
   public bool Success => true;
 
-  [SwaggerSchema("The information / processed data")]
+  [Required, JsonPropertyName("data"), Description("The processed data")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required T Data { get; init; }
 }
 
-[SwaggerSchema("This response class formats the successful success response using dynamic data.",
-  Required = ["Success", "Data"], ReadOnly = true)]
+[Description("This response class formats the successful success response using dynamic data.")]
 public record SuccessResponse : SuccessResponse<object> {
 }

@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Api;
 using Movies.Api.Core.Extensions;
@@ -12,6 +12,7 @@ public static class RateMovieEndpoint {
 
   public static IEndpointRouteBuilder MapRateMovie(this IEndpointRouteBuilder app) {
     app.MapPut(ApiEndpoints.Movies.Rating, async (
+        [Description("The Movie ID")]
         long movieId,
         MovieRatingPayload body,
         HttpContext context,
@@ -30,7 +31,14 @@ public static class RateMovieEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
       .WithName(Name)
-      .RequireAuthorization();
+      .WithSummary("Rate Movie")
+      .WithDescription("Rates a single movie")
+      .WithTags("Ratings")
+      .RequireAuthorization()
+      .Produces<SuccessOnlyResponse>()
+      .Produces(StatusCodes.Status401Unauthorized)
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
     return app;
   }
 }

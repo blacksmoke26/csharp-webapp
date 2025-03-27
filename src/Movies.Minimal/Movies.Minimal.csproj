@@ -5,11 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Movies.Minimal</RootNamespace>
+    <GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dumpify" Version="0.6.6" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.1.2" />
   </ItemGroup>
 
   <ItemGroup>

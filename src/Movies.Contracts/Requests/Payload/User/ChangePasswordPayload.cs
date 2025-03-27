@@ -4,11 +4,11 @@
 
 namespace Movies.Contracts.Requests.Payload.User;
 
-[SwaggerSchema("Use to change the account password", WriteOnly = true)]
+[Description("Use to change the account password")]
 public struct ChangePasswordPayload {
-  [Required] [SwaggerSchema("The current password", Nullable = false)]
+  [Required, JsonPropertyName("CurrentPassword"), Description("The current password")] [property: Range(8, 20)]
   public string CurrentPassword { get; set; }
 
-  [Required] [SwaggerSchema("The new password to update", Nullable = false)]
+  [Required, JsonPropertyName("NewPassword"), Description("The new password to update")] [property: Range(8, 20)]
   public string NewPassword { get; set; }
 }

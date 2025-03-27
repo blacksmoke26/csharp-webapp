@@ -4,20 +4,18 @@
 
 namespace Movies.Contracts.Requests.Payload;
 
-[SwaggerSchema("Use to signup a new user account",
-  Required = ["FirstName", "LastName", "Email", "Password"], WriteOnly = true)]
+[Description("Use to signup a new user account")]
 public struct UserSignupPayload {
-  [Required] [DefaultValue("John")] [SwaggerSchema("The user's first name", Nullable = false)]
+  [Required, JsonPropertyName("firstName"), Description("The first name of user")] [property: Range(3, 20)]
   public string FirstName { get; init; }
 
-  [Required] [DefaultValue("Doe")] [SwaggerSchema("The user's last name", Nullable = false)]
+  [Required, JsonPropertyName("lastName"), Description("The last name of user")] [property: Range(3, 20)]
   public string LastName { get; init; }
 
-  [Required]
-  [DefaultValue("john.doe@domain.com")]
-  [SwaggerSchema("The email address", Format = "email", Nullable = false)]
+  [Required, JsonPropertyName("email"), Description("The email address")] [property: MaxLength(255)]
   public string Email { get; init; }
 
-  [Required] [DefaultValue("<password>")] [SwaggerSchema("Password with symbols", Nullable = false)]
+  [Required, JsonPropertyName("password"), Description("Password with alphanumeric chars along with symbols")]
+  [property: Range(8, 20)]
   public string Password { get; init; }
 }

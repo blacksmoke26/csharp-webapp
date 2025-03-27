@@ -6,36 +6,56 @@ using Movies.Contracts.Responses.Ratings;
 
 namespace Movies.Contracts.Responses.Movies;
 
-[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public record MovieResponse {
   private float _rating;
-  [SwaggerSchema("The id of movie", Nullable = false)]
+
+  [JsonPropertyName("id"), Description("The id of movie")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? Id { get; set; }
-  [SwaggerSchema("The owner id of movie", Nullable = false)]
+
+  [JsonPropertyName("userId"), Description("The owner id of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? UserId { get; set; }
-  [SwaggerSchema("The title of movie", Nullable = false)]
+
+  [JsonPropertyName("title"), Description("The title of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Title { get; set; }
-  [SwaggerSchema("The year of release", Nullable = false)]
+
+  [JsonPropertyName("yearOfRelease"), Description("The year of release")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public short? YearOfRelease { get; set; }
-  [SwaggerSchema("The slug of movie", Nullable = false)]
+
+  [JsonPropertyName("slug"), Description("The slug of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Slug { get; set; }
 
-  [SwaggerSchema("Average rating", Nullable = false)]
+  [JsonPropertyName("rating"), Description("Average rating")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public float? Rating {
     get => _rating;
     set => _rating = float.Round(value ?? 0, 1);
   }
 
-  [SwaggerSchema("User's rating", Nullable = false)]
+  [JsonPropertyName("userRating"), Description("User's rating")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public short? UserRating { get; set; }
-  [SwaggerSchema("The status of movie", Nullable = false)]
+
+  [JsonPropertyName("status"), Description("The status of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Status { get; set; }
-  [SwaggerSchema("The movie created timestamp", Nullable = false)]
+
+  [JsonPropertyName("createdAt"), Description("The movie created timestamp")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public DateTime? CreatedAt { get; set; }
-  [SwaggerSchema("The movie updated timestamp", Nullable = false)]
+
+  [JsonPropertyName("updatedAt"), Description("The movie updated timestamp")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public DateTime? UpdatedAt { get; set; }
-  [SwaggerSchema("The genres of movie", Nullable = false)]
+
+  [JsonPropertyName("genres"), Description("The genres of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public IEnumerable<GenreResponse> Genres { get; set; } = [];
-  [SwaggerSchema("The ratings of movie", Nullable = false)]
+
+  [JsonPropertyName("ratings"), Description("The ratings of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public IEnumerable<RatingResponse> Ratings { get; set; } = [];
 }

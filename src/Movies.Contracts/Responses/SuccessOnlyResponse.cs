@@ -4,11 +4,7 @@
 
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema(@"This class represents the success response without containing
-any kind of data, the best usage is when you delete/remove
-something and returns as an empty success response.",
-  Required = ["Success", "Message"], ReadOnly = true)]
 public record SuccessOnlyResponse : ISuccessResponse {
-  [SwaggerSchema("The success property means operation was a success")]
+  [JsonPropertyName("success"), Description("The operation was successful")]
   public bool Success => true;
 }

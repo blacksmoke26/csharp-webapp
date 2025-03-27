@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Api;
 using Movies.Application.Domain.Extensions;
@@ -30,7 +30,13 @@ public static class LoginEndpoint {
         })
       );
     })
-    .WithName(Name);
+    .WithName(Name)
+    .WithSummary("Login")
+    .WithDescription("Account authentication using credentials")
+    .WithTags("Auth")
+    .Produces<SuccessResponse<UserAuthenticateResponse>>()
+    .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+    .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 
     return app;
   }

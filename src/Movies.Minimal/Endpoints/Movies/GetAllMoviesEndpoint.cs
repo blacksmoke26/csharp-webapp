@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using FluentValidation;
 using Movies.Api;
@@ -9,6 +9,7 @@ using Movies.Api.Domain.Query.Validators;
 using Movies.Application.Core.Extensions;
 using Movies.Application.Domain.Filters;
 using Movies.Contracts.Requests.Query;
+using Movies.Contracts.Responses.Movies;
 
 namespace Movies.Minimal.Endpoints.Movies;
 
@@ -32,7 +33,13 @@ public static class GetAllMoviesEndpoint {
 
         return TypedResults.Ok(ResponseHelper.SuccessWithPaginated(paginated));
       })
-      .WithName(Name);
+      .WithName(Name)
+      .WithSummary("Get All")
+      .WithDescription("Fetch the list of movies <i>(using filters and sort order)</i>")
+      .WithTags("Movies")
+      .Produces<PaginatedResult<MovieResponse>>()
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 
     return app;
   }

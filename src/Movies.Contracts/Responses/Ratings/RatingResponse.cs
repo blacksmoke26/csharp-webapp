@@ -5,44 +5,54 @@
 
 namespace Movies.Contracts.Responses.Ratings;
 
-[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public struct RatingResponse {
-  [SwaggerSchema("The id of rating", Nullable = false)]
+  [JsonPropertyName("id"), Description("The id of rating")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? Id { get; set; }
 
-  [SwaggerSchema("The id of user rated", Nullable = false)]
+  [JsonPropertyName("userId"), Description("The id of user rated")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? UserId { get; set; }
 
-  [SwaggerSchema("The id of movie", Nullable = false)]
+  [JsonPropertyName("movieId"), Description("The id of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? MovieId { get; set; }
 
-  [SwaggerSchema("Overall score", Nullable = false)]
+  [JsonPropertyName("score"), Description("Overall score")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+  [property: Range(0, 5)]
   public short? Score { get; set; }
 
-  [SwaggerSchema("Additional feedback")]
+  [JsonPropertyName("feedback"), Description("Additional feedback")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Feedback { get; set; }
 
-  [SwaggerSchema("The rating created timestamp", Nullable = false)]
+  [JsonPropertyName("createdAt"), Description("The rating created timestamp")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public DateTime? CreatedAt { get; set; }
 
-  [SwaggerSchema("The rating updated timestamp", Nullable = false)]
+  [JsonPropertyName("updatedAt"), Description("The rating updated timestamp")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public DateTime? UpdatedAt { get; set; }
 
-  [SwaggerSchema("The movie associated with this rating", Nullable = false)]
+  [JsonPropertyName("movie"), Description("The movie associated with this rating")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public MovieRatingResponse? Movie { get; set; }
 }
 
-[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public struct MovieRatingResponse {
-  [SwaggerSchema("The id of movie", Nullable = false)]
+  [JsonPropertyName("id"), Description("The id of movie")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? Id { get; set; }
 
-  [SwaggerSchema("The title of movie", Nullable = false)]
+  [JsonPropertyName("title"), Description("The title of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Title { get; set; }
 
-  [SwaggerSchema("The year of release", Nullable = false)]
+  [JsonPropertyName("yearOfRelease"), Description("The year of release")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public short? YearOfRelease { get; set; }
 
-  [SwaggerSchema("The slug of movie", Nullable = false)]
+  [JsonPropertyName("slug"), Description("The slug of movie")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Slug { get; set; }
 }

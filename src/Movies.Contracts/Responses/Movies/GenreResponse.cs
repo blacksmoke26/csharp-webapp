@@ -4,13 +4,16 @@
 
 namespace Movies.Contracts.Responses.Movies;
 
-[SwaggerSchema("The movie genre", ReadOnly = true)]
-[JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+[Description("The movie genre")]
 public struct GenreResponse {
-  [SwaggerSchema("The id of genre", ReadOnly = true)]
+  [JsonPropertyName("id"), Description("The id of genre")] [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? Id { get; set; }
-  [SwaggerSchema("The movie id of genre", ReadOnly = true)]
+
+  [JsonPropertyName("movieId"), Description("The movie id of genre")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public long? MovieId { get; set; }
-  [SwaggerSchema("The name of genre", ReadOnly = true)]
+
+  [JsonPropertyName("name"), Description("The name of genre")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? Name { get; set; }
 }

@@ -1,29 +1,36 @@
 ﻿namespace Movies.Contracts.Responses.Identity;
 
-[SwaggerSchema("This class formats the successful user details response",
-  ReadOnly = true)]
+[Description("This class formats the successful user details response")]
 public struct UserMeResponse {
-  [SwaggerSchema("The unique identifier")]
+  [Required, JsonPropertyName("id"), Description("The unique identifier")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required long Id { get; set; }
 
-  [SwaggerSchema("The user's first and last name", Nullable = false)]
+  [Required, JsonPropertyName("fullname"), Description("The user's first and last name")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string Fullname { get; init; }
 
-  [SwaggerSchema("The user's first name", Nullable = false)]
+  [Required, JsonPropertyName("firstName"), Description("The user's first name")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string FirstName { get; init; }
 
-  [SwaggerSchema("The user's last name", Nullable = false)]
+  [Required, JsonPropertyName("lastName"), Description("The user's last name")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string LastName { get; init; }
 
-  [SwaggerSchema("The email address", Format = "email", Nullable = false)]
+  [Required, JsonPropertyName("email"), Description("The email address")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string Email { get; init; }
 
-  [SwaggerSchema("The role name", Nullable = false)]
+  [Required, JsonPropertyName("role"), Description("The role name")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string Role { get; init; }
 
-  [SwaggerSchema("Account status", Nullable = false)]
+  [Required, JsonPropertyName("status"), Description("Account status")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string Status { get; set; }
 
-  [SwaggerSchema("Account registered date")]
+  [Required, JsonPropertyName("createdAt"), Description("Account registered date")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required DateTime? CreatedAt { get; set; }
 }

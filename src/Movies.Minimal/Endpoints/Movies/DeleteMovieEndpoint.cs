@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Api;
 using Movies.Api.Core.Extensions;
@@ -12,6 +12,7 @@ public static class DeleteMovieEndpoint {
 
   public static IEndpointRouteBuilder MapDeleteMovie(this IEndpointRouteBuilder app) {
     app.MapDelete(ApiEndpoints.Movies.Delete, async (
+        [Description("The Movie ID")]
         long id,
         MovieService movieService, HttpContext context, CancellationToken token) => {
         var isFound = await movieService.ExistsAsync(x
@@ -28,7 +29,13 @@ public static class DeleteMovieEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
       .WithName(Name)
-      .RequireAuthorization(AuthPolicies.AdminPolicy);
+      .WithSummary("Delete")
+      .WithDescription("Deletes a movie")
+      .WithTags("Movies")
+      .RequireAuthorization(AuthPolicies.AdminPolicy)
+      .Produces<SuccessResponse<SuccessOnlyResponse>>()
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound);
 
     return app;
   }

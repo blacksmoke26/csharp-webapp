@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Api;
 using Movies.Api.Core.Extensions;
@@ -19,7 +19,12 @@ public static class LogoutEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
       .WithName(Name)
-      .RequireAuthorization();
+      .WithSummary("Logout")
+      .WithDescription("Logouts the authenticated user")
+      .WithTags("Auth")
+      .RequireAuthorization()
+      .Produces<SuccessResponse<SuccessOnlyResponse>>()
+      .Produces(StatusCodes.Status401Unauthorized);
 
     return app;
   }

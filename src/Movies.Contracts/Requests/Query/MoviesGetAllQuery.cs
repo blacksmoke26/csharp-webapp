@@ -4,14 +4,14 @@
 
 namespace Movies.Contracts.Requests.Query;
 
-[SwaggerSchema("Use to filter the list of movies", WriteOnly = true)]
+[Description("Use to filter the list of movies")]
 public record MoviesGetAllQuery : RequestQueryFetching {
-  [SwaggerSchema("The creator user ID")]
+  [JsonPropertyName("userId"), Description("The creator user ID")] [property: MinLength(1)]
   public long? UserId { get; set; } = null;
-  
-  [SwaggerSchema("Movie title (case-insensitive search)")]
+
+  [JsonPropertyName("title"), Description("Movie title (case-insensitive search)")] [property: Range(1, 60)]
   public string? Title { get; set; } = null;
 
-  [SwaggerSchema("Year of release")]
+  [JsonPropertyName("year"), Description("Year of release")] [property: Range(1950, 2025)]
   public short? Year { get; set; } = null;
 }

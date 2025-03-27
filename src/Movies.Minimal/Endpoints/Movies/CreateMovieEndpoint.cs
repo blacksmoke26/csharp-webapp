@@ -1,9 +1,10 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Api;
 using Movies.Api.Core.Extensions;
+using Movies.Contracts.Responses.Movies;
 
 namespace Movies.Minimal.Endpoints.Movies;
 
@@ -29,7 +30,14 @@ public static class CreateMovieEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessWithData(movie));
       })
       .WithName(Name)
-      .RequireAuthorization();
+      .WithSummary("Create")
+      .WithDescription("Creates a movie")
+      .WithTags("Movies")
+      .RequireAuthorization()
+      .Produces<SuccessResponse<MovieResponse>>()
+      .Produces(StatusCodes.Status401Unauthorized)
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 
     return app;
   }

@@ -7,5 +7,4 @@
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using Movies.Contracts.Base;
-global using Newtonsoft.Json;
-global using Swashbuckle.AspNetCore.Annotations;
+global using System.Text.Json.Serialization;

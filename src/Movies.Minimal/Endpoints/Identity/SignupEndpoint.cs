@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using Movies.Api;
 
@@ -26,8 +26,14 @@ public static class SignupEndpoint {
             "You account has been created. Please check your inbox for verification email"),
           statusCode: StatusCodes.Status201Created);
       })
-      .WithName(Name);
-    
+      .WithName(Name)
+      .WithSummary("Signup")
+      .WithDescription("Creates a user account")
+      .WithTags("Identity")
+      .Produces<SuccessWithMessageResponse>(StatusCodes.Status201Created)
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
+
     return app;
   }
 }

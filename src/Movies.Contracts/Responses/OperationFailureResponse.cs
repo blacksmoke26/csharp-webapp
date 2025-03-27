@@ -4,17 +4,19 @@
 
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema(
-  "This represents the error response caused by some operation failure", ReadOnly = true)]
+[Description("This represents the error response caused by some operation failure")]
 public struct OperationFailureResponse {
-  [SwaggerSchema("The error code")]
+  [Required, JsonPropertyName("errorCode"), Description("The error code")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string ErrorCode { get; init; }
 
-  [SwaggerSchema("List of validation errors")]
+  [Required, JsonPropertyName("errors"), Description("List of validation errors")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required IEnumerable<OperationFailureError> Errors { get; init; }
 }
 
 public struct OperationFailureError {
-  [SwaggerSchema("The error message")]
+  [Required, JsonPropertyName("message"), Description("The error message")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string Message { get; set; }
 }

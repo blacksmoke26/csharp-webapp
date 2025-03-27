@@ -4,14 +4,18 @@
 
 namespace Movies.Contracts.Responses;
 
-[SwaggerSchema("This class formats the validator errors response",
-  Required = ["Errors"], ReadOnly = true, Nullable = false)]
+[Description("This class formats the validator errors response")]
 public class ValidationFailureResponse {
-  [SwaggerSchema("The error code")]
+  [JsonPropertyName("errorCode"), Description("The error code")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? ErrorCode { get; set; }
-  [SwaggerSchema("The error message")]
+
+  [JsonPropertyName("message"), Description("The error message")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string Message { get; set; } = string.Empty;
-  [SwaggerSchema("List of validation errors")]
+
+  [JsonPropertyName("errors"), Description("List of validation errors")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required IEnumerable<ValidationResponse> Errors { get; init; }
 
   /// <summary>
@@ -32,7 +36,8 @@ public class ValidationFailureResponse {
           if (x.ErrorCode != null)
             error.Add("errorCode",
               x.ErrorCode.EndsWith("Validator")
-                ? "VALIDATION_ERROR" : x.ErrorCode
+                ? "VALIDATION_ERROR"
+                : x.ErrorCode
             );
 
           if (x.PropertyName != null)
@@ -48,15 +53,17 @@ public class ValidationFailureResponse {
   }
 }
 
-[SwaggerSchema("This response class formats the validation error",
-  Required = ["Message"], ReadOnly = true)]
+[Description("This response class formats the validation error")]
 public class ValidationResponse {
-  [SwaggerSchema("The property name raising error")]
+  [JsonPropertyName("propertyName"), Description("The raising name which raises the error")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public string? PropertyName { get; init; }
 
-  [SwaggerSchema("The error message", Nullable = false)]
+  [Required, JsonPropertyName("message"), Description("The error message")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string Message { get; init; }
 
-  [SwaggerSchema("The error code")]
+  [Required, JsonPropertyName("errorCode"), Description("The error code")]
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required string? ErrorCode { get; init; }
 }

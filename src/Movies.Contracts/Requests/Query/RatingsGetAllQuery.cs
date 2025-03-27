@@ -4,11 +4,11 @@
 
 namespace Movies.Contracts.Requests.Query;
 
-[SwaggerSchema("Use to filter the list of movies", WriteOnly = true)]
+[Description("Use to filter the list of movies")]
 public record RatingsGetAllQuery : RequestQueryFetching {
-  [SwaggerSchema("The id of the movie")]
+  [JsonPropertyName("movieId"), Description("The id of the movie")] [property: MinLength(1)]
   public long? MovieId { get; set; } = null;
-  
-  [SwaggerSchema("The score")]
+
+  [JsonPropertyName("score"), Description("The score")] [property: Range(0, 5)]
   public short? Score { get; set; } = null;
 }

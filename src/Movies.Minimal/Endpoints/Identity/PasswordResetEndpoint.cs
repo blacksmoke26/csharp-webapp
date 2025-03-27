@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using FluentValidation;
 using Movies.Api;
@@ -33,7 +33,14 @@ public static class PasswordResetEndpoint {
 
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
-      .WithName(Name);
+      .WithName(Name)
+      .WithSummary("Reset password")
+      .WithDescription("Change account password using the Reset Code")
+      .WithTags("Identity")
+      .Produces<SuccessWithMessageResponse>()
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 
     return app;
   }

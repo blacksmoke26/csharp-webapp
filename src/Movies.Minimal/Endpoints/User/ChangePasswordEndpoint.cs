@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using FluentValidation;
 using Movies.Api;
@@ -29,7 +29,14 @@ public static class ChangePasswordEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessOnly());
       })
       .WithName(Name)
-      .RequireAuthorization();
+      .WithSummary("Change password")
+      .WithDescription("Change the account password")
+      .WithTags("User")
+      .RequireAuthorization()
+      .Produces<SuccessOnlyResponse>()
+      .Produces(StatusCodes.Status401Unauthorized)
+      .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 
     return app;
   }

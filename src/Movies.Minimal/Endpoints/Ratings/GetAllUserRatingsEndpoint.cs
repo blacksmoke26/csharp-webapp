@@ -1,6 +1,6 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
-// Website: https://github.com/blacksmoke26/
+// Repository: https://github.com/blacksmoke26/csharp-webapp
 
 using FluentValidation;
 using Movies.Api;
@@ -8,6 +8,7 @@ using Movies.Api.Core.Extensions;
 using Movies.Api.Domain.Query.Validators;
 using Movies.Application.Core.Extensions;
 using Movies.Contracts.Requests.Query;
+using Movies.Contracts.Responses.Ratings;
 
 namespace Movies.Minimal.Endpoints.Ratings;
 
@@ -32,7 +33,13 @@ public static class ListUserRatingEndpoint {
         return TypedResults.Ok(ResponseHelper.SuccessWithPaginated(paginated));
       })
       .WithName(Name)
-      .RequireAuthorization();
+      .WithSummary("Get All")
+      .WithDescription("Get all user ratings")
+      .WithTags("Ratings")
+      .RequireAuthorization()
+      .Produces<PaginatedResult<RatingResponse>>()
+      .Produces(StatusCodes.Status401Unauthorized)
+      .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 
     return app;
   }

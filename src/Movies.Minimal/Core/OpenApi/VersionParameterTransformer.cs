@@ -1,11 +1,10 @@
 ﻿// Licensed to the end users under one or more agreements.
 // Copyright (c) 2025 Junaid Atari, and contributors
 // Repository: https://github.com/blacksmoke26/csharp-webapp
+// Versioning: https://github.com/dotnet/aspnet-api-versioning/wiki/Version-Format
 // Guide: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/customize-openapi#use-operation-transformers
 
 using Asp.Versioning;
-using CaseConverter;
-using Dumpify;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -23,6 +22,8 @@ internal sealed class VersionParameterTransformer : IOpenApiDocumentTransformer 
     CancellationToken cancellationToken
   ) {
     foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations)) {
+      var version = ApiVersionParser.Default.Parse(document.Info.Version.AsSpan()[1..]).ToString("VV");
+      
       operation.Value.Parameters ??= new List<OpenApiParameter>();
       operation.Value.Parameters.Insert(0, new OpenApiParameter {
         Name = "version",
@@ -31,7 +32,7 @@ internal sealed class VersionParameterTransformer : IOpenApiDocumentTransformer 
         Required = true,
         Schema = new OpenApiSchema {
           Type = "string",
-          Default = new OpenApiString(document.Info.Version)
+          Default = new OpenApiString(version)
         }
       });
     }

@@ -32,9 +32,9 @@ public static class ChangePasswordEndpoint {
       .WithSummary("Change password")
       .WithDescription("Change the account password")
       .WithTags("User")
-      .RequireAuthorization()
+      .WithAuthorization()
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessOnlyResponse>()
-      .Produces(StatusCodes.Status401Unauthorized)
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 

@@ -34,9 +34,9 @@ public static class RateMovieEndpoint {
       .WithSummary("Rate Movie")
       .WithDescription("Rates a single movie")
       .WithTags("Ratings")
-      .RequireAuthorization()
+      .WithAuthorization(AuthPolicies.AdminPolicy)
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessOnlyResponse>()
-      .Produces(StatusCodes.Status401Unauthorized)
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
     return app;

@@ -25,9 +25,9 @@ public static class DeleteRatingEndpoint {
       .WithSummary("Delete")
       .WithDescription("Delete a movie rating")
       .WithTags("Ratings")
-      .RequireAuthorization()
+      .WithAuthorization(AuthPolicies.AdminPolicy)
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessOnlyResponse>()
-      .Produces(StatusCodes.Status401Unauthorized)
       .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound);
     return app;
   }

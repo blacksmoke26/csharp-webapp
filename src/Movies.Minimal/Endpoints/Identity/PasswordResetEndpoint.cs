@@ -37,6 +37,7 @@ public static class PasswordResetEndpoint {
       .WithSummary("Reset password")
       .WithDescription("Change account password using the Reset Code")
       .WithTags("Identity")
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessWithMessageResponse>()
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound)

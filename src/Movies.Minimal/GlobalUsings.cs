@@ -10,3 +10,5 @@ global using Movies.Application.Repositories;
 global using Movies.Application.Services;
 global using Movies.Contracts.Requests.Payload;
 global using Movies.Contracts.Responses;
+global using Movies.Minimal.Core.Constants;
+global using Movies.Minimal.Core.Extensions;

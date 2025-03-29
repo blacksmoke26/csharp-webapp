@@ -35,10 +35,10 @@ public static class UpdateMovieEndpoint {
       .WithSummary("Update")
       .WithDescription("Updates a single movie")
       .WithTags("Movies")
-      .RequireAuthorization()
+      .WithAuthorization(AuthPolicies.AdminPolicy)
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessResponse<MovieResponse>>()
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
-      .Produces(StatusCodes.Status401Unauthorized)
       .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 

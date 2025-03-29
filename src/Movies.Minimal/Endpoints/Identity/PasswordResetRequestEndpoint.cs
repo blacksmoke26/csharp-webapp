@@ -41,6 +41,7 @@ public static class PasswordResetRequestEndpoint {
       .WithSummary("Request password reset")
       .WithDescription("Sends a request for resetting password")
       .WithTags("Identity")
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessWithMessageResponse>()
       .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound)
       .Produces<OperationFailureResponse>(StatusCodes.Status403Forbidden)

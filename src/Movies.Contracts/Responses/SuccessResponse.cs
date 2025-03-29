@@ -10,7 +10,6 @@ public record SuccessResponse<T> : ISuccessResponse {
   public bool Success => true;
 
   [Required, JsonPropertyName("data"), Description("The processed data")]
-  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
   public required T Data { get; init; }
 }
 

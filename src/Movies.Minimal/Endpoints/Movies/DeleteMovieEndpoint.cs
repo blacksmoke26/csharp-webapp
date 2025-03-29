@@ -32,7 +32,8 @@ public static class DeleteMovieEndpoint {
       .WithSummary("Delete")
       .WithDescription("Deletes a movie")
       .WithTags("Movies")
-      .RequireAuthorization(AuthPolicies.AdminPolicy)
+      .WithAuthorization(AuthPolicies.AdminPolicy)
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessResponse<SuccessOnlyResponse>>()
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound);

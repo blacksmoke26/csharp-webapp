@@ -5,6 +5,7 @@
 using Movies.Api.Core.Configurators;
 using Movies.Application;
 using Movies.Application.Config;
+using Movies.Minimal.Core.Configurators;
 
 namespace Movies.Minimal.Core.Extensions;
 
@@ -26,7 +27,8 @@ public static class ServiceCollectionExtensions {
     //RequestDecompressionConfigurator.Configure(services, config);
     //CorsConfigurator.Configure(services, config);
 
-    //ApiVersioningConfigurator.Configure(services, config);
+    ApiVersioningConfigurator.Configure(services, config);
+    OpenApiConfigurator.Configure(services, config);
 
     //OutputCachingConfigurator.Configure(services, config);
     //ResponseCachingConfigurator.Configure(services, config);

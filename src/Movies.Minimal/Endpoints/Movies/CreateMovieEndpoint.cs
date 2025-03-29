@@ -33,9 +33,9 @@ public static class CreateMovieEndpoint {
       .WithSummary("Create")
       .WithDescription("Creates a movie")
       .WithTags("Movies")
-      .RequireAuthorization()
+      .WithAuthorization()
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessResponse<MovieResponse>>()
-      .Produces(StatusCodes.Status401Unauthorized)
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);
 

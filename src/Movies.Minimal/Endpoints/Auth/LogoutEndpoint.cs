@@ -22,9 +22,9 @@ public static class LogoutEndpoint {
       .WithSummary("Logout")
       .WithDescription("Logouts the authenticated user")
       .WithTags("Auth")
-      .RequireAuthorization()
-      .Produces<SuccessResponse<SuccessOnlyResponse>>()
-      .Produces(StatusCodes.Status401Unauthorized);
+      .WithAuthorization()
+      .WithVersioning(ApiVersions.V10)
+      .Produces<SuccessResponse<SuccessOnlyResponse>>();
 
     return app;
   }

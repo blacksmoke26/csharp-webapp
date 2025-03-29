@@ -35,6 +35,7 @@ public static class GetMovieEndpoint {
       .WithSummary("Get One")
       .WithDescription("Fetch a single movie")
       .WithTags("Movies")
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessResponse<MovieResponse>>()
       .Produces<OperationFailureResponse>(StatusCodes.Status404NotFound)
       .Produces<OperationFailureResponse>(StatusCodes.Status410Gone)

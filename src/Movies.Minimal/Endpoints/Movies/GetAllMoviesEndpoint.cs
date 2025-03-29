@@ -37,6 +37,7 @@ public static class GetAllMoviesEndpoint {
       .WithSummary("Get All")
       .WithDescription("Fetch the list of movies <i>(using filters and sort order)</i>")
       .WithTags("Movies")
+      .WithVersioning(ApiVersions.V10)
       .Produces<PaginatedResult<MovieResponse>>()
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);

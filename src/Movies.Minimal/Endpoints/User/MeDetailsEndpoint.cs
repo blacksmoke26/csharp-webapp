@@ -22,9 +22,9 @@ public static class MeDetailsEndpoint {
       .WithSummary("Me")
       .WithDescription("Fetch the account information")
       .WithTags("User")
-      .RequireAuthorization()
-      .Produces<SuccessResponse<UserMeResponse>>()
-      .Produces(StatusCodes.Status401Unauthorized);
+      .WithAuthorization()
+      .WithVersioning(ApiVersions.V10)
+      .Produces<SuccessResponse<UserMeResponse>>();
 
     return app;
   }

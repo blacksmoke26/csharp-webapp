@@ -30,6 +30,7 @@ public static class SignupEndpoint {
       .WithSummary("Signup")
       .WithDescription("Creates a user account")
       .WithTags("Identity")
+      .WithVersioning(ApiVersions.V10)
       .Produces<SuccessWithMessageResponse>(StatusCodes.Status201Created)
       .Produces<OperationFailureResponse>(StatusCodes.Status400BadRequest)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);

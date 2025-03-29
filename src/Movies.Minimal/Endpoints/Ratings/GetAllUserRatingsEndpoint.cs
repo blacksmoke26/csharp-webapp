@@ -36,7 +36,8 @@ public static class ListUserRatingEndpoint {
       .WithSummary("Get All")
       .WithDescription("Get all user ratings")
       .WithTags("Ratings")
-      .RequireAuthorization()
+      .WithAuthorization(AuthPolicies.AdminPolicy)
+      .WithVersioning(ApiVersions.V10)
       .Produces<PaginatedResult<RatingResponse>>()
       .Produces(StatusCodes.Status401Unauthorized)
       .Produces<ValidationFailureResponse>(StatusCodes.Status422UnprocessableEntity);

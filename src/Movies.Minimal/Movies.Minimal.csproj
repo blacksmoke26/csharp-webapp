@@ -11,17 +11,17 @@
   <ItemGroup>
     <PackageReference Include="Dumpify" Version="0.6.6" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.1.2" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.1.3" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <OpenApiDocumentsDirectory>./</OpenApiDocumentsDirectory>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Movies.Api\Movies.Api.csproj" />
     <ProjectReference Include="..\Movies.Application\Movies.Application.csproj" />
     <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Core\Configurators\" />
   </ItemGroup>
 
 </Project>

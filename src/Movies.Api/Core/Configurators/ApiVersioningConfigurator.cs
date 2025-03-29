@@ -15,7 +15,7 @@ namespace Movies.Api.Core.Configurators;
 /// <p>Read more about
 /// <see href="https://github.com/dotnet/aspnet-api-versioning/wiki/API-Versioning-Options">API Versioning Options</see></p>
 /// </summary>
-public abstract class ApiVersioningConfigurator : IServiceConfigurator {
+internal abstract class ApiVersioningConfigurator : IServiceConfigurator {
   /// <summary>
   /// Configures the api-versioning to the service collection
   /// </summary>

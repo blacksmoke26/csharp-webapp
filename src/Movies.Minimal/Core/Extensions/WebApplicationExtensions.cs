@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Movies.Api.Core.Configurators;
 using Movies.Application.Context;
+using Movies.Minimal.Core.Configurators;
 
 namespace Movies.Minimal.Core.Extensions;
 
@@ -18,7 +19,8 @@ public static class WebApplicationExtensions {
     //RequestDecompressionConfigurator.Use(app);
     ErrorHandlerConfigurator.Use(app);
 
-    //ControllersConfigurator.Use(app);
+    OpenApiConfigurator.Use(app);
+    ScalarClientConfigurator.Use(app);
 
     //CorsConfigurator.Use(app);
 

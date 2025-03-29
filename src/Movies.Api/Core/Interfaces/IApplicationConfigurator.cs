@@ -4,6 +4,7 @@
 
 namespace Movies.Api.Core.Interfaces;
 
-public interface IApplicationServiceConfigurator
-  : IServiceConfigurator, IApplicationConfigurator {
+public interface IApplicationConfigurator {
+  /// <param name="app">The WebApplication instance</param>
+  public static abstract void Use(WebApplication app);
 }

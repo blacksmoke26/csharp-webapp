@@ -16,7 +16,7 @@ namespace Movies.Minimal.Core.Configurators;
 /// <p>Read more about
 /// <see href="https://github.com/dotnet/aspnet-api-versioning/wiki/API-Versioning-Options">API Versioning Options</see></p>
 /// </summary>
-internal abstract class ApiVersioningConfigurator : IApplicationServiceConfigurator {
+internal abstract class ApiVersioningConfigurator : IServiceConfigurator {
   /// <summary>
   /// Configures the api-versioning to the service collection
   /// </summary>
@@ -34,10 +34,5 @@ internal abstract class ApiVersioningConfigurator : IApplicationServiceConfigura
       // The name associated with the API version route constrain
       //x.RouteConstraintName = "version";
     });
-  }
-
-  /// <inheritdoc/>
-  public static void Use(WebApplication app) {
-    app.CreateApiVersionSet(); 
   }
 }
